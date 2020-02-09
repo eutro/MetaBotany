@@ -1,0 +1,6 @@
+{
+  "name": "botaniapp.category.lenses",
+  "description": "botaniapp.category.text.lenses",
+  "icon": "botaniapp:lens_binding",
+  "parent": "botaniapp:main/botaniapp"
+}

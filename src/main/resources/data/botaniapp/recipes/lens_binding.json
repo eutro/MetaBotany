@@ -1,0 +1,19 @@
+{
+  "type": "botaniapp:lens_binding",
+  "result": {
+    "item": "botaniapp:lens_binding"
+  },
+  "pattern": [
+    "PP",
+    " L"
+  ],
+  "key": {
+    "L": {
+      "item": "botania:lens_normal"
+    },
+    "P": {
+      "tag": "botania:petals"
+    }
+  },
+  "group": "botaniapp:lens_binding"
+}

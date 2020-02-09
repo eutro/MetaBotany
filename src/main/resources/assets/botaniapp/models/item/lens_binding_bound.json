@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "botaniapp:items/lens",
+    "layer1": "botaniapp:items/lens_binding",
+	"layer2": "botaniapp:items/lens_petal_bottom_big"
+  }
+}

@@ -1,0 +1,33 @@
+modLoader="javafml" #mandatory
+loaderVersion="[28,)" #mandatory
+issueTrackerURL="https://github.com/eutropius225/BotaniaPP/issues" #optional
+displayURL="https://github.com/eutropius225/BotaniaPP" #optional
+logoFile="logo.png" #optional
+credits="Botania Developers and Maintainers: Vazkii, wiiv, williewillus, dylan4ever" #optional
+authors="Eutros"
+
+[[mods]]
+modId="botaniapp"
+version="${file.jarVersion}"
+displayName="Botania Plus Plus"
+description='''
+Addon mod for Botania, adding new possibilites.'''
+
+[[dependencies.botaniapp]]
+    modId="forge"
+    mandatory=true
+    versionRange="[28.1.92,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.botaniapp]]
+    modId="patchouli"
+    mandatory=true
+    versionRange="[1.1-22,)"
+    side="BOTH"
+
+[[dependencies.botaniapp]]
+    modId="botania"
+    mandatory=true
+    versionRange="[r1.11-378,)"
+    side="BOTH"

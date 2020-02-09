@@ -1,0 +1,11 @@
+{
+  "name": "Botania Plus Plus",
+  "icon": "botania:lexicon",
+  "category": "botaniapp:main/botaniapp",
+  "pages": [
+    {
+      "type": "text",
+      "text": "botaniapp.text.botaniapp"
+    }
+  ]
+}

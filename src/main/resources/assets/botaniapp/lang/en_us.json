@@ -1,0 +1,22 @@
+{
+  "item.botaniapp.lens_binding": "Mana Lens: Binding",
+  "item.botaniapp.lens_binding.short": "Binding",
+  "itemGroup.botaniapp": "Botania++",
+
+  "botaniapp.category.botaniapp": "$(4)Botania Plus Plus$(0) is an add-on mod for $(1)Botania$(0). It aims to create new possibilities for automation of things that were not possible before.",
+  "botaniapp.text.botaniapp": "$(4)Botania Plus Plus$(0) is a mod by Eutros.",
+
+  "botaniapp.category.lenses": "Additional Mana Lenses",
+  "botaniapp.category.text.lenses": "More lenses for your mana bursts!",
+
+  "botaniapp.entry.lens_binding": "Mana Lens: Binding",
+  "botaniapp.page.lens_binding0": "The $(item)Binding Lens$(0) allows $(thing)Mana Bursts$(0) to bind blocks automatically, like a $(l:basics/wand)$(item)Wand of the Forest$(0)$(/l) would.$(p)Striking any applicable block with the mana burst from this lens will $(thing)bind$(0) that location to the lens, dropping the first petal.$(p)Striking a second block will, if possible, $(thing)bind$(0) the $(thing)first block$(0) to the $(thing)second$(0).",
+  "botaniapp.page.lens_binding1": "If the $(thing)first block$(0) $(l)cannot$() be bound to the $(thing)second$(0), $(o)the lens will not unbind from the first block$().$(p)The $(item)Binding Lens$(0) can even be moved around without losing its binding. Furthermore, it can be bound by hand, by sneak-right clicking on an applicable block. It can also be $(thing)unbound$(0) by sneak-right clicking into space, or putting it in a $(thing)crafting grid$(0).",
+  "botaniapp.page.lens_binding6": "Though the lens and its color will visibly change depending on whether it is currently bound or not, any $(thing)mana bursts$(0) in flight will not change color when the lens does.$(p)Furthermore, $(item)Flowers$(0) cannot be bound (not even $(l:misc/shiny_flowers)$(thing)Floating Flowers$(0)$(/l)) to $(l:mana/pool)$(item)Mana Pools$(0)$(/l) or $(l:mana/spreader)$(item)Mana Spreaders$(0)$(/l) in this way.",
+  "botaniapp.page.lens_binding2": "Wow, pretty colors.$(p)Maybe looking back at this entry after the $(thing)Elves$(0) have seen it would be a good idea...",
+  "botaniapp.page.title.lens_binding3": "Elven Factors",
+  "botaniapp.page.lens_binding3": "It looks like you have met the $(thing)Elves$(0). There are some new features to pay attention to.$(p)Firstly, due to the faint presence of the $(l:mana/prism)$(item)Mana Prism$(0)$(/l) in this world, a $(item)Binding Lens$(0) placed on one will $(o)not$() change its $(thing)binding$(0) when a burst fired through it lands.",
+  "botaniapp.page.lens_binding4": "Interactions with certain $(l:mana/elven_lenses)$(item)Elven Lenses$(0)$(/l) when combined are also of note.$(p)The first is the $(item)Paintslinger Lens$(0). Should the primary lens be the $(item)Binding Lens$(0), it will be the $(item)Binding Lens$(0) whose color is used for painting.$(p)The second to note is the $(item)Warp Lens$(0). When it is combined with the $(item)Binding Lens$(0), the order matters:",
+  "botaniapp.page.lens_binding5": "Should the primary lens be the $(item)Binding Lens$(0), the burst will not $(thing)bind$(0) any $(l:ender/piston_relay)$(item)Force Relays$(0)$(/l) it hits. Should the primary lens be the $(item)Warp Lens$(0), the burst will bind any $(l:ender/piston_relay)$(item)Force Relays$(0)$(/l) it goes through.$(p)The third special interaction is with $(item)Phantom Lenses$(0). By lining up several targets, a single burst can be used to select both the $(thing)source$(0) and $(thing)target$(0) of the binding, or of consecutive bindings. This works even if the lens is on a $(l:mana/prism)$(item)Mana Prism$(0)$(/l).",
+  "botaniapp.page.lens_binding7": "Finally, $(l:alfhomancy/elf_resources)$(item)Pixie Dust$(0)$(/l) can be used in the $(item)Binding Lens$(0)' recipe in lieu of petals, resulting in that petal being replaced with a rainbow petal, which changes color."
+}

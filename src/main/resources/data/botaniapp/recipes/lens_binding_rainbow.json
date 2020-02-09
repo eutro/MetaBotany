@@ -1,0 +1,20 @@
+{
+  "type": "botaniapp:lens_binding",
+  "result": {
+    "item": "botaniapp:lens_binding",
+	"nbt": "{color1:16,color2:16}"
+  },
+  "pattern": [
+    "PP",
+    " L"
+  ],
+  "key": {
+    "L": {
+      "item": "botania:lens_normal"
+    },
+    "P": {
+      "tag": "botaniapp:rainbow_petals"
+    }
+  },
+  "group": "botaniapp:lens_binding"
+}

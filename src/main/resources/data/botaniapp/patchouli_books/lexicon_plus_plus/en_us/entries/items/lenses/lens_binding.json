@@ -1,0 +1,46 @@
+{
+  "name": "botaniapp.entry.lens_binding",
+  "icon": "botaniapp:lens_binding",
+  "category": "botaniapp:items/lenses",
+  "pages": [
+    {
+      "type": "text",
+      "text": "botaniapp.page.lens_binding0"
+    },
+    {
+      "type": "text",
+      "text": "botaniapp.page.lens_binding1"
+    },
+    {
+      "type": "text",
+      "text": "botaniapp.page.lens_binding6"
+    },
+    {
+      "type": "crafting",
+      "recipe": "botaniapp:lens_binding",
+      "text": "botaniapp.page.lens_binding2"
+    },
+    {
+      "type": "text",
+      "title": "botaniapp.page.title.lens_binding3",
+      "advancement": "botania:main/elf_lexicon_pickup",
+      "text": "botaniapp.page.lens_binding3"
+    },
+    {
+      "type": "text",
+      "advancement": "botania:main/elf_lexicon_pickup",
+      "text": "botaniapp.page.lens_binding4"
+    },
+    {
+      "type": "text",
+      "advancement": "botania:main/elf_lexicon_pickup",
+      "text": "botaniapp.page.lens_binding5"
+    },
+    {
+      "type": "crafting",
+      "recipe": "botaniapp:lens_binding_rainbow",
+      "advancement": "botania:main/elf_lexicon_pickup",
+      "text": "botaniapp.page.lens_binding7"
+    }
+  ]
+}
