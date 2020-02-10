@@ -23,7 +23,7 @@ Addon mod for Botania, adding new possibilites.'''
 [[dependencies.botaniapp]]
     modId="patchouli"
     mandatory=true
-    versionRange="[1.1-22,)"
+    versionRange="[1.1-26,)"
     side="BOTH"
 
 [[dependencies.botaniapp]]
