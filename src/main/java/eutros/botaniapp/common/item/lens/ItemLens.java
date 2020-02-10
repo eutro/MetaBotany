@@ -2,6 +2,7 @@ package eutros.botaniapp.common.item.lens;
 
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
 import net.minecraft.entity.projectile.ThrowableEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -16,6 +17,7 @@ import javax.annotation.Nonnull;
 public class ItemLens extends Item implements ILens, ICompositableLens, ILensControl {
 
     private static final String TAG_COMPOSITE_LENS = "compositeLens";
+    protected static final String TAG_COLOR = "color";
     protected boolean updateColor = true;
 
     public ItemLens(Properties properties) {
@@ -65,7 +67,7 @@ public class ItemLens extends Item implements ILens, ICompositableLens, ILensCon
 
     @Override
     public int getLensColor(ItemStack stack) {
-        return 0xFFFFFF;
+        return DyeColor.byId(ItemNBTHelper.getInt(stack, TAG_COLOR, 0)).getColorValue();
     }
 
     @Override
