@@ -1,6 +1,15 @@
-/*
- * This was taken almost in full from its counterpart in the Botania mod,
- * found at https://github.com/Vazkii/Botania/blob/master/src/main/java/vazkii/botania/common/core/helper/ItemNBTHelper.java
+/**
+ * This class was created by <Vazkii>, and negligibly modified by <Eutros>. It's distributed as
+ * part of the ThaumicTinkerer Mod.
+ *
+ * ThaumicTinkerer is Open Source and distributed under a
+ * Botania License: http://botaniamod.net/license.php
+ *
+ * ThaumicTinkerer is a Derivative Work on Thaumcraft 4.
+ * Thaumcraft 4 (c) Azanor 2012
+ * (http://www.minecraftforum.net/topic/1585216-)
+ *
+ * File Created @ [8 Sep 2013, 19:36:25 (GMT)]
  */
 
 package eutros.botaniapp.common.core.helper;
