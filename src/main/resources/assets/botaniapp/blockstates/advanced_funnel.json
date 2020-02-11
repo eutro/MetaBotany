@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "powered=false": { "model": "botaniapp:block/advanced_funnel" },
+    "powered=true": { "model": "botaniapp:block/advanced_funnel" }
+  }
+}

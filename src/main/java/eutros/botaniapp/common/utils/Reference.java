@@ -6,4 +6,8 @@ public class Reference {
     public static final class ItemNames {
         public static final String LENS_PREFIX = "lens_";
     }
+
+    public static final class BlockNames {
+        public static final String ADVANCED_FUNNEL = "advanced_funnel";
+    }
 }

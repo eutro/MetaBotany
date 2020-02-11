@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "botaniapp:blocks/advanced_funnel_top_bottom",
+    "top": "botaniapp:blocks/advanced_funnel_top_bottom",
+    "side": "botaniapp:blocks/advanced_funnel_side"
+  }
+}

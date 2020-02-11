@@ -2,6 +2,10 @@
   "item.botaniapp.lens_binding": "Mana Lens: Binding",
   "item.botaniapp.lens_binding.short": "Binding",
 
+  "block.botaniapp.advanced_funnel": "Advanced Corporea Funnel",
+  "hud.botaniapp.advanced_funnel.pre": "Reaches up to ",
+  "hud.botaniapp.advanced_funnel.post": " block(s) below.",
+
   "itemGroup.botaniapp": "Botania++",
 
   "botaniapp.category.botaniapp": "$(4)Botania Plus Plus$(0) is an add-on mod for $(1)Botania$(0). It aims to create new possibilities for automation of things that were not possible before.",
