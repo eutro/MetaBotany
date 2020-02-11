@@ -7,7 +7,7 @@ import vazkii.botania.api.corporea.ICorporeaRequestMatcher;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class AdvancedMatcher {
+public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
 
     private static final Pattern regexPatternMatcher = Pattern.compile("/(.+)/(i?)");
 
@@ -23,5 +23,9 @@ public abstract class AdvancedMatcher {
         }
 
         return CorporeaHelper.createMatcher(stack, checkNBT);
+    }
+
+    public boolean isInvalid() {
+        return false;
     }
 }

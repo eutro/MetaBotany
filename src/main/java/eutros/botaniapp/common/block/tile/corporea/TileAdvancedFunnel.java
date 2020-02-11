@@ -2,6 +2,7 @@ package eutros.botaniapp.common.block.tile.corporea;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import eutros.botaniapp.common.block.tile.corporea.matchers.AdvancedMatcher;
+import eutros.botaniapp.common.utils.BotaniaPPFakePlayer;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -11,11 +12,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
@@ -49,20 +51,28 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
 
     public void doRequest() {
         ICorporeaSpark spark = getSpark();
+
         if(spark != null && spark.getMaster() != null) {
-            List<ItemStack> filter = getFilter();
+            List<FrameFilter> filter = getFilter();
+
             if(!filter.isEmpty()) {
                 assert world != null;
-                ItemStack stack = filter.get(world.rand.nextInt(filter.size()));
+                FrameFilter frameFilter = filter.get(world.rand.nextInt(filter.size()));
+                ItemStack stack = frameFilter.stack;
 
-                if(!stack.isEmpty())
-                    doCorporeaRequest(AdvancedMatcher.fromItemStack(stack, true), stack.getCount(), spark);
+                if(!stack.isEmpty()) {
+                    ICorporeaRequestMatcher requestMatcher = AdvancedMatcher.fromItemStack(stack, true);
+                    doCorporeaRequest(requestMatcher, stack.getCount(), spark);
+                    if(requestMatcher instanceof AdvancedMatcher && ((AdvancedMatcher) requestMatcher).isInvalid()) {
+                        frameFilter.frame.attackEntityFrom(DamageSource.GENERIC, 1);
+                    }
+                }
             }
         }
     }
 
-    public List<ItemStack> getFilter() {
-        List<ItemStack> filter = new ArrayList<>();
+    public List<FrameFilter> getFilter() {
+        List<FrameFilter> filter = new ArrayList<>();
 
         final int[] rotationToStackSize = new int[] {
                 1, 2, 4, 8, 16, 32, 48, 64
@@ -78,7 +88,7 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
                     if(!stack.isEmpty()) {
                         ItemStack copy = stack.copy();
                         copy.setCount(rotationToStackSize[frame.getRotation()]);
-                        filter.add(copy);
+                        filter.add(new FrameFilter(frame, copy));
                     }
                 }
             }
@@ -180,5 +190,16 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
     @Override
     public BlockPos getBinding() {
         return getInvPos();
+    }
+
+    static class FrameFilter {
+
+        public ItemFrameEntity frame;
+        public ItemStack stack;
+
+        public FrameFilter(ItemFrameEntity frame, ItemStack stack) {
+            this.frame = frame;
+            this.stack = stack;
+        }
     }
 }
