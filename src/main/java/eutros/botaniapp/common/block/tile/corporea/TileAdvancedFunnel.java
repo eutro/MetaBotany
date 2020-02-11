@@ -64,7 +64,7 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
                     ICorporeaRequestMatcher requestMatcher = AdvancedMatcher.fromItemStack(stack, true);
                     doCorporeaRequest(requestMatcher, stack.getCount(), spark);
                     if(requestMatcher instanceof AdvancedMatcher && ((AdvancedMatcher) requestMatcher).isInvalid()) {
-                        frameFilter.frame.attackEntityFrom(DamageSource.GENERIC, 1);
+                        frameFilter.frame.attackEntityFrom(DamageSource.GENERIC, 0);
                     }
                 }
             }
