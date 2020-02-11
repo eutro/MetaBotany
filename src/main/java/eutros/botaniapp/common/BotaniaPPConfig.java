@@ -23,7 +23,7 @@ public class BotaniaPPConfig {
             REGEX_TIMEOUT = builder
                     .comment("Time until a Regular Expression times out, in nanoseconds. Used for the Advanced Corporea Funnel's RegEx Matcher to counteract ReDoSing.")
                     .translation("config.botaniapp.regex_timeout")
-                    .defineInRange("REGEX_TIMEOUT", 2000000, 0, Integer.MAX_VALUE);
+                    .defineInRange("REGEX_TIMEOUT", 500000, 0, Integer.MAX_VALUE);
         }
     }
 
