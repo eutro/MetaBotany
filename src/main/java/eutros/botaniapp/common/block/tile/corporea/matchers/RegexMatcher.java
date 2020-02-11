@@ -4,34 +4,39 @@ import eutros.botaniapp.common.BotaniaPPConfig;
 import eutros.botaniapp.common.utils.RegularExpressionUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import vazkii.botania.common.block.tile.corporea.TileCorporeaRetainer;
 
+import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexMatcher extends AdvancedMatcher {
 
     public enum Type {
-        NAME(""),
-        ORE_DICT("ore"),
-        LOC_KEY("deloc"),
-        MOD_ID("mod"),
-        ITEM_ID("raw_id"),
-        RESOURCE_LOC("id");
+        NAME('n'),
+        LOC_KEY('u'),
+        MOD_ID('m'),
+        ITEM_ID('r'),
+        RESOURCE_LOC('i');
 
-        public final String code;
+        public final char code;
 
-        Type(String code) {
+        Type(char code) {
             this.code = code;
         }
 
-        static Type byCode(String code) {
+        static Type byCode(char code) {
             for(Type t : Type.values()) {
-                if(t.code.equals(code))
+                if(t.code == code)
                     return t;
             }
             return NAME;
+        }
+
+        static Type byCode(String code) {
+            return byCode(code.length() == 0 ? 'n' : code.charAt(0));
         }
     }
 
@@ -65,7 +70,34 @@ public class RegexMatcher extends AdvancedMatcher {
             return false;
         }
 
-        String text = stack.getDisplayName().getFormattedText();
+        String text = "";
+
+        switch(type) {
+            case LOC_KEY:
+                text = stack.getTranslationKey();
+                break;
+            case MOD_ID:
+            case ITEM_ID:
+            case RESOURCE_LOC:
+                ResourceLocation registryName = stack.getItem().getRegistryName();
+                if(registryName != null) {
+                    switch(type) {
+                        case MOD_ID:
+                            text = registryName.getNamespace();
+                            break;
+                        case ITEM_ID:
+                            text = registryName.getPath();
+                            break;
+                        case RESOURCE_LOC:
+                            text = registryName.toString();
+                            break;
+                    }
+                    break;
+                }
+            default:
+                text = stack.getDisplayName().getFormattedText();
+        }
+
         Matcher matcher = RegularExpressionUtils.createMatcherWithTimeout(text, pattern, BotaniaPPConfig.COMMON.REGEX_TIMEOUT.get());
         try {
             return matcher.matches();
@@ -81,7 +113,7 @@ public class RegexMatcher extends AdvancedMatcher {
         tag.putString(PATTERN, pattern.toString());
         tag.putInt(FLAGS, pattern.flags());
         tag.putBoolean(INVALID, invalid);
-        tag.putString(CODE, type.code);
+        tag.putString(CODE, String.valueOf(type.code));
     }
 
     public static RegexMatcher serialize(CompoundNBT tag) {
