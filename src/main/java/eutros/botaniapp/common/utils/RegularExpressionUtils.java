@@ -34,10 +34,9 @@ public class RegularExpressionUtils {
             timeoutTime = System.nanoTime() + timeoutNS;
         }
 
-        public char charAt(int index) throws RuntimeException {
+        public char charAt(int index) {
             if (System.nanoTime() > timeoutTime) {
-                throw new RuntimeException("Timeout occurred after " + timeoutNS + "ns while processing regular expression '"
-                        + regularExpression + "' on input '" + stringToMatch + "'!");
+                throw new RegexTimeout();
             }
             return inner.charAt(index);
         }
@@ -55,5 +54,8 @@ public class RegularExpressionUtils {
         public String toString() {
             return inner.toString();
         }
+
     }
+
+    public static class RegexTimeout extends RuntimeException {}
 }
