@@ -4,11 +4,11 @@ import eutros.botaniapp.common.BotaniaPPConfig;
 import eutros.botaniapp.common.utils.RegularExpressionUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import vazkii.botania.common.block.tile.corporea.TileCorporeaRetainer;
 
-import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +17,7 @@ public class RegexMatcher extends AdvancedMatcher {
     public enum Type {
         NAME('n'),
         LOC_KEY('u'),
+        ORE_DICT('o'),
         MOD_ID('m'),
         ITEM_ID('r'),
         RESOURCE_LOC('i');
@@ -76,6 +77,12 @@ public class RegexMatcher extends AdvancedMatcher {
             case LOC_KEY:
                 text = stack.getTranslationKey();
                 break;
+            case ORE_DICT:
+                for(ResourceLocation tagLoc : ItemTags.getCollection().getOwningTags(stack.getItem())) {
+                    if(matchText(tagLoc.getPath()))
+                        return true;
+                }
+                break;
             case MOD_ID:
             case ITEM_ID:
             case RESOURCE_LOC:
@@ -98,6 +105,10 @@ public class RegexMatcher extends AdvancedMatcher {
                 text = stack.getDisplayName().getFormattedText();
         }
 
+        return matchText(text);
+    }
+
+    private Boolean matchText(String text) {
         Matcher matcher = RegularExpressionUtils.createMatcherWithTimeout(text, pattern, BotaniaPPConfig.COMMON.REGEX_TIMEOUT.get());
         try {
             return matcher.matches();
