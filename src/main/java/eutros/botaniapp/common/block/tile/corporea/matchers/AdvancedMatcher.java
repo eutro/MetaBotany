@@ -13,7 +13,7 @@ import java.util.regex.PatternSyntaxException;
 
 public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
 
-    private static final Pattern regexPatternMatcher = Pattern.compile("([noumri]?).{0,4}/(.+)/(i?)");
+    private static final Pattern regexPatternMatcher = Pattern.compile("([noumrit]?).{0,4}/(.+)/(i?)");
 
     public static ICorporeaRequestMatcher fromItemStack(ItemStack stack, boolean checkNBT) {
         if(!stack.hasDisplayName())

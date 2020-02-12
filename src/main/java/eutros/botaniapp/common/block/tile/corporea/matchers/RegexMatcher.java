@@ -18,6 +18,7 @@ public class RegexMatcher extends AdvancedMatcher {
         NAME('n'),
         LOC_KEY('u'),
         ORE_DICT('o'),
+        TAG('t'),
         MOD_ID('m'),
         ITEM_ID('r'),
         RESOURCE_LOC('i');
@@ -78,6 +79,7 @@ public class RegexMatcher extends AdvancedMatcher {
                 text = stack.getTranslationKey();
                 break;
             case ORE_DICT:
+            case TAG:
                 for(ResourceLocation tagLoc : ItemTags.getCollection().getOwningTags(stack.getItem())) {
                     if(matchText(tagLoc.getPath()))
                         return true;
