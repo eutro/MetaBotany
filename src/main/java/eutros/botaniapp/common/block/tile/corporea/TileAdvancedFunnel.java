@@ -2,7 +2,6 @@ package eutros.botaniapp.common.block.tile.corporea;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import eutros.botaniapp.common.block.tile.corporea.matchers.AdvancedMatcher;
-import eutros.botaniapp.common.utils.BotaniaPPFakePlayer;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -17,7 +16,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
@@ -42,8 +40,10 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
 
     public static TileEntityType<TileAdvancedFunnel> TYPE;
     private static final String TAG_RANGE = "range";
+    private static final String PREV_MATCH = "match";
 
     private int range = 3;
+    private String match = I18n.format("hud.botaniapp.advanced_funnel.no_match");
 
     public TileAdvancedFunnel() {
         super(TYPE);
@@ -66,6 +66,9 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
                     if(requestMatcher instanceof AdvancedMatcher && ((AdvancedMatcher) requestMatcher).isInvalid()) {
                         frameFilter.frame.attackEntityFrom(DamageSource.GENERIC, 0);
                     }
+                    match = I18n.format("hud.botaniapp.advanced_funnel.prev_match") + " " +
+                            requestMatcher.getRequestName().getFormattedText();
+                    VanillaPacketDispatcher.dispatchTEToNearbyPlayers(this) ;
                 }
             }
         }
@@ -118,12 +121,14 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
     public void writePacketNBT(CompoundNBT cmp) {
         super.writePacketNBT(cmp);
         cmp.putInt(TAG_RANGE, range);
+        cmp.putString(PREV_MATCH, match);
     }
 
     @Override
     public void readPacketNBT(CompoundNBT cmp) {
         super.readPacketNBT(cmp);
         range = cmp.getInt(TAG_RANGE);
+        match = cmp.getString(PREV_MATCH);
     }
 
     private IItemHandler getInv() {
@@ -179,10 +184,16 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
                 I18n.format(String.join(".", "hud", Reference.MOD_ID, Reference.BlockNames.ADVANCED_FUNNEL, "post"));
 
         int x = mc.mainWindow.getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(rangeStr) / 2;
-        int y = mc.mainWindow.getScaledHeight() / 2 - 15;
+        int y = mc.mainWindow.getScaledHeight() / 2 - 45;
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         mc.fontRenderer.drawStringWithShadow(rangeStr, x, y, color);
+
+        color = 0xFFFFFFFF;
+
+        x = mc.mainWindow.getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(match) / 2;
+        y += 15;
+        mc.fontRenderer.drawStringWithShadow(match, x, y, color);
         GlStateManager.disableBlend();
     }
 

@@ -3,37 +3,29 @@ package eutros.botaniapp.common.block.tile.corporea.matchers;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import vazkii.botania.api.corporea.CorporeaHelper;
 import vazkii.botania.api.corporea.ICorporeaRequestMatcher;
 import vazkii.botania.common.block.tile.corporea.TileCorporeaRetainer;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.Optional;
 
 public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
-
-    private static final Pattern regexPatternMatcher = Pattern.compile("([noumrit]?).{0,4}/(.+)/(i?)");
 
     public static ICorporeaRequestMatcher fromItemStack(ItemStack stack, boolean checkNBT) {
         if(!stack.hasDisplayName())
             return CorporeaHelper.createMatcher(stack, checkNBT);
 
         String name = stack.getDisplayName().getFormattedText();
+        Optional<ICorporeaRequestMatcher> matcher;
 
-        Matcher matcher = regexPatternMatcher.matcher(name);
-        if(matcher.matches()) {
-            Pattern pattern;
-
-            try {
-                pattern = Pattern.compile(matcher.group(2));
-            } catch(PatternSyntaxException e) {
-                return new InvalidMatcher();
-            }
-
-            return new RegexMatcher(pattern,
-                    RegexMatcher.Type.byCode(matcher.group(1)));
+        matcher = RegexMatcher.from(name);
+        if(matcher.isPresent()) {
+            return matcher.get();
         }
+
+        
 
         return CorporeaHelper.createMatcher(stack, checkNBT);
     }
@@ -42,7 +34,7 @@ public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
         return false;
     }
 
-    private static class InvalidMatcher extends AdvancedMatcher {
+    public static class InvalidMatcher extends AdvancedMatcher {
 
         public InvalidMatcher(CompoundNBT compoundNBT) {
             new InvalidMatcher();
@@ -63,7 +55,7 @@ public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
 
         @Override
         public ITextComponent getRequestName() {
-            return null;
+            return new StringTextComponent(TextFormatting.RED+"INVALID");
         }
 
         public boolean isInvalid() {

@@ -5,6 +5,8 @@
   "block.botaniapp.advanced_funnel": "Advanced Corporea Funnel",
   "hud.botaniapp.advanced_funnel.pre": "Reaches up to ",
   "hud.botaniapp.advanced_funnel.post": " block(s) below.",
+  "hud.botaniapp.advanced_funnel.no_match": "No requests yet.",
+  "hud.botaniapp.advanced_funnel.prev_match": "Previous request:",
 
   "itemGroup.botaniapp": "Botania++",
 

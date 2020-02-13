@@ -13,6 +13,10 @@ public class RegularExpressionUtils {
         return regularExpressionPattern.matcher(charSequence);
     }
 
+    public static String replaceAll(String src, Pattern pattern, String replacement) {
+        return pattern.matcher(src).replaceAll(replacement);
+    }
+
     private static class TimeoutRegexCharSequence implements CharSequence {
 
         private final CharSequence inner;
