@@ -2,6 +2,7 @@ package eutros.botaniapp.client.core.proxy;
 
 import eutros.botaniapp.client.core.handler.ClientTickHandler;
 import eutros.botaniapp.client.core.handler.ColorHandler;
+import eutros.botaniapp.client.patchouli.RegexDissection;
 import eutros.botaniapp.common.core.proxy.IProxy;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -20,5 +21,6 @@ public class ClientProxy implements IProxy {
 
     private void loadComplete(FMLLoadCompleteEvent event) {
         ColorHandler.init();
+        RegexDissection.init();
     }
 }

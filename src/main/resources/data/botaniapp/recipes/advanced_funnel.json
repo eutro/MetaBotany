@@ -1,0 +1,14 @@
+{
+  "result": {
+    "item": "botaniapp:advanced_funnel"
+  },
+  "ingredients": [
+    {
+      "item": "botania:corporea_funnel"
+    },
+    {
+      "item": "botania:dragonstone"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

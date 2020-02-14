@@ -1,0 +1,24 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "#text",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "type": "custom",
+      "class": "eutros.botaniapp.client.patchouli.RegexDissection",
+      "text": "#regex0",
+      "x": 50,
+      "y": 30
+    },
+    {
+      "type": "custom",
+      "class": "eutros.botaniapp.client.patchouli.RegexDissection",
+      "text": "#regex1",
+      "x": 50,
+      "y": 40
+    }
+  ]
+}

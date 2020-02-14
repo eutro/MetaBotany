@@ -1,0 +1,6 @@
+{
+  "name": "botaniapp.category.corporea",
+  "description": "botaniapp.category.text.corporea",
+  "icon": "botaniapp:advanced_funnel",
+  "parent": "botaniapp:main/botaniapp"
+}

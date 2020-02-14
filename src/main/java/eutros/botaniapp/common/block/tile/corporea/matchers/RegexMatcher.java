@@ -153,7 +153,7 @@ public class RegexMatcher extends AdvancedMatcher {
 
     private static final Pattern patternMatcher = Pattern.compile("/(.+)/([a-zA-Z]*)$");
     // This is when the leaning toothpick syndrome hits.
-    private static final Pattern specialEscapeMatcher = Pattern.compile("\\.|(\\\\([wWsSbBtnr]|([0-9]+)))");
+    private static final Pattern specialEscapeMatcher = Pattern.compile("[.|]|(\\\\([wWsSbBtnr]|([0-9]+)))");
     private static final Pattern escapeMatcher = Pattern.compile("\\\\[+*\\\\?()\\[\\]](?!\u00a7r)");
     private static final Pattern parenthesisMatcher = Pattern.compile("[()](?!\u00a7r)");
     private static final Pattern bracketMatcher = Pattern.compile("[\\[\\]](?!\u00a7r)");
