@@ -25,9 +25,8 @@ public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
             return matcher.get();
         }
 
-        
-
-        return CorporeaHelper.createMatcher(stack, checkNBT);
+        matcher = StringMatcher.from(name);
+        return matcher.orElseGet(() -> CorporeaHelper.createMatcher(stack, checkNBT));
     }
 
     public boolean isInvalid() {
