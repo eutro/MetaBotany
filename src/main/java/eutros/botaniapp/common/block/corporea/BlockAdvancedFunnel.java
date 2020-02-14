@@ -23,7 +23,6 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class BlockAdvancedFunnel extends BlockCorporeaBase implements IWandable, IWandHUD {
-    // TODO block drops
 
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
 

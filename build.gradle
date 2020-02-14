@@ -115,7 +115,7 @@ dependencies {
     compileOnly fg.deobf('vazkii.botania:Botania:r1.11-378.286:api')
     compile fg.deobf('vazkii.botania:Botania:r1.11-378.286')
 
-    compile fg.deobf("vazkii.patchouli:Patchouli:1.14.4-1.1-26.138") { transitive = false }
+    compile fg.deobf("vazkii.patchouli:Patchouli:1.14.4-1.1-27.1") { transitive = false }
 
     compileOnly fg.deobf("mezz.jei:jei-1.14.4:6.0.0.11:api")
     runtimeOnly fg.deobf("mezz.jei:jei-1.14.4:6.0.0.11")
