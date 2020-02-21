@@ -9,5 +9,6 @@ public class Reference {
 
     public static final class BlockNames {
         public static final String ADVANCED_FUNNEL = "advanced_funnel";
+        public static final String CHARGING_PLATE = "charging_plate";
     }
 }
