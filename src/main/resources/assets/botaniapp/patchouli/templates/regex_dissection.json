@@ -10,14 +10,14 @@
       "type": "custom",
       "class": "eutros.botaniapp.client.patchouli.RegexDissection",
       "text": "#regex0",
-      "x": 50,
+      "x": 22,
       "y": 30
     },
     {
       "type": "custom",
       "class": "eutros.botaniapp.client.patchouli.RegexDissection",
       "text": "#regex1",
-      "x": 50,
+      "x": 17,
       "y": 40
     }
   ]
