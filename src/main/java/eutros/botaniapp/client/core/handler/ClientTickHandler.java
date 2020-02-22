@@ -17,6 +17,24 @@ import net.minecraftforge.fml.common.Mod;
 public class ClientTickHandler {
 
     public static int ticksInGame = 0;
+    public static float partialTicks = 0;
+    public static float total = 0;
+    public static float delta = 0;
+
+    private static void calcDelta() {
+        float oldTotal = total;
+        total = ticksInGame + partialTicks;
+        delta = total - oldTotal;
+    }
+
+    @SubscribeEvent
+    public static void renderTick(TickEvent.RenderTickEvent event) {
+        if(event.phase == TickEvent.Phase.START)
+            partialTicks = event.renderTickTime;
+        else {
+            calcDelta();
+        }
+    }
 
     @SubscribeEvent
     public static void clientTickEnd(TickEvent.ClientTickEvent event) {
@@ -24,6 +42,7 @@ public class ClientTickHandler {
             Screen gui = Minecraft.getInstance().currentScreen;
             if (gui == null || !gui.isPauseScreen()) {
                 ++ticksInGame;
+                partialTicks = 0;
             }
         }
     }

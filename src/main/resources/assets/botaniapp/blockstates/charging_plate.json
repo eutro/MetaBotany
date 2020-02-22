@@ -1,5 +1,5 @@
 {
   "variants": {
-    "":  { "model": "botania:block/spark_changer" }
+    "":  { "model": "botaniapp:block/charging_plate" }
   }
 }
