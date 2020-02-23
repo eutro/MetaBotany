@@ -1,0 +1,119 @@
+package eutros.botaniapp.common.crafting.recipe;
+
+import eutros.botaniapp.common.core.helper.ItemNBTHelper;
+import net.minecraft.block.Block;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.SpecialRecipe;
+import net.minecraft.item.crafting.SpecialRecipeSerializer;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
+import vazkii.botania.common.item.ItemBlackHoleTalisman;
+import vazkii.botania.common.item.ModItems;
+
+import javax.annotation.Nonnull;
+
+public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
+    public static final IRecipeSerializer<RecipeBlackHoleTalismanInsert> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBlackHoleTalismanInsert::new);
+
+    public RecipeBlackHoleTalismanInsert(ResourceLocation id) {
+        super(id);
+    }
+
+    @Override
+    public boolean matches(@Nonnull CraftingInventory inv, @Nonnull World world) {
+        ItemStack talisman = ItemStack.EMPTY;
+        int pop = 0;
+
+        for(int i = 0; i < inv.getSizeInventory(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
+            if(!stack.isEmpty()) {
+                if(stack.getItem() == ModItems.blackHoleTalisman) {
+                    if(!talisman.isEmpty())
+                        return false;
+                    talisman = stack;
+                    pop = i;
+                }
+            }
+        }
+
+        Block talismanBlock = ItemBlackHoleTalisman.getBlock(talisman);
+        boolean otherItem = false;
+
+        if(talismanBlock == null)
+            return false;
+
+        for(int i = 0; i < inv.getSizeInventory(); i++) {
+            if(i == pop)
+                continue;
+            ItemStack stack = inv.getStackInSlot(i);
+            if(!stack.isEmpty()) {
+                Item item = stack.getItem();
+                if(!(item instanceof BlockItem && ((BlockItem) item).getBlock() == talismanBlock)) {
+                    return false;
+                }
+                otherItem = true;
+            }
+        }
+
+        return otherItem;
+    }
+
+    @Nonnull
+    @Override
+    public ItemStack getCraftingResult(@Nonnull CraftingInventory inv) {
+        ItemStack talisman = ItemStack.EMPTY;
+        int pop = 0;
+
+        for(int i = 0; i < inv.getSizeInventory(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
+            if(!stack.isEmpty()) {
+                if(stack.getItem() == ModItems.blackHoleTalisman) {
+                    talisman = stack;
+                    pop = i;
+                    break;
+                }
+            }
+        }
+
+        ItemStack newTalisman = talisman.copy();
+        int count = ItemBlackHoleTalisman.getBlockCount(newTalisman);
+
+        for(int i = 0; i < inv.getSizeInventory(); i++) {
+            if(i == pop)
+                continue;
+            ItemStack stack = inv.getStackInSlot(i);
+            if(!stack.isEmpty()) {
+                count += stack.getCount();
+            }
+        }
+
+        ItemNBTHelper.setInt(newTalisman, "blockCount", count);
+
+        return newTalisman;
+    }
+
+    @NotNull
+    @Override
+    public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
+        inv.clear();
+        return NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+    }
+
+    @Override
+    public boolean canFit(int width, int height) {
+        return width * height > 1;
+    }
+
+    @Nonnull
+    @Override
+    public IRecipeSerializer<?> getSerializer() {
+        return SERIALIZER;
+    }
+}
+

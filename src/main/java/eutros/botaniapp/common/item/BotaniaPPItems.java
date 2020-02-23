@@ -6,6 +6,7 @@
 package eutros.botaniapp.common.item;
 
 import eutros.botaniapp.common.core.BotaniappCreativeTab;
+import eutros.botaniapp.common.crafting.recipe.RecipeBlackHoleTalismanInsert;
 import eutros.botaniapp.common.crafting.recipe.RecipeLensBinding;
 import eutros.botaniapp.common.crafting.recipe.RecipeLensUnbinding;
 import eutros.botaniapp.common.item.lens.BindingLens;
@@ -61,6 +62,7 @@ public class BotaniaPPItems {
 
         register(r, RecipeLensBinding.SERIALIZER, "lens_binding");
         register(r, RecipeLensUnbinding.SERIALIZER, "lens_unbinding");
+        register(r, RecipeBlackHoleTalismanInsert.SERIALIZER, "black_hole_talisman_insert");
     }
 
     public static <V extends IForgeRegistryEntry<V>> void register(IForgeRegistry<V> reg, IForgeRegistryEntry<V> thing, ResourceLocation name) {
