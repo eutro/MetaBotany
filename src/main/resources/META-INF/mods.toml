@@ -30,4 +30,5 @@ Addon mod for Botania, adding new possibilites.'''
     modId="botania"
     mandatory=true
     versionRange="[r1.11-378,)"
+    ordering="AFTER"
     side="BOTH"

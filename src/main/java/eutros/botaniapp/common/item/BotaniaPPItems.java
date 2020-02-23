@@ -26,6 +26,10 @@ public class BotaniaPPItems {
     
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "binding") public static BindingLens bindingLens;
 
+    public static Item BOTANIA_FLARE_LENS;
+    public static Item BOTANIA_WARP_LENS;
+    public static Item BOTANIA_PAINT_LENS;
+
     public static Item.Properties defaultBuilder() {
         return new Item.Properties().group(BotaniappCreativeTab.INSTANCE);
     }
@@ -39,6 +43,16 @@ public class BotaniaPPItems {
         IForgeRegistry<Item> r = event.getRegistry();
 
         register(r, new BindingLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "binding");
+
+        setBotaniaItems(r);
+    }
+
+    private static void setBotaniaItems(IForgeRegistry<Item> r) {
+        final String b = "botania";
+
+        BOTANIA_FLARE_LENS = r.getValue(new ResourceLocation(b, "lens_flare"));
+        BOTANIA_WARP_LENS = r.getValue(new ResourceLocation(b, "lens_warp"));
+        BOTANIA_PAINT_LENS = r.getValue(new ResourceLocation(b, "lens_paint"));
     }
 
     @SubscribeEvent

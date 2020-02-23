@@ -11,6 +11,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -27,6 +28,9 @@ public class BotaniaPPBlocks {
     @ObjectHolder(Reference.BlockNames.CHARGING_PLATE) public static BlockChargingPlate chargingPlate;
     @ObjectHolder(Reference.BlockNames.LEAKY_POOL) public static BlockLeakyPool leakyPool;
 
+    public static Block BOTANIA_PISTON_RELAY;
+    public static Block BOTANIA_MANA_VOID;
+
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> evt) {
         IForgeRegistry<Block> r = evt.getRegistry();
@@ -37,6 +41,15 @@ public class BotaniaPPBlocks {
         builder = Block.Properties.create(Material.ROCK);
         register(r, new BlockChargingPlate(builder), Reference.BlockNames.CHARGING_PLATE);
         register(r, new BlockLeakyPool(builder), Reference.BlockNames.LEAKY_POOL);
+
+        setBotaniaBlocks(r);
+    }
+
+    private static void setBotaniaBlocks(IForgeRegistry<Block> r) {
+        final String b = "botania";
+
+        BOTANIA_MANA_VOID = r.getValue(new ResourceLocation(b, "mana_void"));
+        BOTANIA_PISTON_RELAY = r.getValue(new ResourceLocation(b, "piston_relay"));
     }
 
     @SubscribeEvent

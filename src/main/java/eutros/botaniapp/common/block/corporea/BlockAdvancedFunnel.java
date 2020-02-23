@@ -42,10 +42,10 @@ public class BlockAdvancedFunnel extends BlockCorporeaBase implements IWandable,
         return new TileAdvancedFunnel();
     }
 
-    // TODO find non-deprecated way of doing this
+    // TODO use blockstates maybe
+    @SuppressWarnings("deprecation")
     @Override
     public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        super.neighborChanged(state, world, pos, blockIn, fromPos, isMoving);
         boolean power = world.getRedstonePowerFromNeighbors(pos) > 0 || world.getRedstonePowerFromNeighbors(pos.up()) > 0;
         boolean powered = state.get(POWERED);
 

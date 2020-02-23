@@ -18,8 +18,8 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class TileChargingPlate extends TileSimpleInventory implements IManaReceiver {
+
 	@ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.CHARGING_PLATE)
-	
 	public static TileEntityType<TileChargingPlate> TYPE;
 	
 	public TileChargingPlate() {

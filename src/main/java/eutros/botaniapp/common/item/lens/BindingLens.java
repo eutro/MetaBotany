@@ -1,8 +1,10 @@
 package eutros.botaniapp.common.item.lens;
 
 import eutros.botaniapp.common.BotaniaPP;
+import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
 import eutros.botaniapp.common.item.BotaniaPPItems;
+import eutros.botaniapp.common.sound.BotaniaPPSounds;
 import eutros.botaniapp.common.utils.BotaniaPPFakePlayer;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.Block;
@@ -22,14 +24,13 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.FakePlayer;
 import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.wand.ICoordBoundItem;
 import vazkii.botania.api.wand.IWandBindable;
 import vazkii.botania.api.wand.IWandable;
 import vazkii.botania.common.block.BlockPistonRelay;
-import vazkii.botania.common.block.ModBlocks;
-import vazkii.botania.common.item.ModItems;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -89,7 +90,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
 
     @Override
     protected boolean isBlacklist(ItemStack sourceLens, ItemStack compositeLens) {
-        return compositeLens.getItem() == ModItems.lensFlare;
+        return compositeLens.getItem() == BotaniaPPItems.BOTANIA_FLARE_LENS;
     }
 
     @Override
@@ -112,9 +113,9 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
             boolean warp = false, paint = false;
             if(!composite.isEmpty()) {
                 Item item = composite.getItem();
-                if(item == ModItems.lensWarp) {
+                if(item == BotaniaPPItems.BOTANIA_WARP_LENS) {
                     warp = true;
-                } else if(item == ModItems.lensPaint) {
+                } else if(item == BotaniaPPItems.BOTANIA_PAINT_LENS) {
                     paint = true;
                 }
             }
@@ -134,9 +135,12 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
 
             if(simBind(world, stack, pos, block, side, player)) {
                 if(!sourcePos.equals(UNBOUND_POS)) {
+                    world.playSound(null, sourcePos, BotaniaPPSounds.BOTANIA_DING, SoundCategory.BLOCKS, 0.5F, 1F);
                     TileEntity tileEntity = world.getTileEntity(sourcePos);
                     if (tileEntity != null)
                         tileEntity.markDirty();
+                } else if(!(player instanceof FakePlayer)) {
+                    world.playSound(null, player.posX, player.posY, player.posZ, BotaniaPPSounds.BOTANIA_DING, SoundCategory.PLAYERS, 0.5F, 1F);
                 }
             }
         }
@@ -194,10 +198,9 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
             GlobalPos bindPos = GlobalPos.of(world.getDimension().getType(), src.toImmutable());
             GlobalPos currentPos = GlobalPos.of(world.getDimension().getType(), pos.toImmutable());
 
-            ((BlockPistonRelay) ModBlocks.pistonRelay).mappedPositions.put(bindPos, currentPos);
+            ((BlockPistonRelay) BotaniaPPBlocks.BOTANIA_PISTON_RELAY).mappedPositions.put(bindPos, currentPos);
             BlockPistonRelay.WorldData.get(world).markDirty();
 
-            // TODO play ding?
             return true;
         }
         return false;
@@ -224,7 +227,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
         if(player.isSneaking()) {
             if(!world.isRemote)
                 setBindingAttempt(stack, UNBOUND_POS);
-            // TODO add ding sound
+            player.playSound(BotaniaPPSounds.BOTANIA_DING, 0.1F, 1F);
             return ActionResult.newResult(ActionResultType.SUCCESS, stack);
         }
 
@@ -247,6 +250,9 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
                 ((IWandBindable) tile).canSelect(player, stack, pos, side)) ||
                 block instanceof BlockPistonRelay)) {
             setBindingAttempt(stack, pos);
+            // TODO use own sound
+            if(player != null)
+                player.playSound(BotaniaPPSounds.BOTANIA_DING, 0.1F, 1F);
             return ActionResultType.SUCCESS;
         }
         return ActionResultType.FAIL;

@@ -3,18 +3,14 @@ package eutros.botaniapp.client.patchouli;
 import com.mojang.blaze3d.platform.GlStateManager;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import vazkii.patchouli.api.IComponentRenderContext;
 import vazkii.patchouli.api.ICustomComponent;
 import vazkii.patchouli.api.PatchouliAPI;
 import vazkii.patchouli.api.VariableHolder;
 import vazkii.patchouli.client.book.gui.BookTextRenderer;
-import vazkii.patchouli.client.book.gui.GuiBook;
 import vazkii.patchouli.client.book.gui.GuiBookEntry;
 
-import java.awt.print.Book;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;

@@ -3,6 +3,8 @@ package eutros.botaniapp.common.block.tile;
 import com.google.common.base.Predicates;
 import com.mojang.blaze3d.platform.GlStateManager;
 import eutros.botaniapp.common.block.BlockLeakyPool;
+import eutros.botaniapp.common.block.BotaniaPPBlocks;
+import eutros.botaniapp.common.sound.BotaniaPPSounds;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -31,9 +33,7 @@ import vazkii.botania.api.mana.spark.ISparkAttachable;
 import vazkii.botania.api.mana.spark.ISparkEntity;
 import vazkii.botania.client.core.handler.HUDHandler;
 import vazkii.botania.client.fx.WispParticleData;
-import vazkii.botania.common.block.ModBlocks;
 import vazkii.botania.common.core.handler.ManaNetworkHandler;
-import vazkii.botania.common.core.handler.ModSounds;
 import vazkii.botania.common.entity.EntityManaBurst;
 
 import javax.annotation.Nonnull;
@@ -41,28 +41,31 @@ import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 
+// TODO make this less similar to original mana pool's
 public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKeyLocked, ISparkAttachable, IThrottledPacket, ITickableTileEntity, IManaSpreader {
-    
+
     public static final int MAX_MANA = 1000000;
-    private static final Color PARTICLE_COLOR = new Color(0x00C6FF);
+
     private static final String TAG_MANA = "mana";
     private static final String TAG_KNOWN_MANA = "knownMana";
     private static final String TAG_COLOR = "color";
     private static final String TAG_INPUT_KEY = "inputKey";
     private static final String TAG_OUTPUT_KEY = "outputKey";
     private static final String TAG_DRIP = "dripTicks";
-    private static final int BURST_MAX_MANA = 50000;
+    private static final Color PARTICLE_COLOR = new Color(0x00C6FF);
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.LEAKY_POOL)
     public static TileEntityType<TileLeakyPool> TYPE;
-    private final String outputKey = "";
+    private static final int BURST_MAX_MANA = 50000;
+
     public DyeColor color = DyeColor.WHITE;
-    private float dripTicks = 0;
     private int mana;
     private int knownMana = -1;
-    private String inputKey = "";
     private int ticks = 0;
-    private boolean sendPacket = false;
+    private final String outputKey = "";
+    private float dripTicks = 0;
+    private String inputKey = "";
     private UUID identity;
+    private boolean sendPacket = false;
     private int lastBurstDeathTick = 0;
     private int burstParticleTick = 0;
 
@@ -81,7 +84,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     public boolean isFull() {
         assert world != null;
         Block blockBelow = world.getBlockState(pos.down()).getBlock();
-        return blockBelow != ModBlocks.manaVoid && getCurrentMana() >= MAX_MANA;
+        return blockBelow != BotaniaPPBlocks.BOTANIA_MANA_VOID && getCurrentMana() >= MAX_MANA;
     }
 
     @Override
@@ -180,7 +183,8 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             burst.setShooterUUID(getIdentifier());
             world.addEntity(burst);
             burst.ping();
-            world.playSound(null, pos, ModSounds.spreaderFire, SoundCategory.BLOCKS, 0.05F, 0.7F + 0.3F * (float) Math.random());
+            // TODO use own sound
+            world.playSound(null, pos, BotaniaPPSounds.BOTANIA_SPREADER_FIRE, SoundCategory.BLOCKS, 0.05F, 0.7F + 0.3F * (float) Math.random());
         }
     }
 
@@ -250,7 +254,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     @Override
     public void writePacketNBT(CompoundNBT cmp) {
         super.writePacketNBT(cmp);
-        
+
         cmp.putInt(TAG_MANA, mana);
         cmp.putInt(TAG_COLOR, color.getId());
         cmp.putFloat(TAG_DRIP, dripTicks);
@@ -262,7 +266,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     @Override
     public void readPacketNBT(CompoundNBT cmp) {
         super.readPacketNBT(cmp);
-        
+
         mana = cmp.getInt(TAG_MANA);
         color = DyeColor.byId(cmp.getInt(TAG_COLOR));
         dripTicks = cmp.getFloat(TAG_DRIP);
@@ -290,7 +294,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
                 ((ServerPlayerEntity) player).connection.sendPacket(new SUpdateTileEntityPacket(pos, -999, nbttagcompound));
         }
 
-        world.playSound(null, player.posX, player.posY, player.posZ, ModSounds.ding, SoundCategory.PLAYERS, 0.11F, 1F);
+        world.playSound(null, player.posX, player.posY, player.posZ, BotaniaPPSounds.BOTANIA_DING, SoundCategory.PLAYERS, 0.11F, 1F);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -377,7 +381,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             return space;
         else {
             assert world != null;
-            if(world.getBlockState(pos.down()).getBlock() == ModBlocks.manaVoid)
+            if(world.getBlockState(pos.down()).getBlock() == BotaniaPPBlocks.BOTANIA_MANA_VOID)
                 return MAX_MANA;
             else return 0;
         }
