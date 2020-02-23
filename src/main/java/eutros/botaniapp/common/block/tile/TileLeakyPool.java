@@ -444,7 +444,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     }
 
     @Override
-    public void setRotationY(float rot) { }
+    public void setRotationY(float rot) {}
 
     @Override
     public void commitRedirection() {}
