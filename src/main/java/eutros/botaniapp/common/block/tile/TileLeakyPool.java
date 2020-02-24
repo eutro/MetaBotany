@@ -51,7 +51,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     private static final String TAG_COLOR = "color";
     private static final String TAG_INPUT_KEY = "inputKey";
     private static final String TAG_OUTPUT_KEY = "outputKey";
-    private static final String TAG_DRIP = "dripTicks";
+    private static final String TAG_DRIP = "drip";
     private static final Color PARTICLE_COLOR = new Color(0x00C6FF);
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.LEAKY_POOL)
     public static TileEntityType<TileLeakyPool> TYPE;
@@ -62,7 +62,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     private int knownMana = -1;
     private int ticks = 0;
     private final String outputKey = "";
-    private float dripTicks = 0;
+    private float dripProgress = 0;
     private String inputKey = "";
     private UUID identity;
     private boolean sendPacket = false;
@@ -125,9 +125,9 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
         if(getCurrentMana() <= 0 || !canFire) {
             shouldShoot = false;
-            dripTicks = 0;
+            dripProgress = 0;
         } else {
-            dripTicks++;
+            dripProgress += 1/getDripFrequency();
         }
 
         if(world.isRemote) {
@@ -157,11 +157,9 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
                 shouldShoot = control.allowBurstShooting(lens, this, redstone);
             }
 
-            float dripFrequency = getDripFrequency();
-            while(shouldShoot && dripTicks > dripFrequency) {
+            while(shouldShoot && dripProgress >= 1) {
                 tryShootBurst();
-                dripTicks = Math.max(dripTicks-dripFrequency, 0);
-                dripFrequency = getDripFrequency();
+                dripProgress = Math.max(dripProgress - 1, 0);
             }
         }
 
@@ -173,8 +171,8 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         ticks++;
     }
 
-    public float getDripTicks() {
-        return dripTicks;
+    public float getDripPercentage(float offset) {
+        return Math.min(dripProgress + offset/getDripFrequency(), 1F);
     }
 
     public float getDripFrequency() {
@@ -262,7 +260,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
         cmp.putInt(TAG_MANA, mana);
         cmp.putInt(TAG_COLOR, color.getId());
-        cmp.putFloat(TAG_DRIP, dripTicks);
+        cmp.putFloat(TAG_DRIP, dripProgress);
 
         cmp.putString(TAG_INPUT_KEY, inputKey);
         cmp.putString(TAG_OUTPUT_KEY, outputKey);
@@ -274,7 +272,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
         mana = cmp.getInt(TAG_MANA);
         color = DyeColor.byId(cmp.getInt(TAG_COLOR));
-        dripTicks = cmp.getFloat(TAG_DRIP);
+        dripProgress = cmp.getFloat(TAG_DRIP);
 
         if(cmp.contains(TAG_INPUT_KEY))
             inputKey = cmp.getString(TAG_INPUT_KEY);

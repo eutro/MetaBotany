@@ -59,7 +59,7 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
 
             float dripFrequency = pool.getDripFrequency();
             final float MAX_DRIP = 1.2F;
-            float dripLevel = dripFrequency < 10 ? MAX_DRIP : Math.min(1F, (pool.getDripTicks()+ClientTickHandler.partialTicks)/dripFrequency)*MAX_DRIP;
+            float dripLevel = dripFrequency < 10 ? MAX_DRIP : pool.getDripPercentage(ClientTickHandler.partialTicks)*MAX_DRIP;
 
             GlStateManager.translatef(w, -1.43F+waterLevel, w);
             GlStateManager.scalef(s, s, s);
@@ -93,13 +93,13 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
         GlStateManager.popMatrix();
     }
 
-    private void renderIcon(TextureAtlasSprite par3Icon) {
+    private void renderIcon(TextureAtlasSprite icon) {
         Tessellator tessellator = Tessellator.getInstance();
         tessellator.getBuffer().begin(GL11.GL_QUADS, POSITION_TEX_LMAP);
-        tessellator.getBuffer().pos(0, 16, 0).tex(par3Icon.getMinU(), par3Icon.getMaxV()).lightmap(240, 240).endVertex();
-        tessellator.getBuffer().pos(16, 16, 0).tex(par3Icon.getMaxU(), par3Icon.getMaxV()).lightmap(240, 240).endVertex();
-        tessellator.getBuffer().pos(16, 0, 0).tex(par3Icon.getMaxU(), par3Icon.getMinV()).lightmap(240, 240).endVertex();
-        tessellator.getBuffer().pos(0, 0, 0).tex(par3Icon.getMinU(), par3Icon.getMinV()).lightmap(240, 240).endVertex();
+        tessellator.getBuffer().pos(0, 16, 0).tex(icon.getMinU(), icon.getMaxV()).lightmap(240, 240).endVertex();
+        tessellator.getBuffer().pos(16, 16, 0).tex(icon.getMaxU(), icon.getMaxV()).lightmap(240, 240).endVertex();
+        tessellator.getBuffer().pos(16, 0, 0).tex(icon.getMaxU(), icon.getMinV()).lightmap(240, 240).endVertex();
+        tessellator.getBuffer().pos(0, 0, 0).tex(icon.getMinU(), icon.getMinV()).lightmap(240, 240).endVertex();
         tessellator.draw();
     }
 }
