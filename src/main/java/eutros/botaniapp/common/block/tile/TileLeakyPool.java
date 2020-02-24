@@ -113,18 +113,10 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
     @Override
     public void tick() {
-
-        if(!ManaNetworkHandler.instance.isPoolIn(this) && !isRemoved())
-            ManaNetworkEvent.addPool(this);
-
         assert world != null;
-        if(world.isRemote) {
-            double particleChance = 1F - (double) getCurrentMana() / (double) MAX_MANA * 0.1;
-            if(Math.random() > particleChance) {
-                WispParticleData data = WispParticleData.wisp((float) Math.random() / 3F, PARTICLE_COLOR.getRed() / 255F, PARTICLE_COLOR.getGreen() / 255F, PARTICLE_COLOR.getBlue() / 255F, 2F);
-                world.addParticle(data, pos.getX() + 0.3 + Math.random() * 0.5, pos.getY() + 0.6 + Math.random() * 0.25, pos.getZ() + Math.random(), 0, (float) Math.random() / 25F, 0);
-            }
-            return;
+
+        if(!ManaNetworkHandler.instance.isPoolIn(this) && !isRemoved()) {
+            ManaNetworkEvent.addPool(this);
         }
 
         boolean shouldShoot = true;
@@ -136,6 +128,15 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             dripTicks = 0;
         } else {
             dripTicks++;
+        }
+
+        if(world.isRemote) {
+            double particleChance = 1F - (double) getCurrentMana() / (double) MAX_MANA * 0.1;
+            if(Math.random() > particleChance) {
+                WispParticleData data = WispParticleData.wisp((float) Math.random() / 3F, PARTICLE_COLOR.getRed() / 255F, PARTICLE_COLOR.getGreen() / 255F, PARTICLE_COLOR.getBlue() / 255F, 2F);
+                world.addParticle(data, pos.getX() + 0.3 + Math.random() * 0.5, pos.getY() + 0.6 + Math.random() * 0.25, pos.getZ() + Math.random(), 0, (float) Math.random() / 25F, 0);
+            }
+            return;
         }
 
         boolean redstone = false;
@@ -172,7 +173,11 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         ticks++;
     }
 
-    private float getDripFrequency() {
+    public float getDripTicks() {
+        return dripTicks;
+    }
+
+    public float getDripFrequency() {
         return MAX_MANA/(Math.max(1F, mana));
     }
 

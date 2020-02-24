@@ -64,8 +64,8 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
 	        if(!isFull()) {
                 ItemStack stack = itemHandler.getStackInSlot(0);
                 item.addMana(stack, Math.min(mana, item.getMaxMana(stack)-item.getMana(stack)));
-                assert this.world != null;
-                this.world.updateComparatorOutputLevel(this.pos, this.getBlockState().getBlock());
+                assert world != null;
+                world.updateComparatorOutputLevel(pos, getBlockState().getBlock());
             }
 	    });
     }

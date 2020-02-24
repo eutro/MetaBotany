@@ -1,6 +1,7 @@
 package eutros.botaniapp.client.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import eutros.botaniapp.client.core.handler.ClientTickHandler;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -56,14 +57,16 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
 
             ShaderHelper.useShader(ShaderHelper.manaPool);
 
-            // TODO ;-; put the mana in the pool
-            GlStateManager.translatef(w, -1.43F, w);
-            GlStateManager.translatef(0F, waterLevel, 0F);
+            float dripFrequency = pool.getDripFrequency();
+            final float MAX_DRIP = 1.2F;
+            float dripLevel = dripFrequency < 10 ? MAX_DRIP : Math.min(1F, (pool.getDripTicks()+ClientTickHandler.partialTicks)/dripFrequency)*MAX_DRIP;
+
+            GlStateManager.translatef(w, -1.43F+waterLevel, w);
             GlStateManager.scalef(s, s, s);
             GlStateManager.rotatef(90F, 1F, 0F, 0F);
             renderIcon(MiscellaneousIcons.INSTANCE.manaWater);
             GlStateManager.rotatef(180F, 0F, 1F, 0F);
-            GlStateManager.translatef(-8F, s*waterLevel, 0F);
+            GlStateManager.translatef(-16F, 0F, -waterLevel/s-dripLevel);
             renderIcon(MiscellaneousIcons.INSTANCE.manaWater);
 
 
