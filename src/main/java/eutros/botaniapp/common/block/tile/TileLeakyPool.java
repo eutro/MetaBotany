@@ -55,7 +55,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     private static final Color PARTICLE_COLOR = new Color(0x00C6FF);
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.LEAKY_POOL)
     public static TileEntityType<TileLeakyPool> TYPE;
-    private static final int BURST_MAX_MANA = 50000;
+    private static final int BURST_MAX_MANA = 1000;
 
     public DyeColor color = DyeColor.WHITE;
     private int mana;
@@ -188,6 +188,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             burst.ping();
             // TODO use own sound
             world.playSound(null, pos, BotaniaPPSounds.BOTANIA_SPREADER_FIRE, SoundCategory.BLOCKS, 0.05F, 0.7F + 0.3F * (float) Math.random());
+            markDispatchable();
         }
     }
 
@@ -242,7 +243,6 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         burst.setPosition(vec.x, vec.y-0.5, vec.z);
 
         burst.setSourceLens(lens);
-        burst.setMana(Math.min(mana, BURST_MAX_MANA));
 
         burst.setColor(props.color);
         burst.setStartingMana(props.maxMana);
@@ -250,6 +250,8 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         burst.setManaLossPerTick(props.manaLossPerTick);
         burst.setGravity(props.gravity);
         burst.setMotion(burst.getMotion().scale(props.motionModifier));
+
+        burst.setMana(Math.min(mana, burst.getStartingMana()));
 
         return burst;
     }

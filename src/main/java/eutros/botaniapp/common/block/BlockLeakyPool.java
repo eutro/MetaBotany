@@ -79,6 +79,7 @@ public class BlockLeakyPool extends Block implements IWandHUD, IWandable {
             TileSimpleInventory inv = (TileSimpleInventory) world.getTileEntity(pos);
             InventoryHelper.dropInventory(inv, world, state, pos);
         }
+        super.onReplaced(state, world, pos, newState, isMoving);
     }
 
     @Override
