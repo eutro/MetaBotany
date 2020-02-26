@@ -17,11 +17,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ObjectHolder;
@@ -55,7 +58,10 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     private static final Color PARTICLE_COLOR = new Color(0x00C6FF);
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.LEAKY_POOL)
     public static TileEntityType<TileLeakyPool> TYPE;
-    private static final int BURST_MAX_MANA = 1000;
+    private static final int BURST_MAX_MANA = 650; // How big bursts get
+    private static final int DIRECT_PUMP_MULTIPLIER = 5; // Approximately much faster direct transfer gets
+
+    private static final AxisAlignedBB CLEAR_COLUMN = new AxisAlignedBB(6 / 16F, 15 / 16F, 6 / 16F, 10 / 16F, 1, 10 / 16F);
 
     public DyeColor color = DyeColor.WHITE;
     private int mana;
@@ -120,23 +126,12 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         }
 
         boolean shouldShoot = true;
-        BlockState state = world.getBlockState(pos.down());
-        boolean canFire = state.isAir(world, pos.down());
+        boolean canFire = canLeak();
+
+        dripProgress += 1/getDripFrequency();
 
         if(getCurrentMana() <= 0 || !canFire) {
             shouldShoot = false;
-            dripProgress = 0;
-        } else {
-            dripProgress += 1/getDripFrequency();
-        }
-
-        if(world.isRemote) {
-            double particleChance = 1F - (double) getCurrentMana() / (double) MAX_MANA * 0.1;
-            if(Math.random() > particleChance) {
-                WispParticleData data = WispParticleData.wisp((float) Math.random() / 3F, PARTICLE_COLOR.getRed() / 255F, PARTICLE_COLOR.getGreen() / 255F, PARTICLE_COLOR.getBlue() / 255F, 2F);
-                world.addParticle(data, pos.getX() + 0.3 + Math.random() * 0.5, pos.getY() + 0.6 + Math.random() * 0.25, pos.getZ() + Math.random(), 0, (float) Math.random() / 25F, 0);
-            }
-            return;
         }
 
         boolean redstone = false;
@@ -157,10 +152,43 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
                 shouldShoot = control.allowBurstShooting(lens, this, redstone);
             }
 
-            while(shouldShoot && dripProgress >= 1) {
-                tryShootBurst();
-                dripProgress = Math.max(dripProgress - 1, 0);
+            if(shouldShoot && !world.isRemote()) {
+                TileEntity te = world.getTileEntity(pos.down());
+                if(te instanceof IManaReceiver && ((IManaReceiver) te).canRecieveManaFromBursts() && !(te instanceof TileLeakyPool)) {
+                    IManaReceiver receiver = (IManaReceiver) te;
+
+                    boolean filled = false;
+                    float dripMin = 2F / DIRECT_PUMP_MULTIPLIER;
+
+                    while(dripProgress >= dripMin && !receiver.isFull()) {
+                        int transfer = Math.max(mana, BURST_MAX_MANA);
+                        receiver.recieveMana(transfer);
+                        mana -= transfer;
+                        dripProgress = Math.max(dripProgress - dripMin, 0);
+                        filled = true;
+                    }
+
+                    if(filled) {
+                        te.markDirty();
+                        tryShootBurst();
+                    }
+                }
+                while(dripProgress >= 1) {
+                    tryShootBurst();
+                    dripProgress = Math.max(dripProgress - 1, 0);
+                }
+            } else {
+                dripProgress = Math.min(1, dripProgress);
             }
+        }
+
+        if(world.isRemote) {
+            double particleChance = 1F - (double) getCurrentMana() / (double) MAX_MANA * 0.1;
+            if(Math.random() > particleChance) {
+                WispParticleData data = WispParticleData.wisp((float) Math.random() / 3F, PARTICLE_COLOR.getRed() / 255F, PARTICLE_COLOR.getGreen() / 255F, PARTICLE_COLOR.getBlue() / 255F, 2F);
+                world.addParticle(data, pos.getX() + 0.3 + Math.random() * 0.5, pos.getY() + 0.6 + Math.random() * 0.25, pos.getZ() + Math.random(), 0, (float) Math.random() / 25F, 0);
+            }
+            return;
         }
 
         if(sendPacket && ticks % 10 == 0) {
@@ -169,6 +197,25 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         }
 
         ticks++;
+    }
+
+    public boolean canLeak() {
+        assert world != null;
+
+        BlockState state = world.getBlockState(pos.down());
+        VoxelShape shape = state.getCollisionShape(world, pos.down());
+
+        if(shape.isEmpty() || shape == VoxelShapes.fullCube())
+            return true;
+
+        List<AxisAlignedBB> boundingBoxes = shape.toBoundingBoxList();
+
+        for(AxisAlignedBB boundingBox : boundingBoxes) {
+            if(boundingBox.intersects(CLEAR_COLUMN))
+                return false;
+        }
+
+        return true;
     }
 
     public float getDripPercentage(float offset) {
