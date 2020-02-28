@@ -1,7 +1,8 @@
 package eutros.botaniapp.common.block.tile;
 
 import com.google.common.base.Predicates;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import eutros.botaniapp.client.core.helper.HUDHelper;
 import eutros.botaniapp.common.block.BlockLeakyPool;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.sound.BotaniaPPSounds;
@@ -29,12 +30,12 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ObjectHolder;
 import org.lwjgl.opengl.GL11;
+import vazkii.botania.api.BotaniaAPI;
 import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.mana.*;
 import vazkii.botania.api.mana.spark.ISparkAttachable;
 import vazkii.botania.api.mana.spark.ISparkEntity;
-import vazkii.botania.client.core.handler.HUDHandler;
 import vazkii.botania.client.fx.WispParticleData;
 import vazkii.botania.common.core.handler.ManaNetworkHandler;
 import vazkii.botania.common.entity.EntityManaBurst;
@@ -177,9 +178,11 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
                     tryShootBurst();
                     dripProgress = Math.max(dripProgress - 1, 0);
                 }
-            } else {
-                dripProgress = Math.min(1, dripProgress);
             }
+        }
+
+        if(!shouldShoot) {
+            dripProgress = Math.min(1, dripProgress);
         }
 
         if(world.isRemote) {
@@ -346,7 +349,8 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
                 ((ServerPlayerEntity) player).connection.sendPacket(new SUpdateTileEntityPacket(pos, -999, nbttagcompound));
         }
 
-        world.playSound(null, player.posX, player.posY, player.posZ, BotaniaPPSounds.BOTANIA_DING, SoundCategory.PLAYERS, 0.11F, 1F);
+        Vec3d playerPos = player.getPositionVec();
+        world.playSound(null, playerPos.x, playerPos.y, playerPos.z, BotaniaPPSounds.BOTANIA_DING, SoundCategory.PLAYERS, 0.11F, 1F);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -354,23 +358,23 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         ItemStack pool = new ItemStack(getBlockState().getBlock());
         String name = pool.getDisplayName().getString();
         int color = 0xFF4444;
-        HUDHandler.drawSimpleManaHUD(color, knownMana, MAX_MANA, name);
+        BotaniaAPI.internalHandler.drawSimpleManaHUD(color, knownMana, MAX_MANA, name);
 
-        int x = Minecraft.getInstance().mainWindow.getScaledWidth() / 2 - 11;
-        int y = Minecraft.getInstance().mainWindow.getScaledHeight() / 2 + 30;
+        int x = Minecraft.getInstance().getWindow().getScaledWidth() / 2 - 11;
+        int y = Minecraft.getInstance().getWindow().getScaledHeight() / 2 + 30;
 
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-        mc.textureManager.bindTexture(HUDHandler.manaBar);
-        GlStateManager.color4f(1F, 1F, 1F, 1F);
+        mc.textureManager.bindTexture(HUDHelper.MANA_HUD);
+        RenderSystem.color4f(1F, 1F, 1F, 1F);
 
-        net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
+        net.minecraft.client.renderer.RenderHelper.enable();
         mc.getItemRenderer().renderItemAndEffectIntoGUI(pool, x + 26, y);
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
 
-        GlStateManager.disableLighting();
-        GlStateManager.disableBlend();
+        RenderSystem.disableLighting();
+        RenderSystem.disableBlend();
     }
 
     @Override

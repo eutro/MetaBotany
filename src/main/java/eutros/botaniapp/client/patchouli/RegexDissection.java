@@ -1,23 +1,23 @@
 package eutros.botaniapp.client.patchouli;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import vazkii.patchouli.api.IComponentRenderContext;
 import vazkii.patchouli.api.ICustomComponent;
 import vazkii.patchouli.api.PatchouliAPI;
-import vazkii.patchouli.api.VariableHolder;
 import vazkii.patchouli.client.book.gui.BookTextRenderer;
 import vazkii.patchouli.client.book.gui.GuiBookEntry;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class RegexDissection implements ICustomComponent {
 
-    @VariableHolder public String text;
+    public String text;
     private transient final float sf = 1.2f;
 
     public static void init() {
@@ -53,8 +53,11 @@ public class RegexDissection implements ICustomComponent {
 
     @Override
     public void render(IComponentRenderContext context, float pTicks, int mouseX, int mouseY) {
-        GlStateManager.scalef(sf, sf, 1);
+        RenderSystem.scalef(sf, sf, 1);
         renderer.render(x + (int) ((mouseX-x)/sf), y + (int) ((mouseY-y)/sf));
-        GlStateManager.scalef(1/sf, 1/sf, 1);
+        RenderSystem.scalef(1/sf, 1/sf, 1);
     }
+
+    @Override
+    public void onVariablesAvailable(Function<String, String> function) {}
 }

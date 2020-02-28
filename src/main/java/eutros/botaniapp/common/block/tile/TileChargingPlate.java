@@ -1,6 +1,6 @@
 package eutros.botaniapp.common.block.tile;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.client.core.helper.HUDHelper;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.utils.Reference;
@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 import org.lwjgl.opengl.GL11;
+import vazkii.botania.api.BotaniaAPI;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.mana.IManaItem;
 import vazkii.botania.api.mana.IManaReceiver;
@@ -90,25 +91,25 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
     public void renderHUD(Minecraft mc) {
         int color = 0x4444FF;
         ItemStack stack = itemHandler.getStackInSlot(0);
-        HUDHelper.drawSimpleManaHUD(color,
+        BotaniaAPI.internalHandler.drawSimpleManaHUD(color,
                 getCurrentMana(),
                 getManaItem().map(item -> item.getMaxMana(stack)).orElse(1),
                 stack.isEmpty() ? I18n.format(BotaniaPPBlocks.chargingPlate.getTranslationKey()) : stack.getDisplayName().getFormattedText());
 
-        int x = Minecraft.getInstance().mainWindow.getScaledWidth() / 2;
-        int y = Minecraft.getInstance().mainWindow.getScaledHeight() / 2;
+        int x = Minecraft.getInstance().getWindow().getScaledWidth() / 2;
+        int y = Minecraft.getInstance().getWindow().getScaledHeight() / 2;
 
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         mc.textureManager.bindTexture(HUDHelper.MANA_HUD);
 
-        net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
+        net.minecraft.client.renderer.RenderHelper.enable();
         mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, x+26, y-10);
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
 
-        GlStateManager.disableLighting();
-        GlStateManager.disableBlend();
+        RenderSystem.disableLighting();
+        RenderSystem.disableBlend();
     }
 
     @Override

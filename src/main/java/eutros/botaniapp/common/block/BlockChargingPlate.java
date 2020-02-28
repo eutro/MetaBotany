@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -21,6 +22,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.jetbrains.annotations.NotNull;
 import vazkii.botania.api.mana.IManaItem;
 import vazkii.botania.api.wand.IWandHUD;
 
@@ -62,8 +64,9 @@ public class BlockChargingPlate extends Block implements IWandHUD {
     }
 
     @SuppressWarnings("deprecation")
+    @NotNull
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public ActionResultType onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         TileChargingPlate charger = (TileChargingPlate) world.getTileEntity(pos);
         ItemStack pstack = player.getHeldItem(hand);
         assert charger != null;
@@ -73,16 +76,16 @@ public class BlockChargingPlate extends Block implements IWandHUD {
             world.updateComparatorOutputLevel(pos, this);
             charger.markDirty();
             ItemHandlerHelper.giveItemToPlayer(player, cstack);
-            return true;
+            return ActionResultType.SUCCESS;
         } else if(!pstack.isEmpty() && pstack.getItem() instanceof IManaItem) {
             charger.getItemHandler().setStackInSlot(0, pstack.split(1));
             world.updateComparatorOutputLevel(pos, this);
             charger.markDirty();
 
-            return true;
+            return ActionResultType.SUCCESS;
         }
 
-        return false;
+        return ActionResultType.PASS;
     }
 
     @SuppressWarnings("deprecation")
@@ -105,12 +108,5 @@ public class BlockChargingPlate extends Block implements IWandHUD {
     @Override
     public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
         return ((TileChargingPlate) Objects.requireNonNull(worldIn.getTileEntity(pos))).comparatorPower();
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean isSolid(BlockState state)
-    {
-        return false;
     }
 }

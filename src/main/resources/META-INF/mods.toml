@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="[28,)" #mandatory
+loaderVersion="[30,)" #mandatory
 issueTrackerURL="https://github.com/eutropius225/BotaniaPP/issues" #optional
 displayURL="https://github.com/eutropius225/BotaniaPP" #optional
 logoFile="logo.png" #optional
@@ -16,14 +16,14 @@ Addon mod for Botania, adding new possibilites.'''
 [[dependencies.botaniapp]]
     modId="forge"
     mandatory=true
-    versionRange="[28.1.92,)"
+    versionRange="[30,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.botaniapp]]
     modId="patchouli"
     mandatory=true
-    versionRange="[1.1-26,)"
+    versionRange="[1.2-28,)"
     side="BOTH"
 
 [[dependencies.botaniapp]]

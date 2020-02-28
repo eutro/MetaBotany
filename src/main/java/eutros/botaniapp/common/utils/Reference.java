@@ -12,4 +12,8 @@ public class Reference {
         public static final String CHARGING_PLATE = "charging_plate";
         public static final String LEAKY_POOL = "leaky_pool";
     }
+
+    public static final class FlowerNames {
+        public static final String BOUGANVILLEA = "flower_bouganvillea";
+    }
 }

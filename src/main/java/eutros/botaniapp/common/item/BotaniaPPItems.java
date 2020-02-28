@@ -30,6 +30,9 @@ public class BotaniaPPItems {
     public static Item BOTANIA_FLARE_LENS;
     public static Item BOTANIA_WARP_LENS;
     public static Item BOTANIA_PAINT_LENS;
+    public static Item BOTANIA_RED_STRING;
+    public static Item BOTANIA_MANA_STRING;
+    public static Item BOTANIA_SPARK;
 
     public static Item.Properties defaultBuilder() {
         return new Item.Properties().group(BotaniappCreativeTab.INSTANCE);
@@ -54,6 +57,9 @@ public class BotaniaPPItems {
         BOTANIA_FLARE_LENS = r.getValue(new ResourceLocation(b, "lens_flare"));
         BOTANIA_WARP_LENS = r.getValue(new ResourceLocation(b, "lens_warp"));
         BOTANIA_PAINT_LENS = r.getValue(new ResourceLocation(b, "lens_paint"));
+        BOTANIA_RED_STRING = r.getValue(new ResourceLocation(b, "red_string"));
+        BOTANIA_MANA_STRING = r.getValue(new ResourceLocation(b, "mana_string"));
+        BOTANIA_SPARK = r.getValue(new ResourceLocation(b, "spark"));
     }
 
     @SubscribeEvent

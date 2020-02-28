@@ -4,6 +4,7 @@ import eutros.botaniapp.common.block.corporea.BlockAdvancedFunnel;
 import eutros.botaniapp.common.block.tile.TileChargingPlate;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
 import eutros.botaniapp.common.block.tile.corporea.TileAdvancedFunnel;
+import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -17,7 +18,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ObjectHolder;
-import vazkii.botania.common.item.ModItems;
 
 import static eutros.botaniapp.common.item.BotaniaPPItems.register;
 
@@ -30,6 +30,7 @@ public class BotaniaPPBlocks {
 
     public static Block BOTANIA_PISTON_RELAY;
     public static Block BOTANIA_MANA_VOID;
+    public static Block BOTANIA_RED_STRING_RELAY;
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> evt) {
@@ -50,12 +51,13 @@ public class BotaniaPPBlocks {
 
         BOTANIA_MANA_VOID = r.getValue(new ResourceLocation(b, "mana_void"));
         BOTANIA_PISTON_RELAY = r.getValue(new ResourceLocation(b, "piston_relay"));
+        BOTANIA_RED_STRING_RELAY = r.getValue(new ResourceLocation(b, "red_string_relay"));
     }
 
     @SubscribeEvent
     public static void registerItemBlocks(RegistryEvent.Register<Item> evt) {
         IForgeRegistry<Item> r = evt.getRegistry();
-        Item.Properties props = ModItems.defaultBuilder();
+        Item.Properties props = BotaniaPPItems.defaultBuilder();
 
         register(r, new BlockItem(advancedFunnel, props), advancedFunnel.getRegistryName());
         register(r, new BlockItem(chargingPlate, props), chargingPlate.getRegistryName());

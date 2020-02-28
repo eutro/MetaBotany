@@ -1,44 +1,32 @@
 package eutros.botaniapp.client.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import eutros.botaniapp.client.core.handler.ClientTickHandler;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
-import org.lwjgl.opengl.GL11;
+import org.jetbrains.annotations.NotNull;
 import vazkii.botania.client.core.handler.MiscellaneousIcons;
-import vazkii.botania.client.core.helper.ShaderHelper;
 
 public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
 
-    public static final VertexFormat POSITION_TEX_LMAP =
-            new VertexFormat()
-                    .addElement(DefaultVertexFormats.POSITION_3F)
-                    .addElement(DefaultVertexFormats.TEX_2F)
-                    .addElement(DefaultVertexFormats.TEX_2S);
+    public RenderTileLeakyPool(TileEntityRendererDispatcher p_i226006_1_) {
+        super(p_i226006_1_);
+    }
 
     @Override
-    public void render(TileLeakyPool pool, double d0, double d1, double d2, float f, int digProgress) {
-        GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.enableRescaleNormal();
+    public void render(@NotNull TileLeakyPool pool, float f, @NotNull MatrixStack ms, @NotNull IRenderTypeBuffer buffers, int light, int overlay) {
 
-        GlStateManager.color4f(1F, 1F, 1F, 1F);
-        GlStateManager.translated(d0, d1, d2);
-
-        Minecraft.getInstance().textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-
-        GlStateManager.translatef(0.5F, 1.5F, 0.5F);
-        GlStateManager.color4f(1, 1, 1, 1);
-        GlStateManager.enableRescaleNormal();
+        ms.push();
+        ms.translate(0.5F, 1.5F, 0.5F);
 
         int mana = pool.getCurrentMana();
         int cap = TileLeakyPool.MAX_MANA;
@@ -49,57 +37,47 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
             float s = 1F / 256F * 14F;
             float v = 1F / 8F;
             float w = -v * 3.5F;
-            GlStateManager.pushMatrix();
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GlStateManager.disableAlphaTest();
-            GlStateManager.color4f(1F, 1F, 1F, 1F);
 
-            ShaderHelper.useShader(ShaderHelper.manaPool);
+            ms.push();
 
             float dripFrequency = pool.getDripFrequency();
             final float MAX_DRIP = 1.2F;
             float dripLevel = dripFrequency < 10 ? MAX_DRIP : pool.getDripPercentage(ClientTickHandler.partialTicks)*MAX_DRIP;
 
-            GlStateManager.translatef(w, -1.43F+waterLevel, w);
-            GlStateManager.scalef(s, s, s);
-            GlStateManager.rotatef(90F, 1F, 0F, 0F);
-            renderIcon(MiscellaneousIcons.INSTANCE.manaWater);
-            GlStateManager.rotatef(180F, 0F, 1F, 0F);
-            GlStateManager.translatef(-16F, 0F, -waterLevel/s-dripLevel);
-            renderIcon(MiscellaneousIcons.INSTANCE.manaWater);
+            ms.translate(w, -1.43F+waterLevel, w);
+            ms.scale(s, s, s);
+            ms.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90F));
+            IVertexBuilder buffer = buffers.getBuffer(RenderHelper.ICON_OVERLAY);
+            renderIcon(ms, buffer, 0, 0, MiscellaneousIcons.INSTANCE.manaWater, 16, 16, 1);
+            ms.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180F));
+            ms.translate(-16F, 0F, -waterLevel/s-dripLevel);
+            renderIcon(ms, buffer, 0, 0, MiscellaneousIcons.INSTANCE.manaWater, 16, 16, 1);
 
-
-            ShaderHelper.releaseShader();
-
-            GlStateManager.enableAlphaTest();
-            GlStateManager.disableBlend();
-            GlStateManager.popMatrix();
+            ms.pop();
         }
 
         ItemStack stack = pool.getItemHandler().getStackInSlot(0);
 
         if(!stack.isEmpty()) {
-            Minecraft.getInstance().textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-            stack.getItem();
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(0F, -1.53F, 0F);
-            GlStateManager.rotatef(90, 1F, 0, 0);
-            GlStateManager.scalef(1.0F, 1.0F, 1.0F);
-            Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.NONE);
-            GlStateManager.popMatrix();
+
+            ms.push();
+
+            ms.translate(0F, -1.53F, 0F);
+            ms.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90F));
+            ms.scale(1.0F, 1.0F, 1.0F);
+            Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.NONE, light, overlay, ms, buffers);
+            ms.pop();
         }
 
-        GlStateManager.popMatrix();
+        ms.pop();
     }
 
-    private void renderIcon(TextureAtlasSprite icon) {
-        Tessellator tessellator = Tessellator.getInstance();
-        tessellator.getBuffer().begin(GL11.GL_QUADS, POSITION_TEX_LMAP);
-        tessellator.getBuffer().pos(0, 16, 0).tex(icon.getMinU(), icon.getMaxV()).lightmap(240, 240).endVertex();
-        tessellator.getBuffer().pos(16, 16, 0).tex(icon.getMaxU(), icon.getMaxV()).lightmap(240, 240).endVertex();
-        tessellator.getBuffer().pos(16, 0, 0).tex(icon.getMaxU(), icon.getMinV()).lightmap(240, 240).endVertex();
-        tessellator.getBuffer().pos(0, 0, 0).tex(icon.getMinU(), icon.getMinV()).lightmap(240, 240).endVertex();
-        tessellator.draw();
+    public static void renderIcon(MatrixStack ms, IVertexBuilder buffer, int x, int y, TextureAtlasSprite icon, int width, int height, float alpha) {
+        Matrix4f mat = ms.peek().getModel();
+        int fullBrightness = 0xF000F0;
+        buffer.vertex(mat, x, y + height, 0).color(1, 1, 1, alpha).texture(icon.getMinU(), icon.getMaxV()).light(fullBrightness).endVertex();
+        buffer.vertex(mat, x + width, y + height, 0).color(1, 1, 1, alpha).texture(icon.getMaxU(), icon.getMaxV()).light(fullBrightness).endVertex();
+        buffer.vertex(mat, x + width, y, 0).color(1, 1, 1, alpha).texture(icon.getMaxU(), icon.getMinV()).light(fullBrightness).endVertex();
+        buffer.vertex(mat, x, y, 0).color(1, 1, 1, alpha).texture(icon.getMinU(), icon.getMinV()).light(fullBrightness).endVertex();
     }
 }

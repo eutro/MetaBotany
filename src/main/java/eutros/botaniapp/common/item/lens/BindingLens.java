@@ -1,7 +1,6 @@
 package eutros.botaniapp.common.item.lens;
 
 import eutros.botaniapp.common.BotaniaPP;
-import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
 import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.sound.BotaniaPPSounds;
@@ -140,7 +139,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
                     if (tileEntity != null)
                         tileEntity.markDirty();
                 } else if(!(player instanceof FakePlayer)) {
-                    world.playSound(null, player.posX, player.posY, player.posZ, BotaniaPPSounds.BOTANIA_DING, SoundCategory.PLAYERS, 0.5F, 1F);
+                    world.playSound(null, player.getPosition(), BotaniaPPSounds.BOTANIA_DING, SoundCategory.PLAYERS, 0.5F, 1F);
                 }
             }
         }
@@ -196,9 +195,10 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
             return false;
         if(world.getBlockState(src).getBlock() instanceof BlockPistonRelay) { // Could this minimal checking cause issues with block protections?
             GlobalPos bindPos = GlobalPos.of(world.getDimension().getType(), src.toImmutable());
-            GlobalPos currentPos = GlobalPos.of(world.getDimension().getType(), pos.toImmutable());
 
-            ((BlockPistonRelay) BotaniaPPBlocks.BOTANIA_PISTON_RELAY).mappedPositions.put(bindPos, currentPos);
+            BlockPistonRelay.WorldData data = BlockPistonRelay.WorldData.get(world);
+            data.mapping.put(bindPos.getPos(), pos.toImmutable());
+            data.markDirty();
             BlockPistonRelay.WorldData.get(world).markDirty();
 
             return true;
@@ -228,10 +228,10 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
             if(!world.isRemote)
                 setBindingAttempt(stack, UNBOUND_POS);
             player.playSound(BotaniaPPSounds.BOTANIA_DING, 0.1F, 1F);
-            return ActionResult.newResult(ActionResultType.SUCCESS, stack);
+            return ActionResult.success(stack);
         }
 
-        return ActionResult.newResult(ActionResultType.PASS, stack);
+        return ActionResult.pass(stack);
     }
 
     @Nonnull

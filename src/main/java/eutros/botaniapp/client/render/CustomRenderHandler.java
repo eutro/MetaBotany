@@ -14,8 +14,8 @@ public final class CustomRenderHandler {
 	
 	@SubscribeEvent
 	public static void registerModels(ModelRegistryEvent evt) {
-		ClientRegistry.bindTileEntitySpecialRenderer(TileChargingPlate.class, new RenderTileChargingPlate());
-		ClientRegistry.bindTileEntitySpecialRenderer(TileLeakyPool.class, new RenderTileLeakyPool());
+		ClientRegistry.bindTileEntityRenderer(TileChargingPlate.TYPE, RenderTileChargingPlate::new);
+		ClientRegistry.bindTileEntityRenderer(TileLeakyPool.TYPE, RenderTileLeakyPool::new);
 	}
 	
 	private CustomRenderHandler() {}
