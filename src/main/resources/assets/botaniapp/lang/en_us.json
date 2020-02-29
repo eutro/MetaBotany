@@ -2,6 +2,9 @@
   "item.botaniapp.lens_binding": "Mana Lens: Binding",
   "item.botaniapp.lens_binding.short": "Binding",
 
+  "block.botaniapp.flower_bouganvillea": "Bouganvillea",
+  "block.botaniapp.floating_flower_bouganvillea": "Floating Bouganvillea",
+
   "block.botaniapp.advanced_funnel": "Advanced Corporea Funnel",
   "hud.botaniapp.advanced_funnel.pre": "Reaches up to ",
   "hud.botaniapp.advanced_funnel.post": " block(s) below.",

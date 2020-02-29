@@ -29,8 +29,8 @@ import static vazkii.botania.common.block.ModBlocks.register;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ObjectHolder(Reference.MOD_ID)
 public class BotaniaPPFlowers {
-    @ObjectHolder(Reference.FlowerNames.BOUGANVILLEA) public static Block bouganvillea;
 
+    @ObjectHolder(Reference.FlowerNames.BOUGANVILLEA) public static Block bouganvillea;
     @ObjectHolder("floating_" + Reference.FlowerNames.BOUGANVILLEA) public static Block bouganvilleaFloating;
 
     private static ResourceLocation floating(ResourceLocation orig) {
@@ -44,6 +44,10 @@ public class BotaniaPPFlowers {
     private static final List<Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation>> TYPES = ImmutableList.of(
             Pair.of(SubtileBouganvillea::new, new ResourceLocation(Reference.MOD_ID, Reference.FlowerNames.BOUGANVILLEA))
     );
+
+    public static List<Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation>> getTypes() {
+        return ImmutableList.copyOf(TYPES);
+    }
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> evt) {

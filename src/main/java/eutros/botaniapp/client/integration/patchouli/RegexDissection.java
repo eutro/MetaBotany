@@ -1,4 +1,4 @@
-package eutros.botaniapp.client.patchouli;
+package eutros.botaniapp.client.integration.patchouli;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.common.utils.Reference;

@@ -2,7 +2,6 @@ package eutros.botaniapp.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
 import eutros.botaniapp.common.core.helper.PetalHelper;
-import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.item.lens.BindingLens;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
@@ -29,6 +28,11 @@ public class RecipeLensBinding implements ICraftingRecipe, IShapedRecipe<Craftin
 
     public RecipeLensBinding(ShapedRecipe compose) {
         this.compose = compose;
+    }
+
+    @Override
+    public boolean isDynamic() {
+        return false;
     }
 
     @Override
