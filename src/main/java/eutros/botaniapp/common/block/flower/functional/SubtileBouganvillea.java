@@ -54,7 +54,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
     public static final String FALLBACK_GROUP = "botaniapp:bouganvillea_fallback";
 
-    private static Map<ResourceLocation, RecipeBouganvillea> fallbackRecipes = new HashMap<ResourceLocation, RecipeBouganvillea>() {{
+    public static Map<ResourceLocation, RecipeBouganvillea> fallbackRecipes = new HashMap<ResourceLocation, RecipeBouganvillea>() {{
         ResourceLocation RENAME = new ResourceLocation(Reference.MOD_ID, "bouganvillea_rename");
         ResourceLocation ANVIL = new ResourceLocation(Reference.MOD_ID, "bouganvillea_anvil");
         put(RENAME, new RecipeBouganvilleaRename(RENAME));
@@ -318,6 +318,11 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         @Override
         public ItemEntity getTrigger() {
             return trigger;
+        }
+
+        @Override
+        public TileEntityFunctionalFlower getFlower() {
+            return SubtileBouganvillea.this;
         }
 
         @Override

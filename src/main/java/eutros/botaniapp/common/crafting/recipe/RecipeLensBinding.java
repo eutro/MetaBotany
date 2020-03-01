@@ -31,11 +31,6 @@ public class RecipeLensBinding implements ICraftingRecipe, IShapedRecipe<Craftin
     }
 
     @Override
-    public boolean isDynamic() {
-        return false;
-    }
-
-    @Override
     public boolean matches(@NotNull CraftingInventory inv, @NotNull World worldIn) {
         return compose.matches(inv, worldIn);
     }

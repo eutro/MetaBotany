@@ -2,6 +2,7 @@ package eutros.botaniapp.api.recipe;
 
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.inventory.IInventory;
+import vazkii.botania.api.subtile.TileEntityFunctionalFlower;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -47,4 +48,11 @@ public interface IBouganvilleaInventory extends IInventory {
         entities.addAll(getEntities());
         return entities;
     }
+
+    /**
+     * Returns the flower TE itself.
+     *
+     * @return This inventory's flower.
+     */
+    TileEntityFunctionalFlower getFlower();
 }

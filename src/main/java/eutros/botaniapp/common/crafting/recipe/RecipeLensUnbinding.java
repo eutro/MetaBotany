@@ -28,11 +28,6 @@ public class RecipeLensUnbinding implements ICraftingRecipe {
     }
 
     @Override
-    public boolean isDynamic() {
-        return true;
-    }
-
-    @Override
     public boolean matches(@NotNull CraftingInventory inv, @NotNull World worldIn) {
         return compose.matches(inv, worldIn);
     }

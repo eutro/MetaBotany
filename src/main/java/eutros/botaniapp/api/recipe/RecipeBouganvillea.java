@@ -1,6 +1,7 @@
 package eutros.botaniapp.api.recipe;
 
 import eutros.botaniapp.common.crafting.BotaniaPPRecipeTypes;
+import eutros.botaniapp.common.utils.MathUtils;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -11,6 +12,10 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * This is the default recipe of the Bouganvillea.
@@ -65,5 +70,24 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
         return BotaniaPPRecipeTypes.BOUGANVILLEA;
     }
 
+    public ItemStack getStacksResult(List<ItemStack> stacks) {
+        return output;
+    }
+
     public abstract boolean checkHead(ItemEntity entity);
+
+    public List<ItemStack> getDynamicOutput(List<List<ItemStack>> ingredients) {
+        if(!isDynamic())
+            return Collections.singletonList(getRecipeOutput());
+        // lovely
+        return IntStream.range(0, ingredients.stream().map(List::size)
+                .reduce(1, MathUtils::lcm)) // Create a stream 0 to the LCM of all list lengths.
+                .boxed().map(i -> //                          Then, from 0 to that LCM,
+                        getStacksResult(ingredients.stream() // get the ItemStack returned
+                                .map(s -> s.get(i % s.size())) // for all the combinations that will be shown.
+
+                                .collect(Collectors.toList())) // This collects the set of ingredients for a single craft.
+                )
+                .collect(Collectors.toList()); // This collects all the results.
+    }
 }

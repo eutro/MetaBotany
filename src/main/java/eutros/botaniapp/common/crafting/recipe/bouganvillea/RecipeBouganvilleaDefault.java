@@ -29,6 +29,12 @@ public class RecipeBouganvilleaDefault extends RecipeBouganvillea {
         this.ingredients = ingredients;
     }
 
+    @NotNull
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
     @Override
         public boolean shouldTrigger(IBouganvilleaInventory inventory) {
         // TODO recipe checking

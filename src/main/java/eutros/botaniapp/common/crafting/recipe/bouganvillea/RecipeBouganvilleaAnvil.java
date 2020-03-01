@@ -1,8 +1,12 @@
 package eutros.botaniapp.common.crafting.recipe.bouganvillea;
 
+import eutros.botaniapp.api.recipe.IBouganvilleaAnvil;
 import eutros.botaniapp.api.recipe.IBouganvilleaInventory;
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
 import eutros.botaniapp.common.block.flower.functional.SubtileBouganvillea;
+import eutros.botaniapp.common.utils.BotaniaPPFakePlayer;
+import net.minecraft.block.AnvilBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -12,11 +16,17 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.ForgeHooks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
@@ -24,7 +34,7 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
     private IRecipeSerializer<RecipeBouganvilleaRename> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaRename::new);
 
     public RecipeBouganvilleaAnvil(ResourceLocation id) {
-        super(id, null, null, SubtileBouganvillea.FALLBACK_GROUP);
+        super(id, null, Ingredient.fromItems(Blocks.ANVIL), SubtileBouganvillea.FALLBACK_GROUP);
     }
 
     @Override
@@ -34,7 +44,8 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
 
     @Override
     public boolean checkHead(ItemEntity entity) {
-        return entity.getItem().getItem() == BlockItem.BLOCK_TO_ITEM.get(Blocks.ANVIL);
+        Block block = ((BlockItem) entity.getItem().getItem()).getBlock();
+        return block instanceof IBouganvilleaAnvil || block instanceof AnvilBlock;
     }
 
     @NotNull
@@ -182,9 +193,45 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
             combineWith.shrink(materialCost);
         else
             combineWith = ItemStack.EMPTY;
+
         inventory.setInventorySlotContents(1, combineWith);
 
+        float breakChance = ForgeHooks.onAnvilRepair(new BotaniaPPFakePlayer((ServerWorld) inventory.getFlower().getWorld()),
+                result,
+                inventory.getStackInSlot(0),
+                inventory.getTrigger().getItem());
+
+        if(new Random(inventory.getFlower().getPos().hashCode()).nextFloat() < breakChance) {
+            Block anvilBlock = ((BlockItem) inventory.getStackInSlot(0).getItem()).getBlock();
+
+            anvilBlock = damage(anvilBlock);
+
+            if (anvilBlock == null)
+                inventory.removeStackFromSlot(0);
+            else
+                inventory.setInventorySlotContents(0, new ItemStack(anvilBlock));
+        }
+
+
         return result;
+    }
+
+    @Nullable
+    private Block damage(Block block) {
+        if(block instanceof IBouganvilleaAnvil) {
+            return ((IBouganvilleaAnvil) block).damage(block);
+        }
+        if (block == Blocks.ANVIL) {
+            return Blocks.CHIPPED_ANVIL;
+        } else {
+            return block == Blocks.CHIPPED_ANVIL ? Blocks.DAMAGED_ANVIL : null;
+        }
+    }
+
+    @NotNull
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return NonNullList.from(Ingredient.EMPTY, Ingredient.EMPTY);
     }
 
     @NotNull
