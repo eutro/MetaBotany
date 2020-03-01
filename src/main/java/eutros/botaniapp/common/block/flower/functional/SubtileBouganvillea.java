@@ -1,12 +1,17 @@
 package eutros.botaniapp.common.block.flower.functional;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.api.recipe.IBouganvilleaInventory;
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
 import eutros.botaniapp.common.crafting.BotaniaPPRecipeTypes;
 import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaAnvil;
 import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaRename;
+import eutros.botaniapp.common.utils.MathUtils;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -23,8 +28,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ObjectHolder;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL11;
+import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.subtile.RadiusDescriptor;
 import vazkii.botania.api.subtile.TileEntityFunctionalFlower;
 import vazkii.botania.common.network.PacketBotaniaEffect;
@@ -32,6 +41,8 @@ import vazkii.botania.common.network.PacketHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,6 +53,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.FlowerNames.BOUGANVILLEA)
     public static TileEntityType<SubtileBouganvillea> TYPE;
 
+    private static final String TAG_HEAD = "head_item";
     private static final String TAG_MEMORY = "item_memory";
     private static final String TAG_RECIPE = "active_recipe";
     private static final String TAG_ANVILLED = "botaniapp_bouganvilled";
@@ -51,8 +63,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     @Nullable
     private RecipeBouganvillea activeRecipe = null;
 
-    @Nullable
-    private ItemAndPos head = null;
+    private ItemAndPos head = new ItemAndPos(ItemStack.EMPTY, new Vec3d(0, 0, 0));
 
     public static final String FALLBACK_GROUP = "botaniapp:bouganvillea_fallback";
 
@@ -80,7 +91,12 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
     @Override
     public int getMaxMana() {
-        return 20;
+        return 500;
+    }
+
+    @Override
+    public int getColor() {
+        return 0x5F5F5F;
     }
 
     @Override
@@ -88,10 +104,12 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         super.tickFlower();
 
         assert world != null;
-        if(world.isRemote || redstoneSignal > 0)
+        if(world.isRemote || redstoneSignal > 0 || getMana() < getMaxMana())
             return;
 
-        List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos.add(-1, -1, -1), pos.add(2, 2, 2)));
+        BlockPos efPos = getEffectivePos();
+        List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(efPos.add(-1, -1, -1), efPos.add(2, 2, 2)));
+        items.sort(Comparator.comparingInt(ItemEntity::getAge).reversed());
 
         for(ItemEntity e : items) {
             if(e.getTags().contains(TAG_ANVILLED) || e.getAge() < 30 + getSlowdownFactor())
@@ -144,12 +162,19 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         activeRecipe = recipe;
         consumeItem(e);
         world.playSound(null, getEffectivePos(), SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 0.5F, 2F);
+
+        BlockPos efPos = getEffectivePos();
+        List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(efPos.add(-1, -1, -1), efPos.add(2, 2, 2)));
+        items.forEach(i -> i.removeTag(TAG_ANVILLED));
     }
 
     public void consumeItem(ItemEntity e) {
         e.addTag(TAG_ANVILLED);
         e.remove();
         spawnParticles(e, getEffectivePos(), 1);
+        addMana(-20);
+        markDirty();
+        VanillaPacketDispatcher.dispatchTEToNearbyPlayers(this);
     }
 
     @Nonnull
@@ -175,16 +200,17 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         dropAll();
         activeRecipe = null;
 
-        world.playSound(null, efPos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 0.5f, 1f);
+        if(!soundCanceled)
+            world.playSound(null, efPos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 0.5f, 1f);
+        else
+            soundCanceled = false;
     }
 
     private void dropAll() {
         assert world != null;
 
-        if(head != null) {
-            memory.add(head);
-            head = null;
-        }
+        memory.add(head);
+        head = new ItemAndPos(ItemStack.EMPTY, new Vec3d(0, 0, 0));
 
         for(ItemAndPos iap : memory) {
             ItemEntity iapEntity = iap.getEntity(world);
@@ -194,6 +220,8 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         }
 
         memory.clear();
+        markDirty();
+        VanillaPacketDispatcher.dispatchTEToNearbyPlayers(this);
     }
 
     private void spawnParticles(ItemEntity e, BlockPos efPos, int p) {
@@ -211,6 +239,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         assert world != null;
 
         memory = cmp.getList(TAG_MEMORY, 10).stream().map(s -> ItemAndPos.fromNBT((CompoundNBT) s)).collect(Collectors.toList());
+        head = ItemAndPos.fromNBT(cmp.getCompound(TAG_HEAD));
         String recipeId = cmp.getString(TAG_RECIPE);
 
         if(recipeId.equals("")) {
@@ -233,7 +262,48 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         ListNBT list = new ListNBT();
         list.addAll(memory.stream().map(ItemAndPos::toNBT).collect(Collectors.toList()));
         cmp.put(TAG_MEMORY, list);
+        cmp.put(TAG_HEAD, head.toNBT());
         cmp.putString(TAG_RECIPE, activeRecipe == null ? "" : activeRecipe.getId().toString());
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void renderHUD(Minecraft mc) {
+        super.renderHUD(mc);
+
+        if(!head.stack.isEmpty()) {
+            final float sf = 0.8F;
+
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            RenderHelper.enable();
+            ItemRenderer itemRenderer = mc.getItemRenderer();
+
+            double angleBetweenEach = Math.max(30.0, 180.0 / (memory.size()+1));
+            Point center = new Point(mc.getWindow().getScaledWidth()/2, mc.getWindow().getScaledHeight()/2);
+            Point point = new Point(center);
+            point.translate(0, -30);
+            point = MathUtils.rotatePointAbout(point, center, -angleBetweenEach*(memory.size())/2);
+
+            assert mc.player != null;
+            for(int i = 0; i < memory.size() + 1; i++) {
+                ItemStack stack = (i == 0 ? head : memory.get(i - 1)).stack;
+                itemRenderer.renderItemAndEffectIntoGUI(stack, point.x-8, point.y);
+                if(mc.player.isSneaking()) {
+                    String formattedText = stack.getDisplayName().getFormattedText();
+                    RenderSystem.scalef(sf, sf, sf);
+                    // TODO do something about names overlapping and stuff
+                    int width = mc.fontRenderer.getStringWidth(formattedText);
+                    mc.fontRenderer.drawStringWithShadow(formattedText, (point.x)/sf-width/2F, (point.y/sf)-10, 0xFFFFFF);
+                    RenderSystem.scalef(1/sf, 1/sf, 1/sf);
+                }
+                point = MathUtils.rotatePointAbout(point, center, angleBetweenEach);
+            }
+
+            RenderHelper.disableStandardItemLighting();
+            RenderSystem.disableLighting();
+            RenderSystem.disableBlend();
+        }
     }
 
     @Override
@@ -312,8 +382,8 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         }
 
         @Override
-        public Optional<ItemEntity> getHead() {
-            return Optional.ofNullable(head).map(iap -> iap.getEntity(world));
+        public ItemEntity getHead() {
+            return head.getEntity(world);
         }
 
         @Nonnull
@@ -328,8 +398,13 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         }
 
         @Override
+        public void cancelSound() {
+            soundCanceled = true;
+        }
+
+        @Override
         public int getSizeInventory() {
-            return memory.size() + (head == null ? 0 : 1);
+            return memory.size() + 1;
         }
 
         @Override
@@ -340,7 +415,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         @NotNull
         @Override
         public ItemStack getStackInSlot(int index) {
-            return index == 0 ? Optional.ofNullable(head).map(iap -> iap.stack).orElse(ItemStack.EMPTY) : memory.get(index-1).stack;
+            return index == 0 ? head.stack : memory.get(index-1).stack;
         }
 
         @NotNull
@@ -354,7 +429,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         public ItemStack removeStackFromSlot(int index) {
             ItemStack stack = getStackInSlot(index);
             if(index == 0) {
-                head = null;
+                head = new ItemAndPos(ItemStack.EMPTY, new Vec3d(0, 0, 0));
             }
             else {
                 memory.remove(index-1);
@@ -365,7 +440,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         @Override
         public void setInventorySlotContents(int index, @NotNull ItemStack stack) {
             if(index == 0)
-                head = new ItemAndPos(stack, head == null ? new Vec3d(getEffectivePos()) : head.pos);
+                head = new ItemAndPos(stack, head.pos);
             else {
                 memory.set(index-1, memory.get(index - 1).withStack(stack));
             }
