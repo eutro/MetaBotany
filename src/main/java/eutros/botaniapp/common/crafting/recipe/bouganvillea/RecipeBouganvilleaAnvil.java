@@ -11,22 +11,22 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import vazkii.botania.api.subtile.TileEntityFunctionalFlower;
 
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
@@ -44,7 +44,10 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
 
     @Override
     public boolean checkHead(ItemEntity entity) {
-        Block block = ((BlockItem) entity.getItem().getItem()).getBlock();
+        Item item = entity.getItem().getItem();
+        if(!(item instanceof BlockItem))
+            return false;
+        Block block = ((BlockItem) item).getBlock();
         return block instanceof IBouganvilleaAnvil || block instanceof AnvilBlock;
     }
 
@@ -196,22 +199,28 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
 
         inventory.setInventorySlotContents(1, combineWith);
 
-        float breakChance = ForgeHooks.onAnvilRepair(new BotaniaPPFakePlayer((ServerWorld) inventory.getFlower().getWorld()),
+        TileEntityFunctionalFlower flower = inventory.getFlower();
+        World world = flower.getWorld();
+        assert world != null;
+        float breakChance = ForgeHooks.onAnvilRepair(new BotaniaPPFakePlayer((ServerWorld) world),
                 result,
                 inventory.getStackInSlot(0),
                 inventory.getTrigger().getItem());
 
-        if(new Random(inventory.getFlower().getPos().hashCode()).nextFloat() < breakChance) {
+        if(flower.getWorld().getRandom().nextFloat() < breakChance) {
             Block anvilBlock = ((BlockItem) inventory.getStackInSlot(0).getItem()).getBlock();
 
             anvilBlock = damage(anvilBlock);
 
-            if (anvilBlock == null)
+            if (anvilBlock == null) {
                 inventory.removeStackFromSlot(0);
-            else
+                inventory.cancelSound();
+                world.playSound(null, flower.getEffectivePos(), SoundEvents.BLOCK_ANVIL_DESTROY, SoundCategory.BLOCKS, 0.5F, 1F);
+            } else
                 inventory.setInventorySlotContents(0, new ItemStack(anvilBlock));
         }
 
+        flower.addMana(-maximumCost*5);
 
         return result;
     }

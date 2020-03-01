@@ -5,6 +5,7 @@ import eutros.botaniapp.client.core.helper.HUDHelper;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
@@ -104,9 +105,9 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
 
         mc.textureManager.bindTexture(HUDHelper.MANA_HUD);
 
-        net.minecraft.client.renderer.RenderHelper.enable();
-        mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, x+26, y-10);
-        net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
+        RenderHelper.enable();
+        mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, x+8, y-8);
+        RenderHelper.disableStandardItemLighting();
 
         RenderSystem.disableLighting();
         RenderSystem.disableBlend();

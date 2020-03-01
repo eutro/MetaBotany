@@ -7,7 +7,6 @@ import vazkii.botania.api.subtile.TileEntityFunctionalFlower;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public interface IBouganvilleaInventory extends IInventory {
 
@@ -22,11 +21,10 @@ public interface IBouganvilleaInventory extends IInventory {
 
     /**
      * Gets the head of the Bouganvillea recipe, i.e. the first item it received.
-     * This will be empty if no other registered recipe is found, i.e. if the Bouganvillea is renaming.
      *
      * @return The head of the Bouganvillea recipe.
      */
-    Optional<ItemEntity> getHead();
+    ItemEntity getHead();
 
     /**
      * Gets the item that has just been thrown. This is the item that triggered the craft, if it is currently taking place.
@@ -44,7 +42,7 @@ public interface IBouganvilleaInventory extends IInventory {
      */
     default List<ItemEntity> allEntities() {
         ArrayList<ItemEntity> entities = new ArrayList<>();
-        getHead().ifPresent(entities::add);
+        entities.add(getHead());
         entities.addAll(getEntities());
         return entities;
     }
@@ -55,4 +53,9 @@ public interface IBouganvilleaInventory extends IInventory {
      * @return This inventory's flower.
      */
     TileEntityFunctionalFlower getFlower();
+
+    /**
+     * Cancels the anvil sound effect.
+     */
+    void cancelSound();
 }

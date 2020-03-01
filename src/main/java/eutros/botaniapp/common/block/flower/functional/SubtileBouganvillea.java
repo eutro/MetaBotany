@@ -46,6 +46,8 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     private static final String TAG_RECIPE = "active_recipe";
     private static final String TAG_ANVILLED = "botaniapp_bouganvilled";
 
+    public boolean soundCanceled = false;
+
     @Nullable
     private RecipeBouganvillea activeRecipe = null;
 

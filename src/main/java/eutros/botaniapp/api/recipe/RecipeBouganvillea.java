@@ -38,7 +38,7 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
 
     @Override
     public boolean matches(IBouganvilleaInventory inventory, @NotNull World world) {
-        return inventory.getHead().map(t -> header.test(t.getItem())).get();
+        return header.test(inventory.getHead().getItem());
     }
 
     @Override

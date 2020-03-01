@@ -3,6 +3,7 @@ package eutros.botaniapp.client.integration.jei;
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
 import eutros.botaniapp.common.block.flower.BotaniaPPFlowers;
 import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaAnvil;
+import eutros.botaniapp.common.utils.MathUtils;
 import eutros.botaniapp.common.utils.Reference;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
@@ -119,23 +120,17 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
 
         double angleBetweenEach = Math.max(30.0, 180.0 / inputs.size());
         Point point = new Point(center);
-        point.translate(0, -20);
-        point = rotatePointAbout(point, center, -angleBetweenEach*(inputs.size()-1)/2);
+        point.translate(0, -background.getHeight()/3);
+        point = MathUtils.rotatePointAbout(point, center, -angleBetweenEach*(inputs.size()-1)/2);
 
         for(int i = 0; i < inputs.size(); i++) {
             stacks.init(i+2, true, point.x, point.y);
             stacks.set(i+2, inputs.get(i));
-            point = rotatePointAbout(point, center, angleBetweenEach);
+            point = MathUtils.rotatePointAbout(point, center, angleBetweenEach);
         }
 
-        stacks.init(1, false, background.getWidth()/2-8, background.getHeight()/2+8);
+        stacks.init(1, false, center.x, center.y+background.getHeight()/3);
         stacks.set(1, ingredients.getOutputs(VanillaTypes.ITEM).stream().map(i -> i.get(0)).collect(Collectors.toList()));
     }
 
-    private Point rotatePointAbout(Point in, Point about, double degrees) {
-        double rad = degrees * Math.PI / 180.0;
-        double newX = Math.cos(rad) * (in.x - about.x) - Math.sin(rad) * (in.y - about.y) + about.x;
-        double newY = Math.sin(rad) * (in.x - about.x) + Math.cos(rad) * (in.y - about.y) + about.y;
-        return new Point((int) newX, (int) newY);
-    }
 }
