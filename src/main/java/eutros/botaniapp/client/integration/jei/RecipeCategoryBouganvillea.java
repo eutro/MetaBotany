@@ -83,10 +83,16 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
                 for (Object rcp : recipes) {
                     category.setIngredients(rcp, ingredients);
                     List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
-                    for (int i = 0; i < 2; i++) {
-                        inputStash.get(i).addAll(inputs.get(i));
+
+                    for(int i = 0; i < 2; i++) {
+                        for(int j = 0; j < inputs.get(1 - i).size(); j++) {
+                            inputStash.get(i).addAll(inputs.get(i));
+                        }
                     }
-                    outputStash.addAll(ingredients.getOutputs(VanillaTypes.ITEM).get(0));
+
+                    for(int i = 0; i < inputs.get(0).size() * inputs.get(1).size(); i++) {
+                        outputStash.addAll(ingredients.getOutputs(VanillaTypes.ITEM).get(0));
+                    }
                     ingredients.setInputs(VanillaTypes.ITEM, Collections.emptyList());
                     ingredients.setOutputs(VanillaTypes.ITEM, Collections.emptyList());
                 }
@@ -102,7 +108,7 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
 
         } else {
             ingredients.setInputIngredients(recipe.getIngredients());
-            ingredients.setOutputs(VanillaTypes.ITEM, recipe.getDynamicOutput(ingredients.getInputs(VanillaTypes.ITEM)));
+            ingredients.setOutputLists(VanillaTypes.ITEM, Collections.singletonList(recipe.getDynamicOutput(ingredients.getInputs(VanillaTypes.ITEM))));
         }
     }
 
