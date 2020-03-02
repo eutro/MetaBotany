@@ -5,16 +5,19 @@ import eutros.botaniapp.api.recipe.IBouganvilleaInventory;
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
 import eutros.botaniapp.common.block.flower.functional.SubtileBouganvillea;
 import eutros.botaniapp.common.utils.BotaniaPPFakePlayer;
+import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -26,15 +29,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import vazkii.botania.api.subtile.TileEntityFunctionalFlower;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
 
-    private IRecipeSerializer<RecipeBouganvilleaRename> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaRename::new);
+    public static IRecipeSerializer<RecipeBouganvilleaAnvil> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaAnvil::new);
 
     public RecipeBouganvilleaAnvil(ResourceLocation id) {
-        super(id, null, Ingredient.fromItems(Blocks.ANVIL), SubtileBouganvillea.FALLBACK_GROUP);
+        super(id, ItemStack.EMPTY, SubtileBouganvillea.BUILTIN_GROUP);
     }
 
     @Override
@@ -42,9 +47,10 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
         return inventory.getSizeInventory() > 1;
     }
 
+    @ParametersAreNonnullByDefault
     @Override
-    public boolean checkHead(ItemEntity entity) {
-        Item item = entity.getItem().getItem();
+    public boolean matches(IBouganvilleaInventory inventory, World world) {
+        Item item = inventory.getTrigger().getItem().getItem();
         if(!(item instanceof BlockItem))
             return false;
         Block block = ((BlockItem) item).getBlock();
@@ -202,7 +208,9 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
         TileEntityFunctionalFlower flower = inventory.getFlower();
         World world = flower.getWorld();
         assert world != null;
-        float breakChance = ForgeHooks.onAnvilRepair(new BotaniaPPFakePlayer((ServerWorld) world),
+        PlayerEntity player = Optional.ofNullable(inventory.getTrigger().getThrowerId()).map(world::getPlayerByUuid)
+                .orElseGet(() -> new BotaniaPPFakePlayer((ServerWorld) world));
+        float breakChance = ForgeHooks.onAnvilRepair(player,
                 result,
                 inventory.getStackInSlot(0),
                 inventory.getTrigger().getItem());
@@ -240,7 +248,13 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
     @NotNull
     @Override
     public NonNullList<Ingredient> getIngredients() {
-        return NonNullList.from(Ingredient.EMPTY, Ingredient.EMPTY);
+        NonNullList<Ingredient> ingredients = NonNullList.create();
+        Tag<Item> tag = ItemTags.getCollection().get(new ResourceLocation(Reference.MOD_ID, "boug_anvils"));
+        if(tag != null)
+            ingredients.add(Ingredient.fromTag(tag));
+        else
+            ingredients.add(Ingredient.EMPTY);
+        return ingredients;
     }
 
     @NotNull

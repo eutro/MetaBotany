@@ -1,7 +1,7 @@
 package eutros.botaniapp.client.integration.jei;
 
 import eutros.botaniapp.common.block.flower.BotaniaPPFlowers;
-import eutros.botaniapp.common.block.flower.functional.SubtileBouganvillea;
+import eutros.botaniapp.common.crafting.BotaniaPPRecipeTypes;
 import eutros.botaniapp.common.utils.Reference;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -35,7 +35,7 @@ public class JEIBotaniaPPPlugin implements IModPlugin { // Ample 'P's here
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        registration.addRecipes(SubtileBouganvillea.fallbackRecipes.values(), RecipeCategoryBouganvillea.LOCATION);
+        registration.addRecipes(BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.getRecipes(), RecipeCategoryBouganvillea.LOCATION);
     }
 
     @Override

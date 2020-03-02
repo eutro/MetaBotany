@@ -6,14 +6,9 @@
 package eutros.botaniapp.common.item;
 
 import eutros.botaniapp.common.core.BotaniappCreativeTab;
-import eutros.botaniapp.common.crafting.recipe.RecipeBlackHoleTalismanInsert;
-import eutros.botaniapp.common.crafting.recipe.RecipeLensBinding;
-import eutros.botaniapp.common.crafting.recipe.RecipeLensUnbinding;
-import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaDefault;
 import eutros.botaniapp.common.item.lens.BindingLens;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.item.Item;
-import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -61,16 +56,6 @@ public class BotaniaPPItems {
         BOTANIA_RED_STRING = r.getValue(new ResourceLocation(b, "red_string"));
         BOTANIA_MANA_STRING = r.getValue(new ResourceLocation(b, "mana_string"));
         BOTANIA_SPARK = r.getValue(new ResourceLocation(b, "spark"));
-    }
-
-    @SubscribeEvent
-    public static void registerRecipeSerializers(RegistryEvent.Register<IRecipeSerializer<?>> event) {
-        IForgeRegistry<IRecipeSerializer<?>> r = event.getRegistry();
-
-        register(r, RecipeLensBinding.SERIALIZER, "lens_binding");
-        register(r, RecipeLensUnbinding.SERIALIZER, "lens_unbinding");
-        register(r, RecipeBlackHoleTalismanInsert.SERIALIZER, "black_hole_talisman_insert");
-        register(r, RecipeBouganvilleaDefault.SERIALIZER, "bouganvillea_default");
     }
 
     public static <V extends IForgeRegistryEntry<V>> void register(IForgeRegistry<V> reg, IForgeRegistryEntry<V> thing, ResourceLocation name) {

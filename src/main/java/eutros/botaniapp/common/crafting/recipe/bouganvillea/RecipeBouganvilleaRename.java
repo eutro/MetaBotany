@@ -14,23 +14,24 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponent;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class RecipeBouganvilleaRename extends RecipeBouganvillea {
 
-    private IRecipeSerializer<RecipeBouganvilleaRename> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaRename::new);
+    public static IRecipeSerializer<RecipeBouganvilleaRename> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaRename::new);
 
     private static final ItemStack manaString = new ItemStack(BotaniaPPItems.BOTANIA_MANA_STRING);
 
     public RecipeBouganvilleaRename(ResourceLocation location) {
         super(location,
                 manaString.copy().setDisplayName(new StringTextComponent("What is your name?")),
-                null,
-                SubtileBouganvillea.FALLBACK_GROUP);
+                SubtileBouganvillea.BUILTIN_GROUP);
     }
 
     @Override
@@ -39,9 +40,10 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
         return stack.getCount() != 1 || stack.getItem() != BotaniaPPItems.BOTANIA_MANA_STRING;
     }
 
+    @ParametersAreNonnullByDefault
     @Override
-    public boolean checkHead(ItemEntity entity) {
-        return entity.getItem().getItem() == BotaniaPPItems.BOTANIA_MANA_STRING;
+    public boolean matches(IBouganvilleaInventory inventory, World world) {
+        return inventory.getTrigger().getItem().getItem() == BotaniaPPItems.BOTANIA_MANA_STRING;
     }
 
     @NotNull

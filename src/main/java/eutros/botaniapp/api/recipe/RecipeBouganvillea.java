@@ -2,11 +2,9 @@ package eutros.botaniapp.api.recipe;
 
 import eutros.botaniapp.common.crafting.BotaniaPPRecipeTypes;
 import eutros.botaniapp.common.utils.MathUtils;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -24,26 +22,47 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
 
     private final ResourceLocation id;
     private final ItemStack output;
-    private final Ingredient header;
     private final String group;
 
-    public RecipeBouganvillea(ResourceLocation id, ItemStack output, Ingredient header, @Nullable String group) {
+    public RecipeBouganvillea(ResourceLocation id, ItemStack output, @Nullable String group) {
         this.id = id;
         this.output = output;
-        this.header = header;
         this.group = group == null ? "" : group;
     }
 
+    /**
+     * Get whether the recipe should finish crafting.
+     * If this returns true, {@link RecipeBouganvillea#getRecipeOutput()} will be run, where the recipe can be carried out.
+     *
+     * @param inventory The inventory the Bouganvillea currently has.
+     * @return true if the recipe should be cancelled or finished, false if the recipe should go on.
+     */
     abstract public boolean shouldTrigger(IBouganvilleaInventory inventory);
 
+    /**
+     * Gets whether the recipe should be initialized. Only {@link IBouganvilleaInventory#getTrigger()} will be set,
+     * which should be used to check for validity.
+     *
+     * @param inventory The inventory the Bouganvillea currently has.
+     * @param world The current world.
+     * @return Whether this recipe should be initialized with the given inventory. This is not where you should check
+     * if the recipe should actually craft, as the inventory is not completely filled.
+     */
     @Override
-    public boolean matches(IBouganvilleaInventory inventory, @NotNull World world) {
-        return header.test(inventory.getHead().getItem());
-    }
+    public abstract boolean matches(@NotNull IBouganvilleaInventory inventory, @NotNull World world);
 
     @Override
-    public boolean canFit(int w, int h) {
+    public final boolean canFit(int w, int h) {
         return false;
+    }
+
+    /**
+     * Used to define what order recipes should be resolved in.
+     *
+     * @return The priority of this recipe. Higher values take precedence.
+     */
+    public int getPriority() {
+        return 0;
     }
 
     @NotNull
@@ -67,14 +86,12 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
     @NotNull
     @Override
     public IRecipeType<?> getType() {
-        return BotaniaPPRecipeTypes.BOUGANVILLEA;
+        return BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.type;
     }
 
     public ItemStack getStacksResult(List<ItemStack> stacks) {
         return output;
     }
-
-    public abstract boolean checkHead(ItemEntity entity);
 
     public List<ItemStack> getDynamicOutput(List<List<ItemStack>> ingredients) {
         if(!isDynamic())

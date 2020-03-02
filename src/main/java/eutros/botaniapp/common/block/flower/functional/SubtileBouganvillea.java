@@ -4,8 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.api.recipe.IBouganvilleaInventory;
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
 import eutros.botaniapp.common.crafting.BotaniaPPRecipeTypes;
-import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaAnvil;
-import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaRename;
 import eutros.botaniapp.common.utils.MathUtils;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.BlockState;
@@ -32,6 +30,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ObjectHolder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.subtile.RadiusDescriptor;
@@ -40,10 +39,12 @@ import vazkii.botania.common.network.PacketBotaniaEffect;
 import vazkii.botania.common.network.PacketHandler;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 // TODO consume mana
@@ -65,14 +66,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
     private ItemAndPos head = new ItemAndPos(ItemStack.EMPTY, new Vec3d(0, 0, 0));
 
-    public static final String FALLBACK_GROUP = "botaniapp:bouganvillea_fallback";
-
-    public static Map<ResourceLocation, RecipeBouganvillea> fallbackRecipes = new HashMap<ResourceLocation, RecipeBouganvillea>() {{
-        ResourceLocation RENAME = new ResourceLocation(Reference.MOD_ID, "bouganvillea_rename");
-        ResourceLocation ANVIL = new ResourceLocation(Reference.MOD_ID, "bouganvillea_anvil");
-        put(RENAME, new RecipeBouganvilleaRename(RENAME));
-        put(ANVIL, new RecipeBouganvilleaAnvil(ANVIL));
-        }};
+    public static final String BUILTIN_GROUP = "botaniapp:bouganvillea_builtin";
 
     private List<ItemAndPos> memory = new ArrayList<>();
 
@@ -118,31 +112,19 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
             IBouganvilleaInventory inventory = getInventory(e);
 
             if(activeRecipe == null) {
-                List<IRecipe<IBouganvilleaInventory>> possibleRecipes = world.getRecipeManager().getRecipes(BotaniaPPRecipeTypes.BOUGANVILLEA, inventory, world);
+                List<RecipeBouganvillea> possibleRecipes = world.getRecipeManager().getRecipes(BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.type, inventory, world);
 
-                for(IRecipe<IBouganvilleaInventory> provisionalRecipe : possibleRecipes) {
-                    if(!(provisionalRecipe instanceof RecipeBouganvillea))
-                        continue;
+                activeRecipe = possibleRecipes.stream()
+                        .reduce(BinaryOperator.maxBy(Comparator.comparingInt(RecipeBouganvillea::getPriority)))
+                        .orElse(null);
 
-                    RecipeBouganvillea recipe = (RecipeBouganvillea) provisionalRecipe;
-
-                    if(recipe.checkHead(e)) {
-                        setRecipe(e, recipe);
-                        return;
-                    }
+                if(activeRecipe != null) {
+                    setRecipe(e, activeRecipe);
+                    return;
                 }
 
-                for(RecipeBouganvillea recipe : fallbackRecipes.values()) {
-                    if(recipe.checkHead(e)) {
-                        setRecipe(e, recipe);
-                        return;
-                    }
-                }
-
-                if(activeRecipe == null) {
-                    e.addTag(TAG_ANVILLED); // So the Bouganvillea doesn't go through all recipes each tick.
-                    continue;
-                }
+                e.addTag(TAG_ANVILLED); // So the Bouganvillea doesn't go through all recipes each tick.
+                continue;
             }
 
             if(!activeRecipe.shouldTrigger(inventory)) {
@@ -245,12 +227,9 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         if(recipeId.equals("")) {
             activeRecipe = null;
         } else {
-            // TODO fix with fallbacks
             IRecipe<?> recipeCandidate;
             ResourceLocation recipeLoc = new ResourceLocation(recipeId);
             recipeCandidate = world.getRecipeManager().getRecipe(recipeLoc).orElse(null);
-            if(recipeCandidate == null)
-                recipeCandidate = fallbackRecipes.getOrDefault(recipeLoc, null);
             activeRecipe = recipeCandidate instanceof RecipeBouganvillea ? (RecipeBouganvillea) recipeCandidate : null;
         }
     }

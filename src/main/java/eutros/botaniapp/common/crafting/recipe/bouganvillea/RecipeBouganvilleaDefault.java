@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import eutros.botaniapp.api.recipe.IBouganvilleaInventory;
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
 import eutros.botaniapp.common.utils.serialization.RecipeDeserialization;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
@@ -12,11 +11,13 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class RecipeBouganvilleaDefault extends RecipeBouganvillea {
 
@@ -25,7 +26,7 @@ public class RecipeBouganvilleaDefault extends RecipeBouganvillea {
     public NonNullList<Ingredient> ingredients;
 
     public RecipeBouganvilleaDefault(ResourceLocation id, ItemStack output, NonNullList<Ingredient> ingredients, @Nullable String group) {
-        super(id, output, ingredients.get(0), group);
+        super(id, output, group);
         this.ingredients = ingredients;
     }
 
@@ -41,9 +42,10 @@ public class RecipeBouganvilleaDefault extends RecipeBouganvillea {
         return true;
     }
 
+    @ParametersAreNonnullByDefault
     @Override
-    public boolean checkHead(ItemEntity entity) {
-        return ingredients.get(0).test(entity.getItem());
+    public boolean matches(IBouganvilleaInventory inventory, World world) {
+        return ingredients.get(0).test(inventory.getTrigger().getItem());
     }
 
     @NotNull

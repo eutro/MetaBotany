@@ -14,10 +14,8 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganvillea> {
 
@@ -93,14 +90,16 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
                     ingredients.setInputs(VanillaTypes.ITEM, Collections.emptyList());
                     ingredients.setOutputs(VanillaTypes.ITEM, Collections.emptyList());
                 }
+                int maxLen = Math.min(outputStash.size(), Math.min(inputStash.get(0).size(), inputStash.get(1).size()));
+
                 ingredients.setInputLists(VanillaTypes.ITEM, Arrays.asList(
-                        Arrays.asList(Ingredient.fromItems(Blocks.ANVIL, Blocks.CHIPPED_ANVIL, Blocks.DAMAGED_ANVIL).getMatchingStacks()),
-                        inputStash.get(0),
-                        inputStash.get(1)
+                        Arrays.asList(recipe.getIngredients().get(0).getMatchingStacks()),
+                        inputStash.get(0).subList(0, maxLen),
+                        inputStash.get(1).subList(0, maxLen)
                 ));
+                ingredients.setOutputLists(VanillaTypes.ITEM, Collections.singletonList(outputStash.subList(0, maxLen)));
             }
 
-            ingredients.setOutputs(VanillaTypes.ITEM, outputStash);
         } else {
             ingredients.setInputIngredients(recipe.getIngredients());
             ingredients.setOutputs(VanillaTypes.ITEM, recipe.getDynamicOutput(ingredients.getInputs(VanillaTypes.ITEM)));
@@ -130,7 +129,7 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
         }
 
         stacks.init(1, false, center.x, center.y+background.getHeight()/3);
-        stacks.set(1, ingredients.getOutputs(VanillaTypes.ITEM).stream().map(i -> i.get(0)).collect(Collectors.toList()));
+        stacks.set(1, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
     }
 
 }

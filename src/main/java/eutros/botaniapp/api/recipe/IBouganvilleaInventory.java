@@ -2,6 +2,8 @@ package eutros.botaniapp.api.recipe;
 
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import vazkii.botania.api.subtile.TileEntityFunctionalFlower;
 
 import javax.annotation.Nonnull;
@@ -21,14 +23,14 @@ public interface IBouganvilleaInventory extends IInventory {
 
     /**
      * Gets the head of the Bouganvillea recipe, i.e. the first item it received.
+     * Will be the entity of {@link ItemStack#EMPTY} if received in {@link RecipeBouganvillea#matches(IBouganvilleaInventory, World)}
      *
      * @return The head of the Bouganvillea recipe.
      */
     ItemEntity getHead();
 
     /**
-     * Gets the item that has just been thrown. This is the item that triggered the craft, if it is currently taking place.
-     * If the craft is underway, this returned true for {@link RecipeBouganvillea#shouldTrigger(IBouganvilleaInventory)}.
+     * Gets the item that has just been thrown.
      *
      * @return The trigger of the Bouganvillea recipe.
      */
@@ -38,10 +40,10 @@ public interface IBouganvilleaInventory extends IInventory {
     /**
      * Gets all the entities in the Bouganvillea's memory, including the head.
      *
-     * @return All entities, including the head, if it is present.
+     * @return All entities, including the head.
      */
     default List<ItemEntity> allEntities() {
-        ArrayList<ItemEntity> entities = new ArrayList<>();
+        List<ItemEntity> entities = new ArrayList<>();
         entities.add(getHead());
         entities.addAll(getEntities());
         return entities;
