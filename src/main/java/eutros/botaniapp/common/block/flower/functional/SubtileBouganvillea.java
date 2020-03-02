@@ -17,6 +17,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.DoubleNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -30,9 +31,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ObjectHolder;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
-import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.subtile.RadiusDescriptor;
 import vazkii.botania.api.subtile.TileEntityFunctionalFlower;
 import vazkii.botania.common.network.PacketBotaniaEffect;
@@ -40,11 +39,9 @@ import vazkii.botania.common.network.PacketHandler;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.awt.geom.Point2D;
 import java.util.List;
-import java.util.function.BinaryOperator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // TODO consume mana
@@ -54,17 +51,13 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.FlowerNames.BOUGANVILLEA)
     public static TileEntityType<SubtileBouganvillea> TYPE;
 
-    private static final String TAG_HEAD = "head_item";
     private static final String TAG_MEMORY = "item_memory";
     private static final String TAG_RECIPE = "active_recipe";
     private static final String TAG_ANVILLED = "botaniapp_bouganvilled";
 
     public boolean soundCanceled = false;
 
-    @Nullable
-    private RecipeBouganvillea activeRecipe = null;
-
-    private ItemAndPos head = new ItemAndPos(ItemStack.EMPTY, new Vec3d(0, 0, 0));
+    private List<RecipeBouganvillea> activeRecipes = Collections.emptyList();
 
     public static final String BUILTIN_GROUP = "botaniapp:bouganvillea_builtin";
 
@@ -111,43 +104,42 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
             IBouganvilleaInventory inventory = getInventory(e);
 
-            if(activeRecipe == null) {
-                List<RecipeBouganvillea> possibleRecipes = world.getRecipeManager().getRecipes(BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.type, inventory, world);
+            if(activeRecipes.isEmpty())
+                activeRecipes = world.getRecipeManager().getRecipes(BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.type, inventory, world);
+            else
+                activeRecipes = activeRecipes.stream().filter(i -> i.matches(inventory, world)).collect(Collectors.toList());
 
-                activeRecipe = possibleRecipes.stream()
-                        .reduce(BinaryOperator.maxBy(Comparator.comparingInt(RecipeBouganvillea::getPriority)))
-                        .orElse(null);
-
-                if(activeRecipe != null) {
-                    setRecipe(e, activeRecipe);
-                    return;
-                }
-
+            if(!activeRecipes.isEmpty()) {
+                setRecipe(e);
+            } else {
                 e.addTag(TAG_ANVILLED); // So the Bouganvillea doesn't go through all recipes each tick.
                 continue;
             }
 
-            if(!activeRecipe.shouldTrigger(inventory)) {
-                memory.add(new ItemAndPos(e));
-                consumeItem(e);
-            } else {
-                doRecipe(e);
+            for(RecipeBouganvillea recipe : activeRecipes) {
+                if (recipe.shouldTrigger(inventory)) {
+                    doRecipe(e, recipe);
+                    return;
+                }
             }
+            memory.add(new ItemAndPos(e));
+            consumeItem(e);
             break;
         }
     }
 
-    private void setRecipe(ItemEntity e, RecipeBouganvillea recipe) {
+    private void setRecipe(ItemEntity e) {
         assert world != null;
 
-        head = new ItemAndPos(e);
-        activeRecipe = recipe;
-        consumeItem(e);
         world.playSound(null, getEffectivePos(), SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 0.5F, 2F);
 
         BlockPos efPos = getEffectivePos();
         List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(efPos.add(-1, -1, -1), efPos.add(2, 2, 2)));
-        items.forEach(i -> i.removeTag(TAG_ANVILLED));
+        items.forEach(i -> {
+            if(i != e) {
+                i.removeTag(TAG_ANVILLED);
+            }
+        });
     }
 
     public void consumeItem(ItemEntity e) {
@@ -156,7 +148,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         spawnParticles(e, getEffectivePos(), 1);
         addMana(-20);
         markDirty();
-        VanillaPacketDispatcher.dispatchTEToNearbyPlayers(this);
+        sync();
     }
 
     @Nonnull
@@ -164,11 +156,9 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         return new BouganvilleaInventory(entity);
     }
 
-    private void doRecipe(ItemEntity e) {
-        if(activeRecipe == null)
-            return;
+    private void doRecipe(ItemEntity e, RecipeBouganvillea recipe) {
 
-        ItemStack stack = activeRecipe.getCraftingResult(getInventory(e));
+        ItemStack stack = recipe.getCraftingResult(getInventory(e));
 
         e.setItem(stack);
 
@@ -180,7 +170,8 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
         assert world != null;
         dropAll();
-        activeRecipe = null;
+        markDirty();
+        sync();
 
         if(!soundCanceled)
             world.playSound(null, efPos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 0.5f, 1f);
@@ -191,9 +182,6 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     private void dropAll() {
         assert world != null;
 
-        memory.add(head);
-        head = new ItemAndPos(ItemStack.EMPTY, new Vec3d(0, 0, 0));
-
         for(ItemAndPos iap : memory) {
             ItemEntity iapEntity = iap.getEntity(world);
             iapEntity.addTag(TAG_ANVILLED);
@@ -202,8 +190,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         }
 
         memory.clear();
-        markDirty();
-        VanillaPacketDispatcher.dispatchTEToNearbyPlayers(this);
+        activeRecipes = Collections.emptyList();
     }
 
     private void spawnParticles(ItemEntity e, BlockPos efPos, int p) {
@@ -221,16 +208,21 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         assert world != null;
 
         memory = cmp.getList(TAG_MEMORY, 10).stream().map(s -> ItemAndPos.fromNBT((CompoundNBT) s)).collect(Collectors.toList());
-        head = ItemAndPos.fromNBT(cmp.getCompound(TAG_HEAD));
-        String recipeId = cmp.getString(TAG_RECIPE);
+        ListNBT recipes = cmp.getList(TAG_RECIPE, 8);
 
-        if(recipeId.equals("")) {
-            activeRecipe = null;
+        if(recipes.isEmpty()) {
+            activeRecipes = Collections.emptyList();
         } else {
-            IRecipe<?> recipeCandidate;
-            ResourceLocation recipeLoc = new ResourceLocation(recipeId);
-            recipeCandidate = world.getRecipeManager().getRecipe(recipeLoc).orElse(null);
-            activeRecipe = recipeCandidate instanceof RecipeBouganvillea ? (RecipeBouganvillea) recipeCandidate : null;
+            activeRecipes = new ArrayList<>();
+            for(int i = 0; i < recipes.size(); i++) {
+                String loc = recipes.getString(i);
+                IRecipe<?> recipeCandidate;
+                ResourceLocation recipeLoc = new ResourceLocation(loc);
+                recipeCandidate = world.getRecipeManager().getRecipe(recipeLoc).orElse(null);
+                if(recipeCandidate instanceof RecipeBouganvillea) {
+                    activeRecipes.add((RecipeBouganvillea) recipeCandidate);
+                }
+            }
         }
     }
 
@@ -241,8 +233,13 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         ListNBT list = new ListNBT();
         list.addAll(memory.stream().map(ItemAndPos::toNBT).collect(Collectors.toList()));
         cmp.put(TAG_MEMORY, list);
-        cmp.put(TAG_HEAD, head.toNBT());
-        cmp.putString(TAG_RECIPE, activeRecipe == null ? "" : activeRecipe.getId().toString());
+        ListNBT recipes = new ListNBT();
+
+        for(RecipeBouganvillea recipe : activeRecipes) {
+            recipes.add(StringNBT.of(recipe.getId().toString()));
+        }
+
+        cmp.put(TAG_RECIPE, recipes);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -250,7 +247,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     public void renderHUD(Minecraft mc) {
         super.renderHUD(mc);
 
-        if(!head.stack.isEmpty()) {
+        if(!memory.isEmpty()) {
             final float sf = 0.8F;
 
             RenderSystem.enableBlend();
@@ -258,24 +255,25 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
             RenderHelper.enable();
             ItemRenderer itemRenderer = mc.getItemRenderer();
 
-            double angleBetweenEach = Math.max(30.0, 180.0 / (memory.size()+1));
+            double angleBetweenEach = Math.min(60.0, memory.size() > 1 ? 180.0 / (memory.size()-1) : 0);
             Point center = new Point(mc.getWindow().getScaledWidth()/2, mc.getWindow().getScaledHeight()/2);
-            Point point = new Point(center);
-            point.translate(0, -30);
-            point = MathUtils.rotatePointAbout(point, center, -angleBetweenEach*(memory.size())/2);
+            Point2D point = new Point2D.Double(center.getX(), center.getY()-40);
+            point = MathUtils.rotatePointAbout(point, center, -angleBetweenEach*(memory.size()-1)/2);
 
             assert mc.player != null;
-            for(int i = 0; i < memory.size() + 1; i++) {
-                ItemStack stack = (i == 0 ? head : memory.get(i - 1)).stack;
-                itemRenderer.renderItemAndEffectIntoGUI(stack, point.x-8, point.y);
-                if(mc.player.isSneaking()) {
+            for (ItemAndPos itemAndPos : memory) {
+                ItemStack stack = itemAndPos.stack;
+                itemRenderer.renderItemAndEffectIntoGUI(stack, (int) Math.round(point.getX()-8), (int) Math.round(point.getY()-8));
+
+                if (mc.player.isSneaking()) {
                     String formattedText = stack.getDisplayName().getFormattedText();
                     RenderSystem.scalef(sf, sf, sf);
                     // TODO do something about names overlapping and stuff
                     int width = mc.fontRenderer.getStringWidth(formattedText);
-                    mc.fontRenderer.drawStringWithShadow(formattedText, (point.x)/sf-width/2F, (point.y/sf)-10, 0xFFFFFF);
-                    RenderSystem.scalef(1/sf, 1/sf, 1/sf);
+                    mc.fontRenderer.drawStringWithShadow(formattedText, (float) (point.getX()) / sf - width / 2F, (float) (point.getY() / sf) - 18, 0xFFFFFF);
+                    RenderSystem.scalef(1 / sf, 1 / sf, 1 / sf);
                 }
+
                 point = MathUtils.rotatePointAbout(point, center, angleBetweenEach);
             }
 
@@ -287,6 +285,8 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
     @Override
     public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if(world.isRemote())
+            return;
         dropAll();
         super.onBlockHarvested(world, pos, state, player);
     }
@@ -356,19 +356,15 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         }
 
         @Override
-        public List<ItemEntity> getEntities() {
-            return memory.stream().map(iap -> iap.getEntity(world)).collect(Collectors.toList());
-        }
-
-        @Override
-        public ItemEntity getHead() {
-            return head.getEntity(world);
-        }
-
-        @Nonnull
-        @Override
-        public ItemEntity getTrigger() {
+        public ItemEntity getThrown() {
             return trigger;
+        }
+
+        @Override
+        public List<ItemEntity> allEntities() {
+            List<ItemEntity> entities = memory.stream().map(iap -> iap.getEntity(world)).collect(Collectors.toList());
+            entities.add(trigger);
+            return entities;
         }
 
         @Override
@@ -394,7 +390,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         @NotNull
         @Override
         public ItemStack getStackInSlot(int index) {
-            return index == 0 ? head.stack : memory.get(index-1).stack;
+            return (index < memory.size() ? memory.get(index).stack : trigger.getItem());
         }
 
         @NotNull
@@ -407,22 +403,19 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         @Override
         public ItemStack removeStackFromSlot(int index) {
             ItemStack stack = getStackInSlot(index);
-            if(index == 0) {
-                head = new ItemAndPos(ItemStack.EMPTY, new Vec3d(0, 0, 0));
-            }
-            else {
-                memory.remove(index-1);
-            }
+            if(index < memory.size())
+                memory.remove(index);
+            else
+                trigger.setItem(ItemStack.EMPTY);
             return stack;
         }
 
         @Override
         public void setInventorySlotContents(int index, @NotNull ItemStack stack) {
-            if(index == 0)
-                head = new ItemAndPos(stack, head.pos);
-            else {
-                memory.set(index-1, memory.get(index - 1).withStack(stack));
-            }
+            if(index < memory.size())
+                memory.set(index, memory.get(index).withStack(stack));
+            else
+                trigger.setItem(stack);
         }
 
         @Override
@@ -437,7 +430,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
         @Override
         public void clear() {
-            dropAll();
+            memory.clear();
         }
     }
 }

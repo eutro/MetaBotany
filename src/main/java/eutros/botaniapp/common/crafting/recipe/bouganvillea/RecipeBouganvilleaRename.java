@@ -4,7 +4,6 @@ import eutros.botaniapp.api.recipe.IBouganvilleaInventory;
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
 import eutros.botaniapp.common.block.flower.functional.SubtileBouganvillea;
 import eutros.botaniapp.common.item.BotaniaPPItems;
-import eutros.botaniapp.common.utils.MathUtils;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -19,8 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class RecipeBouganvilleaRename extends RecipeBouganvillea {
 
@@ -36,28 +33,29 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
 
     @Override
     public boolean shouldTrigger(IBouganvilleaInventory inv) {
-        ItemStack stack = inv.getTrigger().getItem();
+        ItemStack stack = inv.getThrown().getItem();
         return stack.getCount() != 1 || stack.getItem() != BotaniaPPItems.BOTANIA_MANA_STRING;
     }
 
     @ParametersAreNonnullByDefault
     @Override
     public boolean matches(IBouganvilleaInventory inventory, World world) {
-        return inventory.getTrigger().getItem().getItem() == BotaniaPPItems.BOTANIA_MANA_STRING;
+        return inventory.getThrown().getItem().getItem() == BotaniaPPItems.BOTANIA_MANA_STRING;
     }
 
     @NotNull
     @Override
     public ItemStack getCraftingResult(IBouganvilleaInventory inventory) {
+        // TODO these seem a bit dodgy
         TextComponent tc = new StringTextComponent("");
-        for(ItemEntity entity : inventory.allEntities()) {
+        for(ItemEntity entity : inventory.allEntities().subList(0, inventory.getSizeInventory()-1)) {
             tc.appendSibling(entity.getItem().getDisplayName());
         }
 
         if(!tc.equals(new StringTextComponent("")))
-            inventory.getTrigger().getItem().setDisplayName(tc);
+            inventory.getThrown().getItem().setDisplayName(tc);
 
-        return inventory.getTrigger().getItem();
+        return inventory.getThrown().getItem();
     }
 
     public ItemStack getStacksResult(List<ItemStack> stacks) {
@@ -101,16 +99,7 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     }
 
     @Override
-    public List<ItemStack> getDynamicOutput(List<List<ItemStack>> ingredients) {
-        // lovely
-        return IntStream.range(0, ingredients.stream().map(List::size)
-                                                      .reduce(1, MathUtils::lcm)) // Create a stream 0 to the LCM of all list lengths.
-                    .boxed().map(i -> //                          Then, from 0 to that LCM,
-                        getStacksResult(ingredients.stream() // get the ItemStack returned
-                                .map(s -> s.get(i % s.size())) // for all the combinations that will be shown.
-
-                                .collect(Collectors.toList())) // This collects the set of ingredients for a single craft.
-                )
-                .collect(Collectors.toList()); // This collects all the results.
+    public boolean isDynamic() {
+        return true;
     }
 }

@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -123,13 +124,12 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
 
         List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
 
-        double angleBetweenEach = Math.max(30.0, 180.0 / inputs.size());
-        Point point = new Point(center);
-        point.translate(0, -background.getHeight()/3);
+        double angleBetweenEach = Math.min(60.0, inputs.size() > 1 ? 180.0 / (inputs.size()-1) : 0);
+        Point2D point = new Point2D.Double(center.getX(), center.getY()-background.getHeight()/3.0);
         point = MathUtils.rotatePointAbout(point, center, -angleBetweenEach*(inputs.size()-1)/2);
 
         for(int i = 0; i < inputs.size(); i++) {
-            stacks.init(i+2, true, point.x, point.y);
+            stacks.init(i+2, true, (int) Math.round(point.getX()), (int) Math.round(point.getY()));
             stacks.set(i+2, inputs.get(i));
             point = MathUtils.rotatePointAbout(point, center, angleBetweenEach);
         }

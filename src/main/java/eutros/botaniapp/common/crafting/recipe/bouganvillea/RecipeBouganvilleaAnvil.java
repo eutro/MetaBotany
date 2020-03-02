@@ -44,23 +44,26 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
 
     @Override
     public boolean shouldTrigger(IBouganvilleaInventory inventory) {
-        return inventory.getSizeInventory() > 1;
+        return inventory.getSizeInventory() > 2;
     }
 
     @ParametersAreNonnullByDefault
     @Override
     public boolean matches(IBouganvilleaInventory inventory, World world) {
-        Item item = inventory.getTrigger().getItem().getItem();
-        if(!(item instanceof BlockItem))
-            return false;
-        Block block = ((BlockItem) item).getBlock();
-        return block instanceof IBouganvilleaAnvil || block instanceof AnvilBlock;
+        if(inventory.getSizeInventory() == 1) {
+            Item item = inventory.getThrown().getItem().getItem();
+            if (!(item instanceof BlockItem))
+                return false;
+            Block block = ((BlockItem) item).getBlock();
+            return block instanceof IBouganvilleaAnvil || block instanceof AnvilBlock;
+        }
+        return true;
     }
 
     @NotNull
     @Override
     public ItemStack getCraftingResult(IBouganvilleaInventory inventory) {
-        Supplier<ItemStack> defaultRet = () -> inventory.getTrigger().getItem();
+        Supplier<ItemStack> defaultRet = () -> inventory.getThrown().getItem();
 
         // start RepairContainer copypasta
 
@@ -68,7 +71,7 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
         int i = 0;
         int j;
         ItemStack result = itemstack.copy();
-        ItemStack combineWith = inventory.getTrigger().getItem();
+        ItemStack combineWith = inventory.getThrown().getItem();
         Map<Enchantment, Integer> enchantMap = EnchantmentHelper.getEnchantments(result);
         j = itemstack.getRepairCost() + (combineWith.isEmpty() ? 0 : combineWith.getRepairCost());
         int materialCost = 0;
@@ -208,12 +211,12 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
         TileEntityFunctionalFlower flower = inventory.getFlower();
         World world = flower.getWorld();
         assert world != null;
-        PlayerEntity player = Optional.ofNullable(inventory.getTrigger().getThrowerId()).map(world::getPlayerByUuid)
+        PlayerEntity player = Optional.ofNullable(inventory.getThrown().getThrowerId()).map(world::getPlayerByUuid)
                 .orElseGet(() -> new BotaniaPPFakePlayer((ServerWorld) world));
         float breakChance = ForgeHooks.onAnvilRepair(player,
                 result,
                 inventory.getStackInSlot(0),
-                inventory.getTrigger().getItem());
+                inventory.getThrown().getItem());
 
         if(flower.getWorld().getRandom().nextFloat() < breakChance) {
             Block anvilBlock = ((BlockItem) inventory.getStackInSlot(0).getItem()).getBlock();

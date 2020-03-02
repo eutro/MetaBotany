@@ -1,6 +1,6 @@
 package eutros.botaniapp.common.utils;
 
-import java.awt.*;
+import java.awt.geom.Point2D;
 
 public class MathUtils {
 
@@ -19,11 +19,11 @@ public class MathUtils {
         return (a * b) / gcf(a, b);
     }
 
-    public static Point rotatePointAbout(Point in, Point about, double degrees) {
+    public static Point2D rotatePointAbout(Point2D in, Point2D about, double degrees) {
         double rad = degrees * Math.PI / 180.0;
-        double newX = Math.cos(rad) * (in.x - about.x) - Math.sin(rad) * (in.y - about.y) + about.x;
-        double newY = Math.sin(rad) * (in.x - about.x) + Math.cos(rad) * (in.y - about.y) + about.y;
-        return new Point((int) newX, (int) newY);
+        double newX = Math.cos(rad) * (in.getX() - about.getX()) - Math.sin(rad) * (in.getY() - about.getY()) + about.getX();
+        double newY = Math.sin(rad) * (in.getX() - about.getX()) + Math.cos(rad) * (in.getY() - about.getY()) + about.getY();
+        return new Point2D.Double(newX, newY);
     }
 
     private MathUtils() {}

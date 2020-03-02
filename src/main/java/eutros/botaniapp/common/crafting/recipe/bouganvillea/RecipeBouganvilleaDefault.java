@@ -45,7 +45,7 @@ public class RecipeBouganvilleaDefault extends RecipeBouganvillea {
     @ParametersAreNonnullByDefault
     @Override
     public boolean matches(IBouganvilleaInventory inventory, World world) {
-        return ingredients.get(0).test(inventory.getTrigger().getItem());
+        return ingredients.get(0).test(inventory.getThrown().getItem());
     }
 
     @NotNull

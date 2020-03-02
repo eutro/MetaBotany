@@ -34,14 +34,19 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
      * Get whether the recipe should finish crafting.
      * If this returns true, {@link RecipeBouganvillea#getRecipeOutput()} will be run, where the recipe can be carried out.
      *
+     * {@link RecipeBouganvillea#matches(IBouganvilleaInventory, World)} has already been called, and returned true.
+     *
      * @param inventory The inventory the Bouganvillea currently has.
-     * @return true if the recipe should be cancelled or finished, false if the recipe should go on.
+     * @return true if the recipe is finished, false if the recipe should go on.
      */
     abstract public boolean shouldTrigger(IBouganvilleaInventory inventory);
 
     /**
-     * Gets whether the recipe should be initialized. Only {@link IBouganvilleaInventory#getTrigger()} will be set,
-     * which should be used to check for validity.
+     * Gets whether the recipe is still valid. This should probably only be checking the last entry of {@link IBouganvilleaInventory#allEntities()},
+     * as it returned true without it.
+     *
+     * This gets called each time a new item is given to the Bouganvillea, and should return true
+     * if a completed craft is possible from this inventory.
      *
      * @param inventory The inventory the Bouganvillea currently has.
      * @param world The current world.
@@ -51,18 +56,43 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
     @Override
     public abstract boolean matches(@NotNull IBouganvilleaInventory inventory, @NotNull World world);
 
-    @Override
-    public final boolean canFit(int w, int h) {
-        return false;
+    /**
+     * Gets the recipe result from a certain list of stacks. This is used for JEI.
+     * Doesn't need to be overriden unless {@link RecipeBouganvillea#isDynamic()} is true, which will trigger dynamic rendering in JEI.
+     *
+     * @param stacks The stacks this recipe received.
+     * @return A stack that the recipe would output.
+     */
+    public ItemStack getStacksResult(List<ItemStack> stacks) {
+        return output;
     }
 
     /**
-     * Used to define what order recipes should be resolved in.
+     * Gets the dynamic output of a recipe.
+     * By default, this uses {@link RecipeBouganvillea#getStacksResult(List)} to compute a full list of the outputs
+     * it would give, keeping in sync with all the ingredients.
      *
-     * @return The priority of this recipe. Higher values take precedence.
+     * @param ingredients A list of all the ingredients, where each ingredient is a list of the possible stacks.
+     * @return A list of all the outputs with these ingredients.
      */
-    public int getPriority() {
-        return 0;
+    public List<ItemStack> getDynamicOutput(List<List<ItemStack>> ingredients) {
+        if(!isDynamic())
+            return Collections.singletonList(getRecipeOutput());
+        // lovely
+        return IntStream.range(0, ingredients.stream().map(List::size)
+                .reduce(1, MathUtils::lcm)) // Create a stream 0 to the LCM of all list lengths.
+                .boxed().map(i -> //                          Then, from 0 to that LCM,
+                        getStacksResult(ingredients.stream() // get the ItemStack returned
+                                .map(s -> s.get(i % s.size())) // for all the combinations that will be shown.
+
+                                .collect(Collectors.toList())) // This collects the set of ingredients for a single craft.
+                )
+                .collect(Collectors.toList()); // This collects all the results.
+    }
+
+    @Override
+    public final boolean canFit(int w, int h) {
+        return false;
     }
 
     @NotNull
@@ -87,24 +117,5 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
     @Override
     public IRecipeType<?> getType() {
         return BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.type;
-    }
-
-    public ItemStack getStacksResult(List<ItemStack> stacks) {
-        return output;
-    }
-
-    public List<ItemStack> getDynamicOutput(List<List<ItemStack>> ingredients) {
-        if(!isDynamic())
-            return Collections.singletonList(getRecipeOutput());
-        // lovely
-        return IntStream.range(0, ingredients.stream().map(List::size)
-                .reduce(1, MathUtils::lcm)) // Create a stream 0 to the LCM of all list lengths.
-                .boxed().map(i -> //                          Then, from 0 to that LCM,
-                        getStacksResult(ingredients.stream() // get the ItemStack returned
-                                .map(s -> s.get(i % s.size())) // for all the combinations that will be shown.
-
-                                .collect(Collectors.toList())) // This collects the set of ingredients for a single craft.
-                )
-                .collect(Collectors.toList()); // This collects all the results.
     }
 }
