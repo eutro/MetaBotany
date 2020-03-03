@@ -235,24 +235,29 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
         return result;
     }
 
+    /**
+     * Damage an anvil.
+     * Currently resolves using the cursed tag abomination below.
+     * Can and will more than likely break in a coming update :^)
+     */
     @Nullable
     private ItemStack damage(ItemStack stack) {
         Item itemIn = stack.getItem();
-        if(itemIn instanceof IBouganvilleaAnvil) {
+        if(itemIn instanceof IBouganvilleaAnvil) { // API integration
             return ((IBouganvilleaAnvil) itemIn).damage(stack);
         }
-        Tag<Item> tag = ItemTags.getCollection().get(BOUG_ANVILS);
+        Tag<Item> tag = ItemTags.getCollection().get(BOUG_ANVILS); // Data integration
         if(tag != null) {
             Collection<Tag.ITagEntry<Item>> entries = tag.getEntries();
 
-            boolean flag = false;
             for (Tag.ITagEntry<Item> entry : entries) {
                 List<Item> items = new ArrayList<>();
-                getItemsSorted(items,entry);
+                getItemsSorted(items,entry); // Some magic happens that hopefully doesn't break.
+
+                boolean flag = false; // Just get the entry that follows.
                 for(Item item : items) {
-                    if(flag) {
+                    if(flag)
                         return new ItemStack(item);
-                    }
                     if(item == itemIn)
                         flag = true;
                 }
@@ -260,19 +265,16 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
                     return null;
             }
         }
-        return stack;
+        return null;
     }
 
     private void getItemsSorted(List<Item> list, Tag.ITagEntry<Item> entry) {
-        if(entry instanceof Tag.TagEntry) {
+        if(entry instanceof Tag.TagEntry) { // This is a tag in its own right. What we are expecting of top-level entries.
             Tag<Item> tag = ItemTags.getCollection().get(((Tag.TagEntry<Item>) entry).getSerializedId());
-            if(tag != null) {
-                tag.getEntries().forEach(i ->
-                        getItemsSorted(list, i)
-                );
-            }
+            if(tag != null) // We just got this tag from its entry's ID, it shouldn't ever be null, but just in case.
+                tag.getEntries().forEach(i -> getItemsSorted(list, i));
         } else if(entry instanceof Tag.ListEntry) {
-            list.addAll(((Tag.ListEntry<Item>) entry).getTaggedItems());
+            list.addAll(((Tag.ListEntry<Item>) entry).getTaggedItems()); // These seem to always be singleton lists.
         }
     }
 
