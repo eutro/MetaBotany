@@ -3,7 +3,8 @@ package eutros.botaniapp.api.recipe;
 import net.minecraft.item.ItemStack;
 
 /**
- * This supplements the botaniapp:boug_anvils tag. Implement this on your item for custom breaking behaviour.
+ * Implement this on your item for custom breaking behaviour. The items still need to be added to the {@code botaniapp:boug_anvils} tag,
+ * or they won't be recognised for the recipe.
  */
 public interface IBouganvilleaAnvil {
 
