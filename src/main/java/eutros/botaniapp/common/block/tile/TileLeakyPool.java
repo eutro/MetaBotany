@@ -209,7 +209,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         VoxelShape shape = state.getCollisionShape(world, pos.down());
 
         if(shape.isEmpty() || shape == VoxelShapes.fullCube())
-            return true;
+            return shape.isEmpty();
 
         List<AxisAlignedBB> boundingBoxes = shape.toBoundingBoxList();
 

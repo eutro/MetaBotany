@@ -26,7 +26,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ObjectHolder;
@@ -58,6 +57,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     public boolean soundCanceled = false;
 
     private List<RecipeBouganvillea> activeRecipes = Collections.emptyList();
+    private List<ResourceLocation> unresolvedRecipes = Collections.emptyList();
 
     public static final String BUILTIN_GROUP = "botaniapp:bouganvillea_builtin";
 
@@ -104,8 +104,19 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
             IBouganvilleaInventory inventory = getInventory(e);
 
-            if(activeRecipes.isEmpty())
-                activeRecipes = world.getRecipeManager().getRecipes(BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.type, inventory, world);
+            if(activeRecipes.isEmpty()) {
+                if (unresolvedRecipes.isEmpty()) {
+                    activeRecipes = world.getRecipeManager().getRecipes(BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.type, inventory, world);
+                } else {
+                    unresolvedRecipes.forEach(this::resolveRecipe);
+                    unresolvedRecipes = Collections.emptyList();
+                }
+                if(activeRecipes.isEmpty() && !memory.isEmpty()) {
+                    dropAll();
+                    markDirty();
+                    sync();
+                }
+            }
             else
                 activeRecipes = activeRecipes.stream().filter(i -> i.matches(inventory, world)).collect(Collectors.toList());
 
@@ -193,6 +204,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         activeRecipes = Collections.emptyList();
     }
 
+    // TODO don't use internals
     private void spawnParticles(ItemEntity e, BlockPos efPos, int p) {
         PacketHandler.sendToNearby(world, efPos, new PacketBotaniaEffect(PacketBotaniaEffect.EffectType.ITEM_SMOKE, e.getX(), e.getY(), e.getZ(), e.getEntityId(), p));
     }
@@ -205,7 +217,6 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     @Override
     public void readFromPacketNBT(CompoundNBT cmp) {
         super.readFromPacketNBT(cmp);
-        assert world != null;
 
         memory = cmp.getList(TAG_MEMORY, 10).stream().map(s -> ItemAndPos.fromNBT((CompoundNBT) s)).collect(Collectors.toList());
         ListNBT recipes = cmp.getList(TAG_RECIPE, 8);
@@ -214,15 +225,26 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
             activeRecipes = Collections.emptyList();
         } else {
             activeRecipes = new ArrayList<>();
+            unresolvedRecipes = new ArrayList<>();
             for(int i = 0; i < recipes.size(); i++) {
                 String loc = recipes.getString(i);
-                IRecipe<?> recipeCandidate;
                 ResourceLocation recipeLoc = new ResourceLocation(loc);
-                recipeCandidate = world.getRecipeManager().getRecipe(recipeLoc).orElse(null);
-                if(recipeCandidate instanceof RecipeBouganvillea) {
-                    activeRecipes.add((RecipeBouganvillea) recipeCandidate);
+                if(world != null) {
+                    resolveRecipe(recipeLoc);
+                } else {
+                    unresolvedRecipes.add(recipeLoc);
                 }
             }
+        }
+    }
+
+    private void resolveRecipe(ResourceLocation recipeLoc) {
+        assert world != null;
+
+        IRecipe<?> recipeCandidate;
+        recipeCandidate = world.getRecipeManager().getRecipe(recipeLoc).orElse(null);
+        if (recipeCandidate instanceof RecipeBouganvillea) {
+            activeRecipes.add((RecipeBouganvillea) recipeCandidate);
         }
     }
 
@@ -285,15 +307,10 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
     @Override
     public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if(world.isRemote())
-            return;
-        dropAll();
         super.onBlockHarvested(world, pos, state, player);
-    }
-
-    @Override
-    public List<ItemStack> getDrops(List<ItemStack> list, LootContext.Builder ctx) {
-        return super.getDrops(list, ctx);
+        if(!world.isRemote()) {
+            dropAll();
+        }
     }
 
     private static class ItemAndPos {

@@ -51,8 +51,9 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
     @Override
     public boolean matches(IBouganvilleaInventory inventory, World world) {
         if(inventory.getSizeInventory() == 1) {
-            Item item = inventory.getThrown().getItem().getItem();
-            if (!(item instanceof BlockItem))
+            ItemStack stack = inventory.getThrown().getItem();
+            Item item = stack.getItem();
+            if (!(item instanceof BlockItem) || stack.getCount() != 1)
                 return false;
             Block block = ((BlockItem) item).getBlock();
             return block instanceof IBouganvilleaAnvil || block instanceof AnvilBlock;
