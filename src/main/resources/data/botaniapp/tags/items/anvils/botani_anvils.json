@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "botania:terrasteel_block",
+    "botania:elementium_block",
+    "botania:manasteel_block"
+  ]
+}

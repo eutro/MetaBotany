@@ -1,10 +1,9 @@
 package eutros.botaniapp.api.recipe;
 
-import net.minecraft.block.Block;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.item.ItemStack;
 
 /**
- * Any classes that implement this will be usable in the Bouganvillea anvil recipe, though they will not show in JEI.
+ * This supplements the botaniapp:boug_anvils tag. Implement this on your item for custom breaking behaviour.
  */
 public interface IBouganvilleaAnvil {
 
@@ -13,6 +12,5 @@ public interface IBouganvilleaAnvil {
      *
      * @return The damaged anvil. Return null to break.
      */
-    @Nullable
-    Block damage(Block block);
+    ItemStack damage(ItemStack anvil);
 }

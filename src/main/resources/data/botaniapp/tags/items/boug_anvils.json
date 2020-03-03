@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#minecraft:anvil"
+    "#botaniapp:anvils/vanilla_anvils",
+    "#botaniapp:anvils/botani_anvils"
   ]
 }

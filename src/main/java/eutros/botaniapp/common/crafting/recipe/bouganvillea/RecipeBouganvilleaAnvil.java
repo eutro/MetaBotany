@@ -6,13 +6,13 @@ import eutros.botaniapp.api.recipe.RecipeBouganvillea;
 import eutros.botaniapp.common.block.flower.functional.SubtileBouganvillea;
 import eutros.botaniapp.common.utils.BotaniaPPFakePlayer;
 import eutros.botaniapp.common.utils.Reference;
-import net.minecraft.block.AnvilBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
@@ -30,13 +30,14 @@ import org.jetbrains.annotations.Nullable;
 import vazkii.botania.api.subtile.TileEntityFunctionalFlower;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
 
     public static IRecipeSerializer<RecipeBouganvilleaAnvil> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaAnvil::new);
+
+    private static final ResourceLocation BOUG_ANVILS = new ResourceLocation(Reference.MOD_ID, "boug_anvils");
 
     public RecipeBouganvilleaAnvil(ResourceLocation id) {
         super(id, ItemStack.EMPTY, SubtileBouganvillea.BUILTIN_GROUP);
@@ -52,11 +53,8 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
     public boolean matches(IBouganvilleaInventory inventory, World world) {
         if(inventory.getSizeInventory() == 1) {
             ItemStack stack = inventory.getThrown().getItem();
-            Item item = stack.getItem();
-            if (!(item instanceof BlockItem) || stack.getCount() != 1)
-                return false;
-            Block block = ((BlockItem) item).getBlock();
-            return block instanceof IBouganvilleaAnvil || block instanceof AnvilBlock;
+            Tag<Item> tag = ItemTags.getCollection().get(BOUG_ANVILS);
+            return tag != null && tag.contains(stack.getItem());
         }
         return true;
     }
@@ -220,16 +218,16 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
                 inventory.getThrown().getItem());
 
         if(flower.getWorld().getRandom().nextFloat() < breakChance) {
-            Block anvilBlock = ((BlockItem) inventory.getStackInSlot(0).getItem()).getBlock();
+            ItemStack anvil = inventory.getStackInSlot(0);
 
-            anvilBlock = damage(anvilBlock);
+            anvil = damage(anvil);
 
-            if (anvilBlock == null) {
+            if (anvil == null) {
                 inventory.removeStackFromSlot(0);
                 inventory.cancelSound();
                 world.playSound(null, flower.getEffectivePos(), SoundEvents.BLOCK_ANVIL_DESTROY, SoundCategory.BLOCKS, 0.5F, 1F);
             } else
-                inventory.setInventorySlotContents(0, new ItemStack(anvilBlock));
+                inventory.setInventorySlotContents(0, anvil);
         }
 
         flower.addMana(-maximumCost*5);
@@ -238,14 +236,43 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
     }
 
     @Nullable
-    private Block damage(Block block) {
-        if(block instanceof IBouganvilleaAnvil) {
-            return ((IBouganvilleaAnvil) block).damage(block);
+    private ItemStack damage(ItemStack stack) {
+        Item itemIn = stack.getItem();
+        if(itemIn instanceof IBouganvilleaAnvil) {
+            return ((IBouganvilleaAnvil) itemIn).damage(stack);
         }
-        if (block == Blocks.ANVIL) {
-            return Blocks.CHIPPED_ANVIL;
-        } else {
-            return block == Blocks.CHIPPED_ANVIL ? Blocks.DAMAGED_ANVIL : null;
+        Tag<Item> tag = ItemTags.getCollection().get(BOUG_ANVILS);
+        if(tag != null) {
+            Collection<Tag.ITagEntry<Item>> entries = tag.getEntries();
+
+            boolean flag = false;
+            for (Tag.ITagEntry<Item> entry : entries) {
+                List<Item> items = new ArrayList<>();
+                getItemsSorted(items,entry);
+                for(Item item : items) {
+                    if(flag) {
+                        return new ItemStack(item);
+                    }
+                    if(item == itemIn)
+                        flag = true;
+                }
+                if(flag)
+                    return null;
+            }
+        }
+        return stack;
+    }
+
+    private void getItemsSorted(List<Item> list, Tag.ITagEntry<Item> entry) {
+        if(entry instanceof Tag.TagEntry) {
+            Tag<Item> tag = ItemTags.getCollection().get(((Tag.TagEntry<Item>) entry).getSerializedId());
+            if(tag != null) {
+                tag.getEntries().forEach(i ->
+                        getItemsSorted(list, i)
+                );
+            }
+        } else if(entry instanceof Tag.ListEntry) {
+            list.addAll(((Tag.ListEntry<Item>) entry).getTaggedItems());
         }
     }
 
@@ -253,7 +280,7 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
     @Override
     public NonNullList<Ingredient> getIngredients() {
         NonNullList<Ingredient> ingredients = NonNullList.create();
-        Tag<Item> tag = ItemTags.getCollection().get(new ResourceLocation(Reference.MOD_ID, "boug_anvils"));
+        Tag<Item> tag = ItemTags.getCollection().get(BOUG_ANVILS);
         if(tag != null)
             ingredients.add(Ingredient.fromTag(tag));
         else

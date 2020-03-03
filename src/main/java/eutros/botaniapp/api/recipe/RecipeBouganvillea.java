@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * This is the default recipe of the Bouganvillea.
+ * This is the base recipe for the Bouganvillea. If your recipe does not extend this, it will not be usable by the Bouganvillea.
  */
 public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInventory> {
 
