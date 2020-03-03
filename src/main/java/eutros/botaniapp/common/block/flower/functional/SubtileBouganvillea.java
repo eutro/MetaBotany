@@ -121,7 +121,8 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
                 activeRecipes = activeRecipes.stream().filter(i -> i.matches(inventory, world)).collect(Collectors.toList());
 
             if(!activeRecipes.isEmpty()) {
-                setRecipe(e);
+                if(memory.isEmpty())
+                    setRecipe(e);
             } else {
                 e.addTag(TAG_ANVILLED); // So the Bouganvillea doesn't go through all recipes each tick.
                 continue;
@@ -147,7 +148,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         BlockPos efPos = getEffectivePos();
         List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(efPos.add(-1, -1, -1), efPos.add(2, 2, 2)));
         items.forEach(i -> {
-            if(i != e) {
+            if(i != e && i.getAge() < 50) { // Hopefully prevents loop spasms.
                 i.removeTag(TAG_ANVILLED);
             }
         });
