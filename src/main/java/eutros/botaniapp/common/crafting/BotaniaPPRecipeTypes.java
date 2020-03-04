@@ -5,7 +5,8 @@ import eutros.botaniapp.common.crafting.recipe.RecipeBlackHoleTalismanInsert;
 import eutros.botaniapp.common.crafting.recipe.RecipeLensBinding;
 import eutros.botaniapp.common.crafting.recipe.RecipeLensUnbinding;
 import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaAnvil;
-import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaDefault;
+import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaNameTag;
+import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaRegular;
 import eutros.botaniapp.common.crafting.recipe.bouganvillea.RecipeBouganvilleaRename;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.inventory.IInventory;
@@ -43,9 +44,10 @@ public class BotaniaPPRecipeTypes {
         register(r, RecipeLensBinding.SERIALIZER, "lens_binding");
         register(r, RecipeLensUnbinding.SERIALIZER, "lens_unbinding");
         register(r, RecipeBlackHoleTalismanInsert.SERIALIZER, "black_hole_talisman_insert");
-        register(r, RecipeBouganvilleaDefault.SERIALIZER, "bouganvillea_default");
+        register(r, RecipeBouganvilleaRegular.SERIALIZER, "bouganvillea_regular");
         register(r, RecipeBouganvilleaRename.SERIALIZER,"bouganvillea_rename");
         register(r, RecipeBouganvilleaAnvil.SERIALIZER,"bouganvillea_anvil");
+        register(r, RecipeBouganvilleaNameTag.SERIALIZER,"bouganvillea_name_tag");
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)

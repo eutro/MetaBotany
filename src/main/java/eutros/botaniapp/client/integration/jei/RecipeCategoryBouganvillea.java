@@ -36,7 +36,7 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
 
 
     public RecipeCategoryBouganvillea(IGuiHelper guiHelper) {
-        this.background = guiHelper.createBlankDrawable(168, 64);
+        this.background = guiHelper.createBlankDrawable(84, 56);
         this.icon = guiHelper.createDrawableIngredient(new ItemStack(BotaniaPPFlowers.bouganvillea));
     }
 
@@ -97,15 +97,15 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
                     ingredients.setInputs(VanillaTypes.ITEM, Collections.emptyList());
                     ingredients.setOutputs(VanillaTypes.ITEM, Collections.emptyList());
                 }
-                int maxLen = Math.min(outputStash.size(), Math.min(inputStash.get(0).size(), inputStash.get(1).size()));
-
-                ingredients.setInputLists(VanillaTypes.ITEM, Arrays.asList(
-                        Arrays.asList(recipe.getIngredients().get(0).getMatchingStacks()),
-                        inputStash.get(0).subList(0, maxLen),
-                        inputStash.get(1).subList(0, maxLen)
-                ));
-                ingredients.setOutputLists(VanillaTypes.ITEM, Collections.singletonList(outputStash.subList(0, maxLen)));
             }
+            int maxLen = Math.min(outputStash.size(), Math.min(inputStash.get(0).size(), inputStash.get(1).size()));
+
+            ingredients.setInputLists(VanillaTypes.ITEM, Arrays.asList(
+                    Arrays.asList(recipe.getIngredients().get(0).getMatchingStacks()),
+                    inputStash.get(0).subList(0, maxLen),
+                    inputStash.get(1).subList(0, maxLen)
+            ));
+            ingredients.setOutputLists(VanillaTypes.ITEM, Collections.singletonList(outputStash.subList(0, maxLen)));
 
         } else {
             ingredients.setInputIngredients(recipe.getIngredients());

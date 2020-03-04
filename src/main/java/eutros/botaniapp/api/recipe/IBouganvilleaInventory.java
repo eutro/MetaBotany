@@ -33,4 +33,9 @@ public interface IBouganvilleaInventory extends IInventory {
      * Cancels the anvil sound effect.
      */
     void cancelSound();
+
+    /**
+     * Sets the Bouganvillea to not replace the last thrown item, and instead copy it.
+     */
+    void noReplace();
 }

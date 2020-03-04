@@ -47,13 +47,14 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     @Override
     public ItemStack getCraftingResult(IBouganvilleaInventory inventory) {
         // TODO these seem a bit dodgy
-        TextComponent tc = new StringTextComponent("");
+        StringBuilder builder = new StringBuilder();
         for(ItemEntity entity : inventory.allEntities().subList(0, inventory.getSizeInventory()-1)) {
-            tc.appendSibling(entity.getItem().getDisplayName());
+            builder.append(entity.getItem().getDisplayName().getFormattedText());
         }
 
-        if(!tc.equals(new StringTextComponent("")))
-            inventory.getThrown().getItem().setDisplayName(tc);
+        String s = builder.toString();
+        if(!s.equals(""))
+            inventory.getThrown().getItem().setDisplayName(new StringTextComponent(s));
 
         return inventory.getThrown().getItem();
     }

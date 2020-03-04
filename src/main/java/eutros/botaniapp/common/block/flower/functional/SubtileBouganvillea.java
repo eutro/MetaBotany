@@ -43,9 +43,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// TODO consume mana
 // TODO format strings
-// TODO extra goodies
 public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.FlowerNames.BOUGANVILLEA)
     public static TileEntityType<SubtileBouganvillea> TYPE;
@@ -55,6 +53,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     private static final String TAG_ANVILLED = "botaniapp_bouganvilled";
 
     public boolean soundCanceled = false;
+    public boolean shouldReplace = true;
 
     private List<RecipeBouganvillea> activeRecipes = Collections.emptyList();
     private List<ResourceLocation> unresolvedRecipes = Collections.emptyList();
@@ -169,10 +168,16 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     }
 
     private void doRecipe(ItemEntity e, RecipeBouganvillea recipe) {
+        assert world != null;
 
         ItemStack stack = recipe.getCraftingResult(getInventory(e));
 
-        e.setItem(stack);
+        if(!shouldReplace) {
+            memory.add(new ItemAndPos(stack, e.getPositionVec()));
+            shouldReplace = true;
+        } else
+            e.setItem(stack);
+
 
         BlockPos efPos = getEffectivePos();
 
@@ -180,7 +185,6 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         spawnParticles(e, efPos, 3);
         e.setPickupDelay(0);
 
-        assert world != null;
         dropAll();
         markDirty();
         sync();
@@ -396,6 +400,11 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         }
 
         @Override
+        public void noReplace() {
+            shouldReplace = false;
+        }
+
+        @Override
         public int getSizeInventory() {
             return memory.size() + 1;
         }
@@ -432,8 +441,10 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         public void setInventorySlotContents(int index, @NotNull ItemStack stack) {
             if(index < memory.size())
                 memory.set(index, memory.get(index).withStack(stack));
-            else
+            else if(index == memory.size())
                 trigger.setItem(stack);
+            else
+                memory.add(index, new ItemAndPos(stack, trigger.getPositionVector()));
         }
 
         @Override

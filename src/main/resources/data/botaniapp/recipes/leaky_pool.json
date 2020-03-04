@@ -1,0 +1,15 @@
+{
+  "type": "botaniapp:bouganvillea_regular",
+  "group": "botaniapp:leaky_pool",
+  "result": {
+    "item": "botaniapp:leaky_pool"
+  },
+  "ingredients": [
+    {
+      "item": "botania:mana_pool"
+    },
+    {
+      "item": "minecraft:tnt"
+    }
+  ]
+}
