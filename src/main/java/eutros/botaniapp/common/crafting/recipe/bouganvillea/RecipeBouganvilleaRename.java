@@ -40,13 +40,12 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     @ParametersAreNonnullByDefault
     @Override
     public boolean matches(IBouganvilleaInventory inventory, World world) {
-        return inventory.getThrown().getItem().getItem() == BotaniaPPItems.BOTANIA_MANA_STRING;
+        return inventory.getSizeInventory() > 1 || inventory.getThrown().getItem().getItem() == BotaniaPPItems.BOTANIA_MANA_STRING;
     }
 
     @NotNull
     @Override
     public ItemStack getCraftingResult(IBouganvilleaInventory inventory) {
-        // TODO these seem a bit dodgy
         StringBuilder builder = new StringBuilder();
         for(ItemEntity entity : inventory.allEntities().subList(0, inventory.getSizeInventory()-1)) {
             builder.append(entity.getItem().getDisplayName().getFormattedText());
