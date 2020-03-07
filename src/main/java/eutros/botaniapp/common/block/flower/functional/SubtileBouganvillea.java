@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// TODO format strings
 public class SubtileBouganvillea extends TileEntityFunctionalFlower {
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.FlowerNames.BOUGANVILLEA)
     public static TileEntityType<SubtileBouganvillea> TYPE;

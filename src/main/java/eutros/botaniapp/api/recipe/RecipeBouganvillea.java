@@ -2,6 +2,7 @@ package eutros.botaniapp.api.recipe;
 
 import eutros.botaniapp.common.crafting.BotaniaPPRecipeTypes;
 import eutros.botaniapp.common.utils.MathUtils;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
@@ -90,6 +91,12 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
                 .collect(Collectors.toList()); // This collects all the results.
     }
 
+    @NotNull
+    @Override
+    public ItemStack getCraftingResult(IBouganvilleaInventory inventory) {
+        return getStacksResult(inventory.allEntities().stream().map(ItemEntity::getItem).collect(Collectors.toList()));
+    }
+
     @Override
     public final boolean canFit(int w, int h) {
         return false;
@@ -118,4 +125,5 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
     public IRecipeType<?> getType() {
         return BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.type;
     }
+
 }

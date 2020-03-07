@@ -4,7 +4,6 @@ import eutros.botaniapp.api.recipe.IBouganvilleaInventory;
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
 import eutros.botaniapp.common.block.flower.functional.SubtileBouganvillea;
 import eutros.botaniapp.common.item.BotaniaPPItems;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -18,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RecipeBouganvilleaRename extends RecipeBouganvillea {
 
@@ -48,12 +46,6 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     public boolean matches(IBouganvilleaInventory inventory, World world) {
         return inventory.getSizeInventory() > 1 ||
                 inventory.getThrown().getItem().getItem() == BotaniaPPItems.BOTANIA_MANA_STRING;
-    }
-
-    @NotNull
-    @Override
-    public ItemStack getCraftingResult(IBouganvilleaInventory inventory) {
-        return getStacksResult(inventory.allEntities().stream().map(ItemEntity::getItem).collect(Collectors.toList()));
     }
 
     public ItemStack getStacksResult(List<ItemStack> stacks) {
@@ -111,4 +103,5 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     protected String stackNameOrEmpty(ItemStack stack) {
         return stack.hasDisplayName() ? stackName(stack) : "";
     }
+
 }
