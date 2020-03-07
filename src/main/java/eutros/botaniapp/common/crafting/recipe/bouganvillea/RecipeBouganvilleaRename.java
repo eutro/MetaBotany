@@ -6,29 +6,35 @@ import eutros.botaniapp.common.block.flower.functional.SubtileBouganvillea;
 import eutros.botaniapp.common.item.BotaniaPPItems;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RecipeBouganvilleaRename extends RecipeBouganvillea {
 
     public static IRecipeSerializer<RecipeBouganvilleaRename> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaRename::new);
 
-    private static final ItemStack manaString = new ItemStack(BotaniaPPItems.BOTANIA_MANA_STRING);
+    protected static final ItemStack manaString = new ItemStack(BotaniaPPItems.BOTANIA_MANA_STRING);
+    protected static final Ingredient RENAMED_INGREDIENT = Ingredient.fromItems(Items.DIRT, Items.NAME_TAG, Items.PAPER, Items.DIAMOND_SWORD);
 
     public RecipeBouganvilleaRename(ResourceLocation location) {
-        super(location,
+        this(location,
                 manaString.copy().setDisplayName(new StringTextComponent("What is your name?")),
                 SubtileBouganvillea.BUILTIN_GROUP);
+    }
+
+    public RecipeBouganvilleaRename(ResourceLocation location, ItemStack output, String group) {
+        super(location, output, group);
     }
 
     @Override
@@ -40,35 +46,29 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     @ParametersAreNonnullByDefault
     @Override
     public boolean matches(IBouganvilleaInventory inventory, World world) {
-        return inventory.getSizeInventory() > 1 || inventory.getThrown().getItem().getItem() == BotaniaPPItems.BOTANIA_MANA_STRING;
+        return inventory.getSizeInventory() > 1 ||
+                inventory.getThrown().getItem().getItem() == BotaniaPPItems.BOTANIA_MANA_STRING;
     }
 
     @NotNull
     @Override
     public ItemStack getCraftingResult(IBouganvilleaInventory inventory) {
-        StringBuilder builder = new StringBuilder();
-        for(ItemEntity entity : inventory.allEntities().subList(0, inventory.getSizeInventory()-1)) {
-            builder.append(entity.getItem().getDisplayName().getFormattedText());
-        }
-
-        String s = builder.toString();
-        if(!s.equals(""))
-            inventory.getThrown().getItem().setDisplayName(new StringTextComponent(s));
-
-        return inventory.getThrown().getItem();
+        return getStacksResult(inventory.allEntities().stream().map(ItemEntity::getItem).collect(Collectors.toList()));
     }
 
     public ItemStack getStacksResult(List<ItemStack> stacks) {
-        TextComponent tc = new StringTextComponent("");
-        for(ItemStack stack : stacks) {
-            tc.appendSibling(stack.getDisplayName());
+        StringBuilder builder = new StringBuilder();
+        for(ItemStack stack : stacks.subList(0, stacks.size()-1)) {
+            builder.append(stackName(stack));
         }
 
-        ItemStack trigger = stacks.get(stacks.size() - 1).copy();
-        if(!tc.equals(new StringTextComponent("")))
-            trigger.setDisplayName(tc);
+        String s = builder.toString();
+        ItemStack thrown = stacks.get(stacks.size() - 1).copy();
+        if(!s.equals("")) {
+            thrown.setDisplayName(new StringTextComponent(s));
+        }
 
-        return trigger;
+        return thrown;
     }
 
     @NotNull
@@ -89,7 +89,8 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
                         manaString.copy().setDisplayName(new StringTextComponent("wa"))),
                 Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("?")),
                         manaString.copy().setDisplayName(new StringTextComponent("?!")),
-                        manaString.copy().setDisplayName(new StringTextComponent("..?")))
+                        manaString.copy().setDisplayName(new StringTextComponent("..?"))),
+                RENAMED_INGREDIENT
             );
 
     @NotNull
@@ -101,5 +102,13 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     @Override
     public boolean isDynamic() {
         return true;
+    }
+
+    protected String stackName(ItemStack stack) {
+        return stack.getDisplayName().getFormattedText();
+    }
+
+    protected String stackNameOrEmpty(ItemStack stack) {
+        return stack.hasDisplayName() ? stackName(stack) : "";
     }
 }
