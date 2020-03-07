@@ -1,15 +1,13 @@
 package eutros.botaniapp.common.block.corporea;
 
+import eutros.botaniapp.api.internal.block.BlockRedstoneControlled;
 import eutros.botaniapp.common.block.tile.corporea.TileAdvancedFunnel;
 import eutros.botaniapp.common.block.tile.corporea.TileCorporeaBase;
-import net.minecraft.block.Block;
+import javafx.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -20,20 +18,25 @@ import vazkii.botania.api.wand.IWandHUD;
 import vazkii.botania.api.wand.IWandable;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Objects;
 
-public class BlockAdvancedFunnel extends BlockCorporeaBase implements IWandable, IWandHUD {
-
-    public static final BooleanProperty POWERED = BooleanProperty.create("powered");
+public class BlockAdvancedFunnel extends BlockRedstoneControlled implements IWandable, IWandHUD {
 
     public BlockAdvancedFunnel(Properties builder) {
         super(builder);
-        setDefaultState(stateContainer.getBaseState().with(POWERED, false));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(POWERED);
+    public Collection<Pair<BlockPos, Direction>> getRedstoneChecks(BlockPos pos) {
+        Collection<Pair<BlockPos, Direction>> checks = super.getRedstoneChecks(pos);
+        checks.addAll(super.getRedstoneChecks(pos.up()));
+        return checks;
+    }
+
+    @Override
+    public void doPulse(BlockState state, BlockPos pos, World world, BlockPos from) {
+        ((TileAdvancedFunnel) Objects.requireNonNull(world.getTileEntity(pos))).doRequest();
     }
 
     @Nonnull
@@ -42,22 +45,9 @@ public class BlockAdvancedFunnel extends BlockCorporeaBase implements IWandable,
         return new TileAdvancedFunnel();
     }
 
-    // TODO use blockstates maybe
-    @SuppressWarnings("deprecation")
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        boolean power = world.getRedstonePowerFromNeighbors(pos) > 0 || world.getRedstonePowerFromNeighbors(pos.up()) > 0;
-        boolean powered = state.get(POWERED);
-
-        if(power != powered) {
-            TileEntity te = world.getTileEntity(pos);
-            assert te != null;
-
-            if (power) {
-                ((TileAdvancedFunnel) te).doRequest();
-            }
-            world.setBlockState(pos, state.with(POWERED, power), 4);
-        }
+    public boolean hasTileEntity(BlockState state) {
+        return true;
     }
 
     @Override

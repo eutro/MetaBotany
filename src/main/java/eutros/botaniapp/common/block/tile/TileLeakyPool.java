@@ -2,6 +2,7 @@ package eutros.botaniapp.common.block.tile;
 
 import com.google.common.base.Predicates;
 import com.mojang.blaze3d.systems.RenderSystem;
+import eutros.botaniapp.api.internal.block.state.StateRedstoneControlled;
 import eutros.botaniapp.client.core.helper.HUDHelper;
 import eutros.botaniapp.common.block.BlockLeakyPool;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
@@ -20,7 +21,6 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
@@ -135,14 +135,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             shouldShoot = false;
         }
 
-        boolean redstone = false;
-
-        for(Direction dir : Direction.values()) {
-            int redstoneSide = world.getRedstonePower(pos.offset(dir), dir);
-            if(redstoneSide > 0) {
-                redstone = true;
-            }
-        }
+        boolean redstone = this.getBlockState().get(StateRedstoneControlled.POWERED);
 
         if(canFire) {
             ItemStack lens = itemHandler.getStackInSlot(0);
@@ -155,6 +148,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
             if(shouldShoot && !world.isRemote()) {
                 TileEntity te = world.getTileEntity(pos.down());
+                // TODO consider hitbox checking for this
                 if(te instanceof IManaReceiver && ((IManaReceiver) te).canRecieveManaFromBursts() && !(te instanceof TileLeakyPool)) {
                     IManaReceiver receiver = (IManaReceiver) te;
 
