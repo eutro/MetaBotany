@@ -1,6 +1,6 @@
 {
   "variants": {
-    "powered=true":  { "model": "botania:block/spark_changer" },
-    "powered=false":  { "model": "botania:block/spark_changer" }
+    "powered=true":  { "model": "botaniapp:block/frame_tinkerer" },
+    "powered=false":  { "model": "botaniapp:block/frame_tinkerer" }
   }
 }
