@@ -1,8 +1,12 @@
 package eutros.botaniapp.common.utils;
 
+import net.minecraft.util.Direction;
+
 import java.awt.geom.Point2D;
 
 public class MathUtils {
+
+    public static final Direction[] HORIZONTALS = { Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST };
 
     public static int gcf(int a, int b)
     {

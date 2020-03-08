@@ -5,7 +5,6 @@ import eutros.botaniapp.common.block.tile.TileLeakyPool;
 import eutros.botaniapp.common.block.tile.TileSimpleInventory;
 import eutros.botaniapp.common.core.helper.InventoryHelper;
 import eutros.botaniapp.common.item.BotaniaPPItems;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -95,13 +94,6 @@ public class BlockLeakyPool extends BlockRedstoneControlled implements IWandHUD,
     @Override
     public TileEntity createTileEntity(@Nonnull BlockState state, @Nonnull IBlockReader world) {
         return new TileLeakyPool();
-    }
-
-    @SuppressWarnings("deprecation")
-    @Nonnull
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
     }
 
     @SuppressWarnings("deprecation")

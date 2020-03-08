@@ -11,6 +11,7 @@ public class Reference {
         public static final String ADVANCED_FUNNEL = "advanced_funnel";
         public static final String CHARGING_PLATE = "charging_plate";
         public static final String LEAKY_POOL = "leaky_pool";
+        public static final String FRAME_TINKERER = "frame_tinkerer";
     }
 
     public static final class FlowerNames {

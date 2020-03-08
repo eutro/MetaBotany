@@ -4,6 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Pair;
+import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.Vector3f;
@@ -25,8 +26,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
-
-import static vazkii.botania.common.lib.ResourceLocationHelper.prefix;
 
 public class FloatingFlowerModel implements IModelGeometry<FloatingFlowerModel> {
     private IUnbakedModel unbakedFlower;
@@ -123,7 +122,7 @@ public class FloatingFlowerModel implements IModelGeometry<FloatingFlowerModel> 
     public enum Loader implements IModelLoader<FloatingFlowerModel> {
         INSTANCE;
 
-        public static final ResourceLocation ID = prefix("floating_flower");
+        public static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "floating_flower");
 
         @Override
         public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {}

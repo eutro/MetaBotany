@@ -4,6 +4,7 @@ import eutros.botaniapp.client.render.model.FloatingFlowerModel;
 import eutros.botaniapp.common.block.flower.BotaniaPPFlowers;
 import eutros.botaniapp.common.block.tile.TileChargingPlate;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
+import eutros.botaniapp.common.block.tinkerer.tile.TileFrameTinkerer;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.api.distmarker.Dist;
@@ -23,10 +24,11 @@ public final class CustomRenderHandler {
 
 		BotaniaPPFlowers.getTypes().stream()
 				.map(Pair::getRight)
-				.map(rl -> Registry.BLOCK_ENTITY_TYPE.getValue(rl).get())
+				.map(rl -> Registry.BLOCK_ENTITY_TYPE.getValue(rl).orElseThrow(NullPointerException::new))
 				.forEach(typ -> ClientRegistry.bindTileEntityRenderer(typ, RenderTileFloatingFlower::new));
 
 		ClientRegistry.bindTileEntityRenderer(TileChargingPlate.TYPE, RenderTileChargingPlate::new);
+		ClientRegistry.bindTileEntityRenderer(TileFrameTinkerer.TYPE, RenderTileFrameTinkerer::new);
 		ClientRegistry.bindTileEntityRenderer(TileLeakyPool.TYPE, RenderTileLeakyPool::new);
 	}
 	
