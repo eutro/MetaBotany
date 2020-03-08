@@ -79,7 +79,8 @@ public class BlockFrameTinkerer extends BlockRedstoneControlled implements IWand
 
     @Override
     public boolean onUsedByWand(PlayerEntity player, ItemStack stack, World world, BlockPos pos, Direction side) {
-        return ((TileFrameTinkerer) Objects.requireNonNull(world.getTileEntity(pos))).doRotate();
+        return !world.isRemote() &&
+                ((TileFrameTinkerer) Objects.requireNonNull(world.getTileEntity(pos))).doRotate();
     }
 
     @SuppressWarnings("deprecation")
