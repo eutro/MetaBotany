@@ -2,7 +2,6 @@ package eutros.botaniapp.api.internal.block.state;
 
 import com.google.common.collect.ImmutableMap;
 import eutros.botaniapp.api.internal.block.BlockRedstoneControlled;
-import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.BooleanProperty;
@@ -10,6 +9,7 @@ import net.minecraft.state.IProperty;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -29,7 +29,7 @@ public class StateRedstoneControlled extends BlockState {
 
         int power = 0;
         for(Pair<BlockPos, Direction> pair : ((BlockRedstoneControlled) getBlock()).getRedstoneChecks(pos)) {
-            int powerAt = world.getRedstonePower(pair.getKey(), pair.getValue());
+            int powerAt = world.getRedstonePower(pair.getLeft(), pair.getRight());
             if(powerAt > power) {
                 power = powerAt;
             }

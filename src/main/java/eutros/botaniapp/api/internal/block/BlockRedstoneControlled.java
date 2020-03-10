@@ -1,13 +1,13 @@
 package eutros.botaniapp.api.internal.block;
 
 import eutros.botaniapp.api.internal.block.state.StateRedstoneControlled;
-import javafx.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public abstract class BlockRedstoneControlled extends Block {
     public Collection<Pair<BlockPos, Direction>> getRedstoneChecks(BlockPos pos) {
         Collection<Pair<BlockPos, Direction>> checks = new ArrayList<>();
         for(Direction d : getDirections()) {
-            checks.add(new Pair<>(pos.offset(d), d));
+            checks.add(Pair.of(pos.offset(d), d));
         }
         return checks;
     }

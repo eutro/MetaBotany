@@ -3,7 +3,6 @@ package eutros.botaniapp.common.block.corporea;
 import eutros.botaniapp.api.internal.block.BlockRedstoneControlled;
 import eutros.botaniapp.common.block.tile.corporea.TileAdvancedFunnel;
 import eutros.botaniapp.common.block.tile.corporea.TileCorporeaBase;
-import javafx.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +13,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.commons.lang3.tuple.Pair;
 import vazkii.botania.api.wand.IWandHUD;
 import vazkii.botania.api.wand.IWandable;
 
