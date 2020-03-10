@@ -5,6 +5,7 @@ import eutros.botaniapp.common.block.tile.TileChargingPlate;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
 import eutros.botaniapp.common.block.tile.corporea.TileAdvancedFunnel;
 import eutros.botaniapp.common.block.tinkerer.BlockFrameTinkerer;
+import eutros.botaniapp.common.block.tinkerer.cart.BlockCartTinkerer;
 import eutros.botaniapp.common.block.tinkerer.tile.TileFrameTinkerer;
 import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.utils.Reference;
@@ -30,10 +31,12 @@ public class BotaniaPPBlocks {
     @ObjectHolder(Reference.BlockNames.CHARGING_PLATE) public static BlockChargingPlate chargingPlate;
     @ObjectHolder(Reference.BlockNames.LEAKY_POOL) public static BlockLeakyPool leakyPool;
     @ObjectHolder(Reference.BlockNames.FRAME_TINKERER) public static BlockFrameTinkerer frameTinkerer;
+    @ObjectHolder(Reference.BlockNames.CART_TINKERER) public static BlockCartTinkerer cartTinkerer;
 
     public static Block BOTANIA_PISTON_RELAY;
     public static Block BOTANIA_MANA_VOID;
     public static Block BOTANIA_RED_STRING_RELAY;
+    public static Block BOTANIA_MANA_POOL;
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> evt) {
@@ -46,6 +49,7 @@ public class BotaniaPPBlocks {
         register(r, new BlockChargingPlate(builder), Reference.BlockNames.CHARGING_PLATE);
         register(r, new BlockLeakyPool(builder), Reference.BlockNames.LEAKY_POOL);
         register(r, new BlockFrameTinkerer(builder), Reference.BlockNames.FRAME_TINKERER);
+        register(r, new BlockCartTinkerer(builder), Reference.BlockNames.CART_TINKERER);
 
         setBotaniaBlocks(r);
     }
@@ -56,6 +60,7 @@ public class BotaniaPPBlocks {
         BOTANIA_MANA_VOID = r.getValue(new ResourceLocation(b, "mana_void"));
         BOTANIA_PISTON_RELAY = r.getValue(new ResourceLocation(b, "piston_relay"));
         BOTANIA_RED_STRING_RELAY = r.getValue(new ResourceLocation(b, "red_string_relay"));
+        BOTANIA_MANA_POOL = r.getValue(new ResourceLocation(b, "mana_pool"));
     }
 
     @SubscribeEvent
@@ -67,6 +72,7 @@ public class BotaniaPPBlocks {
         register(r, new BlockItem(chargingPlate, props), chargingPlate.getRegistryName());
         register(r, new BlockItem(leakyPool, props), leakyPool.getRegistryName());
         register(r, new BlockItem(frameTinkerer, props), frameTinkerer.getRegistryName());
+        register(r, new BlockItem(cartTinkerer, props), cartTinkerer.getRegistryName());
     }
 
     @SubscribeEvent

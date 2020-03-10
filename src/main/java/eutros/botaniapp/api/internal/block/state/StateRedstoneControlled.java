@@ -43,10 +43,10 @@ public class StateRedstoneControlled extends BlockState {
         }
 
         if((power > 0) != powered) {
+            world.setBlockState(pos, this.with(POWERED, power > 0), 4);
             if(power > 0) {
                 ((BlockRedstoneControlled) getBlock()).doPulse(this, pos, world, fromPos);
             }
-            world.setBlockState(pos, this.with(POWERED, power > 0), 4);
         }
     }
 
