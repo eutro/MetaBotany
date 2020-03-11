@@ -14,9 +14,8 @@ import vazkii.botania.common.entity.EntityPoolMinecart;
 
 public class PoolTinkerHandler extends CartTinkerHandler {
 
-    @SuppressWarnings("unchecked")
     public PoolTinkerHandler() {
-        super(new Class[]{EntityPoolMinecart.class}, BotaniaPPBlocks.BOTANIA_MANA_POOL);
+        super(new net.minecraft.block.Block[]{BotaniaPPBlocks.BOTANIA_MANA_POOL}, EntityPoolMinecart.class);
     }
 
     @Override

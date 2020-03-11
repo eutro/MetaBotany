@@ -18,13 +18,15 @@ public abstract class CartTinkerHandler extends ForgeRegistryEntry<CartTinkerHan
     public List<Class<? extends AbstractMinecartEntity>> cartTypes;
     public List<BlockState> workingStates;
 
-    public CartTinkerHandler(Class<? extends AbstractMinecartEntity>[] cartTypes, BlockState... workingStates) {
+    @SafeVarargs
+    public CartTinkerHandler(BlockState[] workingStates, Class<? extends AbstractMinecartEntity>... cartTypes) {
         this.cartTypes = Arrays.asList(cartTypes);
         this.workingStates = Arrays.asList(workingStates);
     }
 
-    public CartTinkerHandler(Class<? extends AbstractMinecartEntity>[] cartTypes, Block... workingBlocks) {
-        this(cartTypes, Arrays.stream(workingBlocks).flatMap(b -> b.getStateContainer().getValidStates().stream()).toArray(BlockState[]::new));
+    @SafeVarargs
+    public CartTinkerHandler(Block[] workingBlocks, Class<? extends AbstractMinecartEntity>... cartTypes) {
+        this(Arrays.stream(workingBlocks).flatMap(b -> b.getStateContainer().getValidStates().stream()).toArray(BlockState[]::new), cartTypes);
     }
 
     public abstract boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world);

@@ -31,11 +31,8 @@ import java.util.stream.IntStream;
 
 public class ContainerTinkerHandler extends CartTinkerHandler {
 
-    @SuppressWarnings("unchecked")
     public ContainerTinkerHandler() {
-        super(new Class[]{ChestMinecartEntity.class,
-                HopperMinecartEntity.class,
-                FurnaceMinecartEntity.class}, Blocks.CHEST, Blocks.HOPPER, Blocks.FURNACE);
+        super(new Block[]{Blocks.CHEST, Blocks.HOPPER, Blocks.FURNACE}, ChestMinecartEntity.class, HopperMinecartEntity.class, FurnaceMinecartEntity.class);
     }
 
     private static final BiMap<Block, Class<? extends AbstractMinecartEntity>> cartMapping = HashBiMap.create();

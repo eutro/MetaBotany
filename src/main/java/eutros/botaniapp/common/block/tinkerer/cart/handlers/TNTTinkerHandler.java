@@ -13,9 +13,8 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class TNTTinkerHandler extends CartTinkerHandler {
 
-    @SuppressWarnings("unchecked")
     public TNTTinkerHandler() {
-        super(new Class[]{TNTMinecartEntity.class}, Blocks.TNT);
+        super(new net.minecraft.block.Block[]{Blocks.TNT}, TNTMinecartEntity.class);
     }
 
     @Override
