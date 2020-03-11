@@ -23,30 +23,29 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class HackFlatPreset {
 
+    private static boolean initialized = false;
+
     @SubscribeEvent
     public static void guiOpened(GuiOpenEvent event) {
-        // Just invoke the static block the first time this is fired.
-        Inner.prod();
+        if(!initialized && event.getGui() instanceof FlatPresetsScreen) {
+            addPreset();
+            initialized = true;
+        }
     }
 
-    private static class Inner {
-
-        public static void prod() {}
-
-        static {
-            Method addPreset = ObfuscationReflectionHelper.findMethod(FlatPresetsScreen.class,
-                    "addPreset",
-                    String.class,
-                    IItemProvider.class,
-                    Biome.class,
-                    List.class,
-                    FlatLayerInfo[].class);
-            Reflection.invoke(addPreset,
-                    I18n.format("botaniapp.customize.preset.botanist_ready"),
-                    ModItems.twigWand,
-                    Biomes.PLAINS,
-                    Collections.emptyList(),
-                    new FlatLayerInfo[]{new FlatLayerInfo(52, ModBlocks.livingrockBrick), new FlatLayerInfo(3, Blocks.STONE), new FlatLayerInfo(1, Blocks.BEDROCK)});
-        }
+    static void addPreset() {
+        Method addPreset = ObfuscationReflectionHelper.findMethod(FlatPresetsScreen.class,
+                "addPreset",
+                String.class,
+                IItemProvider.class,
+                Biome.class,
+                List.class,
+                FlatLayerInfo[].class);
+        Reflection.invoke(addPreset,
+                I18n.format("botaniapp.customize.preset.botanist_ready"),
+                ModItems.twigWand,
+                Biomes.PLAINS,
+                Collections.emptyList(),
+                new FlatLayerInfo[]{new FlatLayerInfo(52, ModBlocks.livingrockBrick), new FlatLayerInfo(3, Blocks.STONE), new FlatLayerInfo(1, Blocks.BEDROCK)});
     }
 }
