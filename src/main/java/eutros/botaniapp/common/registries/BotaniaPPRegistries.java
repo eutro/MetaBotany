@@ -14,12 +14,13 @@ import net.minecraftforge.registries.RegistryBuilder;
 public class BotaniaPPRegistries {
 
     public static IForgeRegistry<CartTinkerHandler> CART_TINKER;
+    public static final ResourceLocation CART_TINKER_DEFAULT = new ResourceLocation(Reference.MOD_ID, "default_tinker");
 
     @SubscribeEvent
     public static void registerRegistries(RegistryEvent.NewRegistry event) {
         RegistryBuilder<CartTinkerHandler> builder = new RegistryBuilder<>();
         builder.setName(new ResourceLocation(Reference.MOD_ID, "cart_tinker"));
-        builder.setDefaultKey(new ResourceLocation(Reference.MOD_ID, "default_tinker"));
+        builder.setDefaultKey(CART_TINKER_DEFAULT);
         builder.setType(CartTinkerHandler.class);
         builder.add((IForgeRegistry.ClearCallback<CartTinkerHandler>) TinkerHandlerMap.getInstance()::clear);
         builder.add((IForgeRegistry.CreateCallback<CartTinkerHandler>) TinkerHandlerMap.getInstance()::create);

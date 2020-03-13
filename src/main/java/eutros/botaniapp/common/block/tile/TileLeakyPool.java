@@ -4,7 +4,6 @@ import com.google.common.base.Predicates;
 import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.api.internal.block.state.StateRedstoneControlled;
 import eutros.botaniapp.client.core.helper.HUDHelper;
-import eutros.botaniapp.common.block.BlockLeakyPool;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.sound.BotaniaPPSounds;
 import eutros.botaniapp.common.utils.Reference;
@@ -383,10 +382,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
     @Override
     public int getCurrentMana() {
-        if (getBlockState().getBlock() instanceof BlockLeakyPool) {
-            return mana;
-        }
-        return 0;
+        return mana;
     }
 
     @Override

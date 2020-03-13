@@ -28,7 +28,7 @@ public class PoolTinkerHandler extends CartTinkerHandler {
         IManaPool pool = (IManaPool) te;
         cart.setMana(pool.getCurrentMana());
 
-        return super.doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world);
+        return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class PoolTinkerHandler extends CartTinkerHandler {
 
         BlockState state = BotaniaPPBlocks.BOTANIA_MANA_POOL.getDefaultState();
 
-        boolean ret = super.doSwap(destinationPos, state, sourceCart, newCart, world);
+        boolean ret = doSwap(destinationPos, state, sourceCart, newCart, world);
 
         TileEntity te = world.getTileEntity(destinationPos);
         if(te instanceof IManaPool) {

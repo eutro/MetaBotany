@@ -33,8 +33,6 @@ public abstract class CartTinkerHandler extends ForgeRegistryEntry<CartTinkerHan
 
     public abstract boolean doExtract(BlockPos destinationPos, AbstractMinecartEntity sourceCart, World world);
 
-
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean doSwap(BlockPos pos,
                              BlockState newState,
                              AbstractMinecartEntity cart,
@@ -43,6 +41,7 @@ public abstract class CartTinkerHandler extends ForgeRegistryEntry<CartTinkerHan
         if(newState != null) {
             world.removeBlock(pos, false);
             world.setBlockState(pos, newState);
+            world.notifyBlockUpdate(pos, newState, newState, 0);
         }
         cart.onKillCommand();
         world.addEntity(newCart);

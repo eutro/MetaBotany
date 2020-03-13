@@ -2,6 +2,7 @@ package eutros.botaniapp.common.registries;
 
 import eutros.botaniapp.api.carttinkerer.CartTinkerHandler;
 import eutros.botaniapp.common.block.tinkerer.cart.handlers.ContainerTinkerHandler;
+import eutros.botaniapp.common.block.tinkerer.cart.handlers.DefaultTinkerHandler;
 import eutros.botaniapp.common.block.tinkerer.cart.handlers.PoolTinkerHandler;
 import eutros.botaniapp.common.block.tinkerer.cart.handlers.TNTTinkerHandler;
 import eutros.botaniapp.common.utils.Reference;
@@ -21,6 +22,7 @@ public class BotaniaPPCartTinkers {
     public static void registerTinkers(RegistryEvent.Register<CartTinkerHandler> evt) {
         IForgeRegistry<CartTinkerHandler> r = evt.getRegistry();
 
+        register(r, new DefaultTinkerHandler(), BotaniaPPRegistries.CART_TINKER_DEFAULT);
         register(r, new ContainerTinkerHandler(), "container_tinker");
         register(r, new PoolTinkerHandler(), "pool_tinker");
         register(r, new TNTTinkerHandler(), "tnt_tinker");

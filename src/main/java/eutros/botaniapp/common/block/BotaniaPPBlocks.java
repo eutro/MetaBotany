@@ -32,6 +32,7 @@ public class BotaniaPPBlocks {
     @ObjectHolder(Reference.BlockNames.LEAKY_POOL) public static BlockLeakyPool leakyPool;
     @ObjectHolder(Reference.BlockNames.FRAME_TINKERER) public static BlockFrameTinkerer frameTinkerer;
     @ObjectHolder(Reference.BlockNames.CART_TINKERER) public static BlockCartTinkerer cartTinkerer;
+    @ObjectHolder(Reference.BlockNames.FRAGILE_BOX) public static BlockFragileTileEntityBox fragileBox;
 
     public static Block BOTANIA_PISTON_RELAY;
     public static Block BOTANIA_MANA_VOID;
@@ -50,6 +51,7 @@ public class BotaniaPPBlocks {
         register(r, new BlockLeakyPool(builder), Reference.BlockNames.LEAKY_POOL);
         register(r, new BlockFrameTinkerer(builder), Reference.BlockNames.FRAME_TINKERER);
         register(r, new BlockCartTinkerer(builder), Reference.BlockNames.CART_TINKERER);
+        register(r, new BlockFragileTileEntityBox(builder), Reference.BlockNames.FRAGILE_BOX);
 
         setBotaniaBlocks(r);
     }

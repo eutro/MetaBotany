@@ -12,15 +12,11 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.IProperty;
-import net.minecraft.tileentity.AbstractFurnaceTileEntity;
-import net.minecraft.tileentity.FurnaceTileEntity;
 import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -56,24 +52,15 @@ public class ContainerTinkerHandler extends CartTinkerHandler {
         TileEntity te = world.getTileEntity(sourcePos);
         if(!(te instanceof LockableTileEntity))
             return false;
+
         LockableTileEntity inv = (LockableTileEntity) te;
         if(cart instanceof ContainerMinecartEntity) {
             for(int i = 0; i < ((ContainerMinecartEntity) cart).getSizeInventory(); i++) {
                 ((ContainerMinecartEntity) cart).setInventorySlotContents(i, inv.removeStackFromSlot(i));
             }
-        } else {
-            if(te instanceof FurnaceTileEntity) {
-                int burnTime = 0;
-                Object o = ObfuscationReflectionHelper.getPrivateValue(AbstractFurnaceTileEntity.class, (FurnaceTileEntity) te, "burnTime");
-                if (o instanceof Integer)
-                    burnTime += (Integer) o;
-                ItemStack fuel = ((FurnaceTileEntity) te).removeStackFromSlot(1);
-                burnTime += ForgeHooks.getBurnTime(fuel)*2.25;
-                ObfuscationReflectionHelper.setPrivateValue(FurnaceMinecartEntity.class, (FurnaceMinecartEntity) cart, burnTime, "fuel");
-            }
         }
 
-        return super.doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world);
+        return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world);
     }
 
     @Override
@@ -101,7 +88,7 @@ public class ContainerTinkerHandler extends CartTinkerHandler {
                 state = state.with(ChestBlock.WATERLOGGED, true);
         }
 
-        boolean ret = super.doSwap(destinationPos, state, sourceCart, newCart, world);
+        boolean ret = doSwap(destinationPos, state, sourceCart, newCart, world);
         TileEntity te = world.getTileEntity(destinationPos);
 
         if(sourceCart instanceof ContainerMinecartEntity) {

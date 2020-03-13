@@ -13,6 +13,7 @@ public class Reference {
         public static final String LEAKY_POOL = "leaky_pool";
         public static final String FRAME_TINKERER = "frame_tinkerer";
         public static final String CART_TINKERER = "cart_tinkerer";
+        public static final String FRAGILE_BOX = "fragile_box";
     }
 
     public static final class FlowerNames {

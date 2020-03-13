@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static eutros.botaniapp.common.registries.BotaniaPPRegistries.CART_TINKER;
+import static eutros.botaniapp.common.registries.BotaniaPPRegistries.CART_TINKER_DEFAULT;
 
 public class BlockCartTinkerer extends BlockRedstoneControlled {
 
@@ -39,11 +40,6 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public void doPulse(BlockState state, BlockPos pos, World world, BlockPos from) {
         if(world.isRemote() || world.getGameTime() <= lastSwitch)
@@ -53,8 +49,9 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
         lastSwitch = world.getGameTime();
 
         List<AbstractMinecartEntity> carts = getCarts(world, pos);
-        if(carts.isEmpty())
+        if(carts.isEmpty()) {
             return;
+        }
 
         AbstractMinecartEntity cart = carts.get(world.rand.nextInt(carts.size()));
 
@@ -65,35 +62,34 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
             BlockState targetState = world.getBlockState(opposite);
             Multimap<BlockState, ResourceLocation> stateMap =
                     CART_TINKER.getSlaveMap(TinkerHandlerMap.STATE_MAP_LOC, Multimap.class);
-            if(stateMap.containsKey(targetState)) {
-                Collection<ResourceLocation> locations = stateMap.get(targetState);
+            Collection<ResourceLocation> locations = stateMap.get(targetState);
+            locations.add(CART_TINKER_DEFAULT);
 
-                for(ResourceLocation location : locations) {
-                    CartTinkerHandler handler = CART_TINKER.getValue(location);
-                    if(handler == null) {
-                        continue;
-                    }
+            for(ResourceLocation location : locations) {
+                CartTinkerHandler handler = CART_TINKER.getValue(location);
+                if(handler == null) {
+                    continue;
+                }
 
-                    if(handler.doInsert(opposite, targetState, cart, world))
-                        break;
+                if(handler.doInsert(opposite, targetState, cart, world)) {
+                    break;
                 }
             }
         } else if(world.getBlockState(opposite) == world.getFluidState(opposite).getBlockState()) {
             Multimap<Class<? extends AbstractMinecartEntity>, ResourceLocation> cartMap =
                     CART_TINKER.getSlaveMap(TinkerHandlerMap.CART_MAP_LOC, Multimap.class);
             Class<? extends AbstractMinecartEntity> cartType = cart.getClass();
-            if(cartMap.containsKey(cartType)) {
-                Collection<ResourceLocation> locations;
-                locations = cartMap.get(cartType);
+            Collection<ResourceLocation> locations;
+            locations = cartMap.get(cartType);
+            locations.add(CART_TINKER_DEFAULT);
 
-                for(ResourceLocation location : locations) {
-                    CartTinkerHandler handler = CART_TINKER.getValue(location);
-                    if(handler == null)
-                        continue;
+            for(ResourceLocation location : locations) {
+                CartTinkerHandler handler = CART_TINKER.getValue(location);
+                if(handler == null)
+                    continue;
 
-                    if(handler.doExtract(opposite, cart, world))
-                        break;
-                }
+                if(handler.doExtract(opposite, cart, world))
+                    break;
             }
         }
     }
