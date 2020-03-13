@@ -29,19 +29,21 @@ public abstract class CartTinkerHandler extends ForgeRegistryEntry<CartTinkerHan
         this(Arrays.stream(workingBlocks).flatMap(b -> b.getStateContainer().getValidStates().stream()).toArray(BlockState[]::new), cartTypes);
     }
 
-    public abstract boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world);
+    public abstract boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world, BlockPos tinkererPos);
 
-    public abstract boolean doExtract(BlockPos destinationPos, AbstractMinecartEntity sourceCart, World world);
+    public abstract boolean doExtract(BlockPos destinationPos, BlockState destinationState, AbstractMinecartEntity sourceCart, World world, BlockPos tinkererPos);
 
     protected boolean doSwap(BlockPos pos,
                              BlockState newState,
                              AbstractMinecartEntity cart,
                              AbstractMinecartEntity newCart,
-                             World world) {
+                             World world, BlockPos tinkererPos) {
         if(newState != null) {
+            if(!newState.isValidPosition(world, pos))
+                return false;
             world.removeBlock(pos, false);
             world.setBlockState(pos, newState);
-            world.notifyBlockUpdate(pos, newState, newState, 0);
+            newState.neighborChanged(world, pos, newState.getBlock(), tinkererPos, true);
         }
         cart.onKillCommand();
         world.addEntity(newCart);

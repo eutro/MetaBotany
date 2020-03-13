@@ -42,6 +42,7 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
     @Override
     @SuppressWarnings("unchecked")
     public void doPulse(BlockState state, BlockPos pos, World world, BlockPos from) {
+        // TODO block update
         if(world.isRemote() || world.getGameTime() <= lastSwitch)
             return;
 
@@ -57,12 +58,12 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
 
         BlockPos diff = pos.subtract(cart.getPosition());
         BlockPos opposite = pos.offset(Direction.getFacingFromVector(diff.getX(), diff.getY(), diff.getZ()));
+        BlockState oppositeState = world.getBlockState(opposite);
 
         if(cart.getClass() == MinecartEntity.class) {
-            BlockState targetState = world.getBlockState(opposite);
             Multimap<BlockState, ResourceLocation> stateMap =
                     CART_TINKER.getSlaveMap(TinkerHandlerMap.STATE_MAP_LOC, Multimap.class);
-            Collection<ResourceLocation> locations = stateMap.get(targetState);
+            Collection<ResourceLocation> locations = stateMap.get(oppositeState);
             locations.add(CART_TINKER_DEFAULT);
 
             for(ResourceLocation location : locations) {
@@ -71,7 +72,7 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
                     continue;
                 }
 
-                if(handler.doInsert(opposite, targetState, cart, world)) {
+                if(handler.doInsert(opposite, oppositeState, cart, world, pos)) {
                     break;
                 }
             }
@@ -80,7 +81,7 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
                     CART_TINKER.getSlaveMap(TinkerHandlerMap.CART_MAP_LOC, Multimap.class);
             Class<? extends AbstractMinecartEntity> cartType = cart.getClass();
             Collection<ResourceLocation> locations;
-            locations = cartMap.get(cartType);
+            locations = new ArrayList<>(cartMap.get(cartType));
             locations.add(CART_TINKER_DEFAULT);
 
             for(ResourceLocation location : locations) {
@@ -88,7 +89,7 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
                 if(handler == null)
                     continue;
 
-                if(handler.doExtract(opposite, cart, world))
+                if(handler.doExtract(opposite, oppositeState, cart, world, pos))
                     break;
             }
         }

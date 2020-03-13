@@ -19,7 +19,7 @@ public class PoolTinkerHandler extends CartTinkerHandler {
     }
 
     @Override
-    public boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world) {
+    public boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world, BlockPos tinkererPos) {
         EntityPoolMinecart cart = new EntityPoolMinecart(world, destinationCart.getX(), destinationCart.getY(), destinationCart.getZ());
 
         TileEntity te = world.getTileEntity(sourcePos);
@@ -28,17 +28,17 @@ public class PoolTinkerHandler extends CartTinkerHandler {
         IManaPool pool = (IManaPool) te;
         cart.setMana(pool.getCurrentMana());
 
-        return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world);
+        return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world, tinkererPos);
     }
 
     @Override
-    public boolean doExtract(BlockPos destinationPos, AbstractMinecartEntity sourceCart, World world) {
+    public boolean doExtract(BlockPos destinationPos, BlockState destinationState, AbstractMinecartEntity sourceCart, World world, BlockPos tinkererPos) {
         AbstractMinecartEntity newCart = new MinecartEntity(world, sourceCart.getX(), sourceCart.getY(), sourceCart.getZ());
         EntityPoolMinecart poolCart = (EntityPoolMinecart) sourceCart;
 
         BlockState state = BotaniaPPBlocks.BOTANIA_MANA_POOL.getDefaultState();
 
-        boolean ret = doSwap(destinationPos, state, sourceCart, newCart, world);
+        boolean ret = doSwap(destinationPos, state, sourceCart, newCart, world, tinkererPos);
 
         TileEntity te = world.getTileEntity(destinationPos);
         if(te instanceof IManaPool) {

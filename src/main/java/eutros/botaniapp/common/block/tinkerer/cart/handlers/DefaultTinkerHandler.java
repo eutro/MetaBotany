@@ -18,11 +18,12 @@ public class DefaultTinkerHandler extends CartTinkerHandler {
     }
 
     @Override
-    public boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world) {
+    public boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world, BlockPos tinkererPos) {
         // TODO block blacklist/whitelist
         if(sourceState.isAir(world, sourcePos)) {
             return false;
         }
+
         TileEntity te = world.getTileEntity(sourcePos);
         EntityGenericBlockCart cart;
         if(te == null)
@@ -33,14 +34,14 @@ public class DefaultTinkerHandler extends CartTinkerHandler {
             te.remove();
         }
 
-        return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world);
+        return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world, tinkererPos);
     }
 
     @Override
-    public boolean doExtract(BlockPos destinationPos, AbstractMinecartEntity sourceCart, World world) {
+    public boolean doExtract(BlockPos destinationPos, BlockState destinationState, AbstractMinecartEntity sourceCart, World world, BlockPos tinkererPos) {
         BlockState state = sourceCart.getDisplayTile();
         AbstractMinecartEntity cart = new MinecartEntity(world, sourceCart.getX(), sourceCart.getY(), sourceCart.getZ());
-        boolean ret = doSwap(destinationPos, state, sourceCart, cart, world);
+        boolean ret = doSwap(destinationPos, state, sourceCart, cart, world, tinkererPos);
         if(sourceCart instanceof EntityGenericTileEntityCart) {
             TileEntity tile = ((EntityGenericTileEntityCart) sourceCart).getTile();
             tile.validate();

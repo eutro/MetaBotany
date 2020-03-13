@@ -18,14 +18,14 @@ public class TNTTinkerHandler extends CartTinkerHandler {
     }
 
     @Override
-    public boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world) {
+    public boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world, BlockPos tinkererPos) {
         TNTMinecartEntity cart = new TNTMinecartEntity(world, destinationCart.getX(), destinationCart.getY(), destinationCart.getZ());
 
-        return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world);
+        return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world, tinkererPos);
     }
 
     @Override
-    public boolean doExtract(BlockPos destinationPos, AbstractMinecartEntity sourceCart, World world) {
+    public boolean doExtract(BlockPos destinationPos, BlockState destinationState, AbstractMinecartEntity sourceCart, World world, BlockPos tinkererPos) {
         AbstractMinecartEntity newCart = new MinecartEntity(world, sourceCart.getX(), sourceCart.getY(), sourceCart.getZ());
         TNTMinecartEntity tntCart = (TNTMinecartEntity) sourceCart;
 
@@ -42,6 +42,6 @@ public class TNTTinkerHandler extends CartTinkerHandler {
             world.addEntity(tnt);
         }
 
-        return doSwap(destinationPos, state, sourceCart, newCart, world);
+        return doSwap(destinationPos, state, sourceCart, newCart, world, tinkererPos);
     }
 }
