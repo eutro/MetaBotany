@@ -6,15 +6,30 @@ import eutros.botaniapp.common.entity.cart.EntityGenericTileEntityCart;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.item.minecart.MinecartEntity;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static net.minecraft.state.properties.BlockStateProperties.*;
 
 public class DefaultTinkerHandler extends CartTinkerHandler {
 
     public DefaultTinkerHandler() {
         super(new BlockState[]{});
+    }
+
+    private static final Set<IProperty<?>> propertyBlacklist = new HashSet<>();
+
+    static {
+        propertyBlacklist.add(DOUBLE_BLOCK_HALF);
+        propertyBlacklist.add(BED_PART);
     }
 
     @Override
@@ -23,6 +38,12 @@ public class DefaultTinkerHandler extends CartTinkerHandler {
         if(sourceState.isAir(world, sourcePos)) {
             return false;
         }
+
+        if(sourceState.getProperties().stream().map(propertyBlacklist::contains).reduce(Boolean::logicalOr).orElse(false))
+            return false;
+
+        if(sourceState.has(WATERLOGGED) && sourceState.get(WATERLOGGED))
+            sourceState = sourceState.with(WATERLOGGED, false);
 
         TileEntity te = world.getTileEntity(sourcePos);
         EntityGenericBlockCart cart;
@@ -40,6 +61,11 @@ public class DefaultTinkerHandler extends CartTinkerHandler {
     @Override
     public boolean doExtract(BlockPos destinationPos, BlockState destinationState, AbstractMinecartEntity sourceCart, World world, BlockPos tinkererPos) {
         BlockState state = sourceCart.getDisplayTile();
+
+        IFluidState fluidState = world.getFluidState(destinationPos);
+        if(state.has(WATERLOGGED) && fluidState.isSource() && fluidState.getFluid() == Fluids.WATER)
+            state = state.with(WATERLOGGED, true);
+
         AbstractMinecartEntity cart = new MinecartEntity(world, sourceCart.getX(), sourceCart.getY(), sourceCart.getZ());
         boolean ret = doSwap(destinationPos, state, sourceCart, cart, world, tinkererPos);
         if(sourceCart instanceof EntityGenericTileEntityCart) {
