@@ -3,6 +3,7 @@ package eutros.botaniapp.common.block.tinkerer.cart.handlers;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import eutros.botaniapp.api.carttinkerer.CartTinkerHandler;
+import eutros.botaniapp.api.internal.config.Configurable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +28,18 @@ import java.util.stream.IntStream;
 
 public class ContainerTinkerHandler extends CartTinkerHandler {
 
+    @Configurable(path={"cart_tinkerer"},
+            comment={"If true, disable tinkering of chests to chest minecarts."})
+    public static boolean DISABLE_CHEST = false;
+
+    @Configurable(path={"cart_tinkerer"},
+            comment={"If true, disable tinkering of furnaces to furnace minecarts."})
+    public static boolean DISABLE_FURNACE = false;
+
+    @Configurable(path={"cart_tinkerer"},
+            comment={"If true, disable tinkering of hoppers to hopper minecarts."})
+    public static boolean DISABLE_HOPPER = false;
+
     public ContainerTinkerHandler() {
         super(new Block[]{Blocks.CHEST, Blocks.HOPPER, Blocks.FURNACE}, ChestMinecartEntity.class, HopperMinecartEntity.class, FurnaceMinecartEntity.class);
     }
@@ -41,6 +54,12 @@ public class ContainerTinkerHandler extends CartTinkerHandler {
 
     @Override
     public boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world, BlockPos tinkererPos) {
+        Block block = sourceState.getBlock();
+        if(DISABLE_CHEST && block == Blocks.CHEST ||
+                DISABLE_FURNACE && block == Blocks.FURNACE ||
+                DISABLE_HOPPER && block == Blocks.HOPPER)
+            return false;
+
         AbstractMinecartEntity cart;
         try {
             Constructor<? extends AbstractMinecartEntity> constructor = cartMapping.get(sourceState.getBlock()).getDeclaredConstructor(World.class, double.class, double.class, double.class);

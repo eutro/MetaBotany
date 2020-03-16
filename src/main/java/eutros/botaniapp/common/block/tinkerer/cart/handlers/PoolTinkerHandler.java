@@ -1,6 +1,7 @@
 package eutros.botaniapp.common.block.tinkerer.cart.handlers;
 
 import eutros.botaniapp.api.carttinkerer.CartTinkerHandler;
+import eutros.botaniapp.api.internal.config.Configurable;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
@@ -14,12 +15,19 @@ import vazkii.botania.common.entity.EntityPoolMinecart;
 
 public class PoolTinkerHandler extends CartTinkerHandler {
 
+    @Configurable(path={"cart_tinkerer"},
+            comment={"If true, disable tinkering of mana pools to pool minecarts."})
+    public static boolean DISABLE_POOL = false;
+
     public PoolTinkerHandler() {
         super(new net.minecraft.block.Block[]{BotaniaPPBlocks.BOTANIA_MANA_POOL}, EntityPoolMinecart.class);
     }
 
     @Override
     public boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world, BlockPos tinkererPos) {
+        if(DISABLE_POOL)
+            return false;
+
         EntityPoolMinecart cart = new EntityPoolMinecart(world, destinationCart.getX(), destinationCart.getY(), destinationCart.getZ());
 
         TileEntity te = world.getTileEntity(sourcePos);

@@ -1,6 +1,7 @@
 package eutros.botaniapp.common.block.tinkerer.cart.handlers;
 
 import eutros.botaniapp.api.carttinkerer.CartTinkerHandler;
+import eutros.botaniapp.api.internal.config.Configurable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.TNTEntity;
@@ -13,12 +14,19 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class TNTTinkerHandler extends CartTinkerHandler {
 
+    @Configurable(path={"cart_tinkerer"},
+            comment={"If true, disable tinkering of TNT to TNT minecarts."})
+    public static boolean DISABLE_TNT = false;
+
     public TNTTinkerHandler() {
         super(new net.minecraft.block.Block[]{Blocks.TNT}, TNTMinecartEntity.class);
     }
 
     @Override
     public boolean doInsert(BlockPos sourcePos, BlockState sourceState, AbstractMinecartEntity destinationCart, World world, BlockPos tinkererPos) {
+        if(DISABLE_TNT)
+            return false;
+
         TNTMinecartEntity cart = new TNTMinecartEntity(world, destinationCart.getX(), destinationCart.getY(), destinationCart.getZ());
 
         return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world, tinkererPos);

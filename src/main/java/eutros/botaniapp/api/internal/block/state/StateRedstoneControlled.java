@@ -16,7 +16,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class StateRedstoneControlled extends BlockState {
 
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
-    private boolean locked;
 
     public StateRedstoneControlled(Block block, ImmutableMap<IProperty<?>, Comparable<?>> map) {
         super(block, map);
@@ -25,7 +24,7 @@ public class StateRedstoneControlled extends BlockState {
     @ParametersAreNonnullByDefault
     @Override
     public void neighborChanged(World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        if(locked || !(getBlock() instanceof BlockRedstoneControlled))
+        if(!(getBlock() instanceof BlockRedstoneControlled))
             return;
 
         int power = 0;
@@ -43,13 +42,11 @@ public class StateRedstoneControlled extends BlockState {
             return;
         }
 
-        locked = true;
         if((power > 0) != powered) {
             if(power > 0) {
                 ((BlockRedstoneControlled) getBlock()).doPulse(this, pos, world, fromPos);
             }
             world.setBlockState(pos, this.with(POWERED, power > 0), 4);
         }
-        locked = false;
     }
 }

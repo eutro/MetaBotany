@@ -1,6 +1,7 @@
 package eutros.botaniapp.common;
 
 import eutros.botaniapp.client.core.proxy.ClientProxy;
+import eutros.botaniapp.common.config.BotaniaPPConfig;
 import eutros.botaniapp.common.core.proxy.IProxy;
 import eutros.botaniapp.common.core.proxy.ServerProxy;
 import eutros.botaniapp.common.utils.Reference;
