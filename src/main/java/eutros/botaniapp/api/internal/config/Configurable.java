@@ -1,5 +1,7 @@
 package eutros.botaniapp.api.internal.config;
 
+import net.minecraftforge.fml.config.ModConfig;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
@@ -27,4 +29,9 @@ public @interface Configurable {
      * and must take the field's type as a single parameter.
      */
     String callback() default "";
+
+    /**
+     * The side this config value should appear on.
+     */
+    ModConfig.Type side() default ModConfig.Type.COMMON;
 }

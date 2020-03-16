@@ -1,5 +1,7 @@
 package eutros.botaniapp.common.config;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import eutros.botaniapp.api.internal.config.Configurable;
 import eutros.botaniapp.api.internal.config.ITomlSerializer;
 import eutros.botaniapp.common.utils.Reference;
@@ -8,6 +10,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.loading.moddiscovery.ModAnnotation;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -28,55 +31,104 @@ public class BotaniaPPConfig {
     public static class Common {
 
         public static List<Triple<Field, ForgeConfigSpec.ConfigValue<?>, Method>> fields = new ArrayList<>();
+        public static List<ModFileScanData.AnnotationData> data = new ArrayList<>();
 
         Common(ForgeConfigSpec.Builder builder) {
             builder.comment("Common configurations, synced from the server. Reloads on file saved.")
                     .push("common");
 
-            org.objectweb.asm.Type annotationType = org.objectweb.asm.Type.getType(Configurable.class);
-            List<ModFileScanData> allScanData = ModList.get().getAllScanData();
+            for(ModFileScanData.AnnotationData a : data)
+                addField(a, builder, fields);
+        }
+    }
 
-            for (ModFileScanData scanData : allScanData) {
-                Iterable<ModFileScanData.AnnotationData> annotations = scanData.getAnnotations();
-                for (ModFileScanData.AnnotationData a : annotations) {
-                    if (Objects.equals(a.getAnnotationType(), annotationType)) {
-                        String fieldName = a.getMemberName();
-                        String className = a.getClassType().getClassName();
+    public static class Client {
 
-                        try {
-                            Class<?> clazz = Class.forName(className);
-                            Field field = clazz.getField(fieldName);
-                            Type fieldType = field.getGenericType();
+        public static List<Triple<Field, ForgeConfigSpec.ConfigValue<?>, Method>> fields = new ArrayList<>();
+        public static List<ModFileScanData.AnnotationData> data = new ArrayList<>();
 
-                            Map<String, Object> info = a.getAnnotationData();
+        Client(ForgeConfigSpec.Builder builder) {
+            builder.comment("Client-side configurations. Reloads on file saved.")
+                    .push("client");
 
-                            @SuppressWarnings("unchecked")
-                            List<String> comment = (List<String>) info.getOrDefault("comment", new ArrayList<>());
-                            builder.comment(comment.toArray(new String[0]));
+            for(ModFileScanData.AnnotationData a : data)
+                addField(a, builder, fields);
+        }
+    }
 
-                            builder.translation((String) info.getOrDefault("translation", ""));
+    public static class Server {
 
-                            @SuppressWarnings("unchecked")
-                            List<String> path = (List<String>) info.getOrDefault("path", new ArrayList<>());
-                            path.add(fieldName);
-                            ForgeConfigSpec.ConfigValue<Object> value = builder.define(path, serialize(field.get(null), fieldType));
+        public static List<Triple<Field, ForgeConfigSpec.ConfigValue<?>, Method>> fields = new ArrayList<>();
+        public static List<ModFileScanData.AnnotationData> data = new ArrayList<>();
 
-                            Method callback = null;
-                            String callbackName = (String) info.getOrDefault("callback", null);
+        Server(ForgeConfigSpec.Builder builder) {
+            builder.comment("Server-side configurations. Reloads on file saved.")
+                    .push("server");
 
-                            if (callbackName != null)
-                                try {
-                                    callback = clazz.getMethod(callbackName, String.class, field.getType());
-                                } catch (NoSuchMethodException ignored) {}
+            for(ModFileScanData.AnnotationData a : data)
+                addField(a, builder, fields);
+        }
+    }
 
-                            fields.add(Triple.of(field, value, callback));
+    static {
+        org.objectweb.asm.Type annotationType = org.objectweb.asm.Type.getType(Configurable.class);
+        List<ModFileScanData> allScanData = ModList.get().getAllScanData();
 
-                        } catch (NoSuchFieldException | ClassNotFoundException | IllegalAccessException | ExceptionInInitializerError e) {
-                            LOGGER.error("Setting configurable: " + className + "." + fieldName + " failed.", e);
-                        }
+        for (ModFileScanData scanData : allScanData) {
+            Iterable<ModFileScanData.AnnotationData> annotations = scanData.getAnnotations();
+            for (ModFileScanData.AnnotationData a : annotations) {
+                if (Objects.equals(a.getAnnotationType(), annotationType)) {
+                    Object side = a.getAnnotationData().get("side");
+                    switch(side instanceof ModAnnotation.EnumHolder ? ((ModAnnotation.EnumHolder) side).getValue() : "COMMON") {
+                        case "COMMON":
+                            Common.data.add(a);
+                            break;
+                        case "CLIENT":
+                            Client.data.add(a);
+                            break;
+                        case "SERVER":
+                            Server.data.add(a);
                     }
                 }
             }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void addField(ModFileScanData.AnnotationData data,
+                                 ForgeConfigSpec.Builder builder,
+                                 List<Triple<Field, ForgeConfigSpec.ConfigValue<?>, Method>> fields) {
+        String fieldName = data.getMemberName();
+        String className = data.getClassType().getClassName();
+
+        try {
+            Class<?> clazz = Class.forName(className);
+            Field field = clazz.getField(fieldName);
+            Type fieldType = field.getGenericType();
+
+            Map<String, Object> info = data.getAnnotationData();
+
+            List<String> comment = (List<String>) info.getOrDefault("comment", new ArrayList<>());
+            builder.comment(comment.toArray(new String[0]));
+
+            builder.translation((String) info.getOrDefault("translation", ""));
+
+            List<String> path = (List<String>) info.getOrDefault("path", new ArrayList<>());
+            path.add(fieldName);
+            ForgeConfigSpec.ConfigValue<Object> value = builder.define(path, serialize(field.get(null), fieldType));
+
+            Method callback = null;
+            String callbackName = (String) info.getOrDefault("callback", null);
+
+            if (callbackName != null)
+                try {
+                    callback = clazz.getMethod(callbackName, String.class, field.getType());
+                } catch (NoSuchMethodException ignored) {}
+
+            fields.add(Triple.of(field, value, callback));
+
+        } catch (NoSuchFieldException | ClassNotFoundException | IllegalAccessException | ExceptionInInitializerError e) {
+            LOGGER.error("Setting configurable: " + className + "." + fieldName + " failed.", e);
         }
     }
 
@@ -93,16 +145,74 @@ public class BotaniaPPConfig {
                         .collect(Collectors.toSet());
             }
         });
+        serializers.put(Map.class, new ITomlSerializer<Map<?, ?>, List<List<?>>>() {
+            @Override
+            public List<List<?>> serialize(Map<?, ?> toSerialize) {
+                return toSerialize.keySet().stream().map(k ->
+                        {
+                            Object val = toSerialize.get(k);
+                            return Arrays.asList(BotaniaPPConfig.serialize(k, k.getClass()),
+                                    BotaniaPPConfig.serialize(val, val.getClass()));
+                        }
+                ).collect(Collectors.toList());
+            }
+
+            @Override
+            public Map<?, ?> deserialize(List<List<?>> toDeserialize, Type type) {
+                HashMap<Object, Object> map = new HashMap<>();
+                Type[] arguments = ((ParameterizedType) type).getActualTypeArguments();
+                for(List<?> pair : toDeserialize) {
+                    map.put(BotaniaPPConfig.deserialize(pair.get(0), arguments[0]),
+                            BotaniaPPConfig.deserialize(pair.get(1), arguments[1]));
+                }
+                return map;
+            }
+        });
+        serializers.put(Multimap.class, new ITomlSerializer<Multimap<Object, ?>, List<List<?>>>() {
+            @Override
+            public List<List<?>> serialize(Multimap<Object, ?> toSerialize) {
+                return toSerialize.keySet().stream().map(k ->
+                        {
+                            List<?> val = new ArrayList<>(toSerialize.get(k));
+                            return Arrays.asList(BotaniaPPConfig.serialize(k, k.getClass()),
+                                    BotaniaPPConfig.serialize(val, val.getClass()));
+                        }
+                ).collect(Collectors.toList());
+            }
+
+            @Override
+            public Multimap<Object, ?> deserialize(List<List<?>> toDeserialize, Type type) {
+                HashMultimap<Object, Object> map = HashMultimap.create();
+                Type[] arguments = ((ParameterizedType) type).getActualTypeArguments();
+                for(List<?> pair : toDeserialize) {
+                    map.putAll(BotaniaPPConfig.deserialize(pair.get(0), arguments[0]),
+                            (Iterable<?>) pair.get(1));
+                }
+                return map;
+            }
+        });
     }
 
     public static final ForgeConfigSpec COMMON_SPEC;
     public static final Common COMMON;
+    public static final ForgeConfigSpec CLIENT_SPEC;
+    public static final Client CLIENT;
+    public static final ForgeConfigSpec SERVER_SPEC;
+    public static final Server SERVER;
 
     static {
-        final Pair<Common, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Common::new);
-        COMMON_SPEC = specPair.getRight();
-        COMMON = specPair.getLeft();
+        final Pair<Common, ForgeConfigSpec> commonPair = new ForgeConfigSpec.Builder().configure(Common::new);
+        COMMON_SPEC = commonPair.getRight();
+        COMMON = commonPair.getLeft();
         loadConfig(Common.fields);
+        final Pair<Client, ForgeConfigSpec> clientPair = new ForgeConfigSpec.Builder().configure(Client::new);
+        CLIENT_SPEC = clientPair.getRight();
+        CLIENT = clientPair.getLeft();
+        loadConfig(Client.fields);
+        final Pair<Server, ForgeConfigSpec> serverPair = new ForgeConfigSpec.Builder().configure(Server::new);
+        SERVER_SPEC = serverPair.getRight();
+        SERVER = serverPair.getLeft();
+        loadConfig(Server.fields);
     }
 
     public static void loadConfig(List<Triple<Field, ForgeConfigSpec.ConfigValue<?>, Method>> fields) {
@@ -124,7 +234,9 @@ public class BotaniaPPConfig {
                 loadConfig(Common.fields);
                 break;
             case CLIENT:
+                loadConfig(Client.fields);
             case SERVER:
+                loadConfig(Server.fields);
         }
     }
 

@@ -1,5 +1,7 @@
 package eutros.botaniapp.common.block.tinkerer.cart.handlers;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import eutros.botaniapp.api.carttinkerer.CartTinkerHandler;
 import eutros.botaniapp.api.internal.config.Configurable;
 import eutros.botaniapp.common.entity.cart.EntityGenericBlockCart;
@@ -10,6 +12,7 @@ import net.minecraft.entity.item.minecart.MinecartEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -34,7 +37,9 @@ public class DefaultTinkerHandler extends CartTinkerHandler {
     
     @Configurable(path={"cart_tinkerer", "generic"},
             comment="Any blocks in this set will be blacklisted from generic tinkering.")
-    public static Set<String> BLOCK_BLACKLIST = Collections.emptySet();
+    public static Set<String> BLOCK_BLACKLIST = new HashSet<>(Collections.singletonList(
+            "minecraft:piston_head"
+    ));
 
     @Configurable(path={"cart_tinkerer", "generic"},
             comment="Any blocks with a state property in this set will be blacklisted from generic tinkering.")
@@ -42,6 +47,14 @@ public class DefaultTinkerHandler extends CartTinkerHandler {
             BED_PART.toString(),
             DOUBLE_BLOCK_HALF.toString()
     ));
+
+    @Configurable(path={"cart_tinkerer", "generic"},
+            comment="Any blocks with a state in this list will be blacklisted from generic tinkering.")
+    public static Multimap<String, Object> STATE_VALUE_BLACKLIST = HashMultimap.create();
+
+    static {
+        STATE_VALUE_BLACKLIST.put(EXTENDED.getName(), true);
+    }
 
     @Configurable(path={"cart_tinkerer", "generic"},
             comment="Disable generic Tile Entity tinkering altogether.")
@@ -63,6 +76,11 @@ public class DefaultTinkerHandler extends CartTinkerHandler {
                 sourceState.getProperties().stream().map(Object::toString).map(STATE_PROPERTY_BLACKLIST::contains)
                 .reduce(Boolean::logicalOr).orElse(false))
             return false;
+
+        for(IProperty<?> property : sourceState.getProperties()) {
+            if(STATE_VALUE_BLACKLIST.get(property.getName()).contains(sourceState.get(property)))
+                return false;
+        }
 
         if(sourceState.has(WATERLOGGED) && sourceState.get(WATERLOGGED))
             sourceState = sourceState.with(WATERLOGGED, false);
