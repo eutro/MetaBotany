@@ -1,6 +1,6 @@
 package eutros.botaniapp.common.block.tile.corporea.matchers;
 
-import eutros.botaniapp.common.BotaniaPPConfig;
+import eutros.botaniapp.api.internal.config.Configurable;
 import eutros.botaniapp.common.utils.RegularExpressionUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -20,6 +20,10 @@ import java.util.regex.PatternSyntaxException;
 import static eutros.botaniapp.common.utils.RegularExpressionUtils.replaceAll;
 
 public class RegexMatcher extends AdvancedMatcher {
+
+    @Configurable(comment="Time until a Regular Expression times out, in nanoseconds. " +
+                    "Used for the Advanced Corporea Funnel's RegEx Matcher to counteract ReDoSing.")
+    public static int REGEX_TIMEOUT = 500000;
 
     private static final Pattern regexPatternMatcher = Pattern.compile("/(?<exp>.+)/" + // Matches the expression itself.
             "(?<type>(N(AME)?)|(O(RE(_?DICT)?)?)|(T(AGS?)?)|(U(NLOC)?)|(M(OD)?)|(P(ATH)?)|(ID?))?" + // What should be matched?
@@ -126,7 +130,7 @@ public class RegexMatcher extends AdvancedMatcher {
     }
 
     private Boolean matchText(String text) {
-        Matcher matcher = RegularExpressionUtils.createMatcherWithTimeout(text, pattern, BotaniaPPConfig.COMMON.REGEX_TIMEOUT.get());
+        Matcher matcher = RegularExpressionUtils.createMatcherWithTimeout(text, pattern, REGEX_TIMEOUT);
         try {
             return matcher.matches();
         } catch (RegularExpressionUtils.RegexTimeout e) {

@@ -9,7 +9,6 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.loading.FMLPaths;
 
 @Mod(Reference.MOD_ID)
 public class BotaniaPP {
@@ -21,8 +20,9 @@ public class BotaniaPP {
         instance = this;
         proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
         proxy.registerHandlers();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, BotaniaPPConfig.COMMON_SPEC);
-        BotaniaPPConfig.loadConfig(BotaniaPPConfig.COMMON_SPEC, FMLPaths.CONFIGDIR.get().resolve(BotaniaPPConfig.Common.PATH));
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BotaniaPPConfig.COMMON_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, BotaniaPPConfig.CLIENT_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, BotaniaPPConfig.SERVER_SPEC);
     }
 }
 
