@@ -675,18 +675,8 @@ public class BotaniaPPClientWorldProxy extends ClientWorld {
     }
 
     @Override
-    public boolean removeBlock(BlockPos p_217377_1_, boolean p_217377_2_) {
-        return innerWorld.removeBlock(p_217377_1_, p_217377_2_);
-    }
-
-    @Override
     public boolean breakBlock(BlockPos p_225521_1_, boolean p_225521_2_, @Nullable Entity p_225521_3_) {
         return innerWorld.breakBlock(p_225521_1_, p_225521_2_, p_225521_3_);
-    }
-
-    @Override
-    public boolean setBlockState(BlockPos p_175656_1_, BlockState p_175656_2_) {
-        return innerWorld.setBlockState(p_175656_1_, p_175656_2_);
     }
 
     @Override
@@ -697,16 +687,6 @@ public class BotaniaPPClientWorldProxy extends ClientWorld {
     @Override
     public void checkBlockRerender(BlockPos p_225319_1_, BlockState p_225319_2_, BlockState p_225319_3_) {
         innerWorld.checkBlockRerender(p_225319_1_, p_225319_2_, p_225319_3_);
-    }
-
-    @Override
-    public void notifyNeighborsOfStateChange(BlockPos p_195593_1_, Block p_195593_2_) {
-        innerWorld.notifyNeighborsOfStateChange(p_195593_1_, p_195593_2_);
-    }
-
-    @Override
-    public void notifyNeighborsOfStateExcept(BlockPos p_175695_1_, Block p_175695_2_, Direction p_175695_3_) {
-        innerWorld.notifyNeighborsOfStateExcept(p_175695_1_, p_175695_2_, p_175695_3_);
     }
 
     @Override

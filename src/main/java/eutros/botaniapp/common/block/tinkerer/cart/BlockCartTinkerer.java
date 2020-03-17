@@ -42,7 +42,6 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
     @Override
     @SuppressWarnings("unchecked")
     public void doPulse(BlockState state, BlockPos pos, World world, BlockPos from) {
-        // TODO block update
         if(world.isRemote() || world.getGameTime() <= lastSwitch)
             return;
 
@@ -58,6 +57,10 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
 
         BlockPos diff = pos.subtract(cart.getPosition());
         BlockPos opposite = pos.offset(Direction.getFacingFromVector(diff.getX(), diff.getY(), diff.getZ()));
+
+        if(opposite.equals(from))
+            return;
+
         BlockState oppositeState = world.getBlockState(opposite);
 
         if(cart.getClass() == MinecartEntity.class) {

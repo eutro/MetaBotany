@@ -1,7 +1,6 @@
 package eutros.botaniapp.common.entity.cart;
 
 import eutros.botaniapp.common.utils.Reference;
-import eutros.botaniapp.common.utils.proxyworld.BotaniaPPWorldProxy;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
@@ -20,6 +19,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
     @ObjectHolder(Reference.MOD_ID + ":generic_tile_entity_cart")
@@ -122,16 +123,19 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
         return wrappedTile;
     }
 
-    public World getProxyWorld(World world) {
-        if(world == null)
-            return null;
-        if(world instanceof ServerWorld) {
-            return new ProxyServerWorld((ServerWorld) world);
-        }
-        if(world instanceof ClientWorld) {
-            return new ProxyClientWorld((ClientWorld) world);
-        }
-        return new BotaniaPPWorldProxy(world);
+    @Override
+    protected Function<ServerWorld, ServerWorld> getServerWorldFactory() {
+        return ProxyServerWorld::new;
+    }
+
+    @Override
+    protected Function<ClientWorld, ClientWorld> getClientWorldFactory() {
+        return ProxyClientWorld::new;
+    }
+
+    @Override
+    protected Function<World, World> getGenericWorldFactory() {
+        return ProxyWorld::new;
     }
 
     protected class ProxyServerWorld extends EntityGenericBlockCart.ProxyServerWorld {
@@ -155,6 +159,25 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
 
     protected class ProxyClientWorld extends EntityGenericBlockCart.ProxyClientWorld {
         public ProxyClientWorld(ClientWorld world) {
+            super(world);
+        }
+
+        @Nullable
+        @Override
+        public TileEntity getTileEntity(BlockPos pos) {
+            return pos.equals(getPosition()) ? getTile() : super.getTileEntity(pos);
+        }
+
+        @Override
+        public void markChunkDirty(BlockPos pos, TileEntity te) {
+            if(pos.equals(getPosition()))
+                setTile(te);
+            super.markChunkDirty(pos, te);
+        }
+    }
+
+    protected class ProxyWorld extends EntityGenericBlockCart.ProxyWorld {
+        public ProxyWorld(World world) {
             super(world);
         }
 
