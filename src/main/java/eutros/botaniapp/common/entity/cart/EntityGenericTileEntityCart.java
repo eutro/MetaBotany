@@ -1,16 +1,21 @@
 package eutros.botaniapp.common.entity.cart;
 
 import eutros.botaniapp.common.utils.Reference;
+import eutros.botaniapp.common.utils.proxyworld.BotaniaPPWorldProxy;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 import org.jetbrains.annotations.NotNull;
@@ -24,10 +29,12 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
     private static final String TAG_TILE_LOC = "id";
 
     private static final DataParameter<CompoundNBT> TILE = EntityDataManager.createKey(EntityGenericTileEntityCart.class, DataSerializers.COMPOUND_NBT);
+    private TileEntity cachedTile;
 
     public EntityGenericTileEntityCart(EntityType<?> type, World world) {
         super(type, world);
         setTile(null);
+        cachedTile = null;
     }
 
     public EntityGenericTileEntityCart(World world) {
@@ -35,16 +42,38 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
     }
 
     public EntityGenericTileEntityCart(World world, double x, double y, double z, BlockState state, TileEntity tile) {
-        super(TYPE, world, x, y, z, state);
+        this(TYPE, world, x, y, z, state, tile);
+    }
+
+    public EntityGenericTileEntityCart(EntityType<?> type, World world, double x, double y, double z, BlockState state, TileEntity tile) {
+        super(type, world, x, y, z, state);
         setTile(tile);
+        cachedTile = null;
     }
 
     public TileEntity getTile() {
-        return deserializeTile(dataManager.get(TILE));
+        if(cachedTile == null) {
+            TileEntity tile = deserializeTile(dataManager.get(TILE));
+            if (tile != null)
+                tile.setLocation(proxyWorld, getPosition());
+            cachedTile = tile;
+        }
+        if(cachedTile != null && (!cachedTile.hasWorld() || !cachedTile.getPos().equals(getPosition())))
+            cachedTile.setLocation(proxyWorld, getPosition());
+        return cachedTile;
     }
 
     private void setTile(TileEntity tile) {
+        cachedTile = tile;
         dataManager.set(TILE, serializeTile(tile));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        TileEntity tile = getTile();
+        if(tile instanceof ITickableTileEntity)
+            ((ITickableTileEntity) tile).tick();
     }
 
     @Override
@@ -93,4 +122,53 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
         return wrappedTile;
     }
 
+    public World getProxyWorld(World world) {
+        if(world == null)
+            return null;
+        if(world instanceof ServerWorld) {
+            return new ProxyServerWorld((ServerWorld) world);
+        }
+        if(world instanceof ClientWorld) {
+            return new ProxyClientWorld((ClientWorld) world);
+        }
+        return new BotaniaPPWorldProxy(world);
+    }
+
+    protected class ProxyServerWorld extends EntityGenericBlockCart.ProxyServerWorld {
+        public ProxyServerWorld(ServerWorld world) {
+            super(world);
+        }
+
+        @Nullable
+        @Override
+        public TileEntity getTileEntity(BlockPos pos) {
+            return pos.equals(getPosition()) ? getTile() : super.getTileEntity(pos);
+        }
+
+        @Override
+        public void markChunkDirty(BlockPos pos, TileEntity te) {
+            if(pos.equals(getPosition()))
+                setTile(te);
+            super.markChunkDirty(pos, te);
+        }
+    }
+
+    protected class ProxyClientWorld extends EntityGenericBlockCart.ProxyClientWorld {
+        public ProxyClientWorld(ClientWorld world) {
+            super(world);
+        }
+
+        @Nullable
+        @Override
+        public TileEntity getTileEntity(BlockPos pos) {
+            return pos.equals(getPosition()) ? getTile() : super.getTileEntity(pos);
+        }
+
+        @Override
+        public void markChunkDirty(BlockPos pos, TileEntity te) {
+            if(pos.equals(getPosition()))
+                setTile(te);
+            super.markChunkDirty(pos, te);
+        }
+    }
 }

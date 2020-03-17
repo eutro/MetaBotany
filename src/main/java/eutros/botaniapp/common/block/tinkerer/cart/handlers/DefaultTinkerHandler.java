@@ -94,8 +94,7 @@ public class DefaultTinkerHandler extends CartTinkerHandler {
                 return false;
 
             cart = new EntityGenericTileEntityCart(world, destinationCart.getX(), destinationCart.getY(), destinationCart.getZ(), sourceState, te);
-            te.write(new CompoundNBT()); // Completely and utterly remove the TE from existence.
-            te.remove();
+            te.read(new CompoundNBT()); // Completely and utterly remove the TE from existence.
         }
 
         return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world, tinkererPos);

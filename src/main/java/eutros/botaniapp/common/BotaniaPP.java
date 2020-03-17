@@ -25,4 +25,3 @@ public class BotaniaPP {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, BotaniaPPConfig.SERVER_SPEC);
     }
 }
-
