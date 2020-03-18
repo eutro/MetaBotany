@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +31,15 @@ public class TileFrameTinkerer extends TileSimpleInventory {
     @Override
     public int getSizeInventory() {
         return 1;
+    }
+
+    protected SimpleItemStackHandler createItemHandler() {
+        return new SimpleItemStackHandler(this, true) {
+            @Override
+            protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
+                return 1;
+            }
+        };
     }
 
     public void doSwitch() {

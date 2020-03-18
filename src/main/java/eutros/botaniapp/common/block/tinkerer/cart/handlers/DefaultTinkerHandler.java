@@ -6,7 +6,9 @@ import eutros.botaniapp.api.carttinkerer.CartTinkerHandler;
 import eutros.botaniapp.api.internal.config.Configurable;
 import eutros.botaniapp.common.entity.cart.EntityGenericBlockCart;
 import eutros.botaniapp.common.entity.cart.EntityGenericTileEntityCart;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.BushBlock;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.item.minecart.MinecartEntity;
 import net.minecraft.fluid.Fluids;
@@ -15,9 +17,13 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ITickList;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 import static net.minecraft.state.properties.BlockStateProperties.*;
 
@@ -37,8 +43,10 @@ public class DefaultTinkerHandler extends CartTinkerHandler {
     
     @Configurable(path={"cart_tinkerer", "generic"},
             comment="Any blocks in this set will be blacklisted from generic tinkering.")
-    public static Set<String> BLOCK_BLACKLIST = new HashSet<>(Collections.singletonList(
-            "minecraft:piston_head"
+    public static Set<String> BLOCK_BLACKLIST = new HashSet<>(Arrays.asList(
+            "minecraft:piston_head",
+            "botania:cell_block",
+            "botania:enchanter"
     ));
 
     @Configurable(path={"cart_tinkerer", "generic"},
@@ -94,9 +102,18 @@ public class DefaultTinkerHandler extends CartTinkerHandler {
                 return false;
 
             cart = new EntityGenericTileEntityCart(world, destinationCart.getX(), destinationCart.getY(), destinationCart.getZ(), sourceState, te);
-            te.write(new CompoundNBT()); // Completely and utterly remove the TE from existence.
-            te.remove();
+            te.read(new CompoundNBT()); // Completely and utterly remove the TE from existence.
         }
+        if(sourceState.getBlock() instanceof BushBlock)
+            cart.setGroundState(world.getBlockState(sourcePos.down()));
+
+        ITickList<Block> pendingTicks = world.getPendingBlockTicks();
+        if(pendingTicks.isTickScheduled(sourcePos, sourceState.getBlock())) {
+            cart.proxyWorld.getPendingBlockTicks().scheduleTick(cart.getPosition(), sourceState.getBlock(), 1);
+        }
+
+        BlockState state = cart.getDisplayTile();
+        state.neighborChanged(cart.proxyWorld, cart.getPosition(), state.getBlock(), tinkererPos, true);
 
         return doSwap(sourcePos, world.getFluidState(sourcePos).getBlockState(), destinationCart, cart, world, tinkererPos);
     }

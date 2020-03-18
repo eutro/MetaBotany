@@ -25,7 +25,7 @@ public class RenderTileFrameTinkerer extends TileEntityRenderer<TileFrameTinkere
 		ms.push();
 		ItemStack stack = plate.getItemHandler().getStackInSlot(0);
 		if(!stack.isEmpty()) {
-			Random rand = new Random(plate.getPos().hashCode());
+			Random rand = new Random(plate.hashCode());
 			float angle = (ClientTickHandler.total + 360F * rand.nextFloat()) * 2;
 			int period = 10;
 			float height = (float) Math.sin(ClientTickHandler.total / period + Math.PI * rand.nextFloat());

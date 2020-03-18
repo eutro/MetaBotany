@@ -3,6 +3,7 @@ package eutros.botaniapp.common.block.tinkerer.cart;
 import com.google.common.collect.Multimap;
 import eutros.botaniapp.api.carttinkerer.CartTinkerHandler;
 import eutros.botaniapp.api.internal.block.BlockRedstoneControlled;
+import eutros.botaniapp.common.utils.MathUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.item.minecart.MinecartEntity;
@@ -42,7 +43,6 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
     @Override
     @SuppressWarnings("unchecked")
     public void doPulse(BlockState state, BlockPos pos, World world, BlockPos from) {
-        // TODO block update
         if(world.isRemote() || world.getGameTime() <= lastSwitch)
             return;
 
@@ -58,6 +58,10 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
 
         BlockPos diff = pos.subtract(cart.getPosition());
         BlockPos opposite = pos.offset(Direction.getFacingFromVector(diff.getX(), diff.getY(), diff.getZ()));
+
+        if(opposite.equals(from))
+            return;
+
         BlockState oppositeState = world.getBlockState(opposite);
 
         if(cart.getClass() == MinecartEntity.class) {
@@ -98,7 +102,7 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
     @NotNull
     private static List<AbstractMinecartEntity> getCarts(World world, BlockPos pos) {
         List<AbstractMinecartEntity> carts = new ArrayList<>();
-        for(Direction dir : Direction.values()) {
+        for(Direction dir : MathUtils.HORIZONTALS) {
             AxisAlignedBB aabb = new AxisAlignedBB(pos.offset(dir));
             carts.addAll(world.getEntitiesWithinAABB(AbstractMinecartEntity.class, aabb));
         }

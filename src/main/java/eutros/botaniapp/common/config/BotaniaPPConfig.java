@@ -222,7 +222,7 @@ public class BotaniaPPConfig {
                 if(triple.getRight() != null)
                     triple.getRight().invoke(null, triple.getLeft().getName(), triple.getMiddle().get());
             } catch (IllegalAccessException | NullPointerException | InvocationTargetException e) {
-                LOGGER.error("Couldn't set " + triple.getLeft().getDeclaringClass().getName() + "." + triple.getLeft().getName() + " to " + triple.getMiddle().get() + "because it is " + (e instanceof IllegalAccessException ? "final" : "not static") + ".");
+                LOGGER.debug("Couldn't set " + triple.getLeft().getDeclaringClass().getName() + "." + triple.getLeft().getName() + " to " + triple.getMiddle().get() + "because it is " + (e instanceof IllegalAccessException ? "final" : "not static") + ".");
             }
         }
     }

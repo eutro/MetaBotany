@@ -19,34 +19,23 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.model.data.IModelData;
 import org.jetbrains.annotations.NotNull;
-import vazkii.botania.api.state.BotaniaStateProps;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
 
-public class RenderTileFloatingFlower extends TileEntityRenderer<TileEntity> {
+public class RenderCartFloatingFlower {
 
-    public RenderTileFloatingFlower(TileEntityRendererDispatcher manager) {
-        super(manager);
-    }
-
-    @Override
-    public void render(@Nonnull TileEntity tile, float t, @NotNull MatrixStack ms, @NotNull IRenderTypeBuffer buffers, int light, int overlay) {
-
+    public static void render(@Nonnull TileEntity tile, float t, @NotNull MatrixStack ms, @NotNull IRenderTypeBuffer buffers, int light, int overlay) {
         IModelData data = tile.getModelData();
-        if (!data.hasProperty(BotaniaStateProps.FLOATING_DATA))
-            return;
 
         ms.push();
 
         double worldTime = ClientTickHandler.ticksInGame + t;
         if(tile.getWorld() != null)
-            worldTime += new Random(tile.getPos().hashCode()).nextInt(1000);
+            worldTime += new Random(tile.hashCode()).nextInt(1000);
 
         ms.translate(0.5F, 0, 0.5F);
         ms.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-((float) worldTime * 0.5F)));
