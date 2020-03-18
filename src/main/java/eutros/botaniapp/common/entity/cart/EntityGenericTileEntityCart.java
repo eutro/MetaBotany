@@ -152,8 +152,10 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
 
         @Override
         public void markChunkDirty(BlockPos pos, TileEntity te) {
-            if(pos.equals(getPosition()))
+            if(pos.equals(getPosition())) {
                 setTile(te);
+                return;
+            }
             super.markChunkDirty(pos, te);
         }
     }
@@ -168,13 +170,6 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
         public TileEntity getTileEntity(BlockPos pos) {
             return pos.equals(getPosition()) ? getTile() : super.getTileEntity(pos);
         }
-
-        @Override
-        public void markChunkDirty(BlockPos pos, TileEntity te) {
-            if(pos.equals(getPosition()))
-                setTile(te);
-            super.markChunkDirty(pos, te);
-        }
     }
 
     protected class ProxyWorld extends EntityGenericBlockCart.ProxyWorld {
@@ -186,13 +181,6 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
         @Override
         public TileEntity getTileEntity(BlockPos pos) {
             return pos.equals(getPosition()) ? getTile() : super.getTileEntity(pos);
-        }
-
-        @Override
-        public void markChunkDirty(BlockPos pos, TileEntity te) {
-            if(pos.equals(getPosition()))
-                setTile(te);
-            super.markChunkDirty(pos, te);
         }
     }
 }

@@ -56,7 +56,7 @@ public class EntityGenericBlockCart extends AbstractMinecartEntity {
     private static final String GROUND = "ground";
     private static final DataParameter<Integer> GROUND_STATE = EntityDataManager.createKey(EntityGenericBlockCart.class, DataSerializers.VARINT);
 
-    int[] cachedNeighbors;
+    int[] cachedNeighbors = {};
 
     public World proxyWorld;
 
@@ -79,16 +79,17 @@ public class EntityGenericBlockCart extends AbstractMinecartEntity {
 
     public EntityGenericBlockCart(EntityType<?> type, World world, double x, double y, double z, @Nullable BlockState state) {
         super(type, world, x, y, z);
-        setDisplayTile(state);
-        proxyWorld = getProxyWorld(world);
-        cachedNeighbors = getNeighboringStates();
+        init(world, state);
     }
 
     public EntityGenericBlockCart(EntityType<?> type, World world, @Nullable BlockState state) {
         super(type, world);
-        setDisplayTile(state);
+        init(world, state);
+    }
+
+    private void init(World world, @Nullable BlockState state) {
+        setDisplayTile(state == null ? Blocks.AIR.getDefaultState() : state);
         proxyWorld = getProxyWorld(world);
-        cachedNeighbors = getNeighboringStates();
     }
 
     protected int[] getNeighboringStates() {
@@ -140,6 +141,9 @@ public class EntityGenericBlockCart extends AbstractMinecartEntity {
 
     @Override
     public void tick() {
+        if(cachedNeighbors.length == 0) // World is incomplete when first constructed during loading, so this is initialised as empty.
+            cachedNeighbors = getNeighboringStates();
+
         BlockPos oldPos = getPosition();
         super.tick();
         BlockPos pos = getPosition();

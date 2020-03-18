@@ -46,8 +46,9 @@ public abstract class CartTinkerHandler extends ForgeRegistryEntry<CartTinkerHan
             world.setBlockState(pos, newState);
             world.notifyNeighborsOfStateChange(tinkererPos, BotaniaPPBlocks.cartTinkerer);
         }
-        cart.onKillCommand();
+        newCart.setMotion(cart.getMotion());
         world.addEntity(newCart);
+        cart.remove(false);
         return true;
     }
 
