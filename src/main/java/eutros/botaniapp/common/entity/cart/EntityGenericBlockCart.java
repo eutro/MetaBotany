@@ -54,7 +54,7 @@ public class EntityGenericBlockCart extends AbstractMinecartEntity {
     public static EntityType<EntityGenericBlockCart> TYPE;
 
     private static final String GROUND = "ground";
-    private static final DataParameter<Integer> GROUND_STATE = EntityDataManager.createKey(AbstractMinecartEntity.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> GROUND_STATE = EntityDataManager.createKey(EntityGenericBlockCart.class, DataSerializers.VARINT);
 
     int[] cachedNeighbors;
 
