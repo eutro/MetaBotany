@@ -26,6 +26,8 @@ public final class ItemNBTHelper {
 
     private static final int[] EMPTY_INT_ARRAY = new int[0];
 
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
     // SETTERS ///////////////////////////////////////////////////////////////////
 
     public static void set(ItemStack stack, String tag, INBT nbt) {
@@ -38,6 +40,10 @@ public final class ItemNBTHelper {
 
     public static void setByte(ItemStack stack, String tag, byte b) {
         stack.getOrCreateTag().putByte(tag, b);
+    }
+
+    public static void setByteArray(ItemStack stack, String tag, byte[] val) {
+        stack.getOrCreateTag().putByteArray(tag, val);
     }
 
     public static void setShort(ItemStack stack, String tag, short s) {
@@ -102,6 +108,14 @@ public final class ItemNBTHelper {
 
     public static byte getByte(ItemStack stack, String tag, byte defaultExpected) {
         return verifyExistence(stack, tag) ? stack.getOrCreateTag().getByte(tag) : defaultExpected;
+    }
+
+    public static byte[] getByteArray(ItemStack stack, String tag) {
+        return verifyExistence(stack, tag) ? stack.getOrCreateTag().getByteArray(tag) : EMPTY_BYTE_ARRAY;
+    }
+
+    public static byte[] getByteArray(ItemStack stack, String tag, int size) {
+        return verifyExistence(stack, tag) ? stack.getOrCreateTag().getByteArray(tag) : new byte[size];
     }
 
     public static short getShort(ItemStack stack, String tag, short defaultExpected) {

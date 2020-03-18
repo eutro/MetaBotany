@@ -22,6 +22,7 @@ import net.minecraftforge.registries.ObjectHolder;
 public class BotaniaPPItems {
     
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "binding") public static BindingLens bindingLens;
+    @ObjectHolder("terra_pick") public static ItemTerraPickPP terraPick;
 
     public static Item BOTANIA_FLARE_LENS;
     public static Item BOTANIA_WARP_LENS;
@@ -43,6 +44,7 @@ public class BotaniaPPItems {
         IForgeRegistry<Item> r = event.getRegistry();
 
         register(r, new BindingLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "binding");
+        register(r, new ItemTerraPickPP(unstackable()), "terra_pick");
 
         setBotaniaItems(r);
     }
