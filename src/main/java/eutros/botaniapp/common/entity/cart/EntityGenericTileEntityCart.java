@@ -139,7 +139,6 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
     }
 
     protected class ProxyServerWorld extends EntityGenericBlockCart.ProxyServerWorld {
-        // TODO step down
         public ProxyServerWorld(ServerWorld world) {
             super(world);
         }
@@ -152,10 +151,8 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
 
         @Override
         public void markChunkDirty(BlockPos pos, TileEntity te) {
-            if(pos.equals(getPosition())) {
+            if(pos.equals(getPosition()))
                 setTile(te);
-                return;
-            }
             super.markChunkDirty(pos, te);
         }
     }

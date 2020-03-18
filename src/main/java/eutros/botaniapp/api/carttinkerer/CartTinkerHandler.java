@@ -1,6 +1,7 @@
 package eutros.botaniapp.api.carttinkerer;
 
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
+import eutros.botaniapp.common.block.tinkerer.cart.CartHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
@@ -46,9 +47,7 @@ public abstract class CartTinkerHandler extends ForgeRegistryEntry<CartTinkerHan
             world.setBlockState(pos, newState);
             world.notifyNeighborsOfStateChange(tinkererPos, BotaniaPPBlocks.cartTinkerer);
         }
-        newCart.setMotion(cart.getMotion());
-        world.addEntity(newCart);
-        cart.remove(false);
+        CartHelper.switchCarts(world, cart, newCart);
         return true;
     }
 

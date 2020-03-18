@@ -19,8 +19,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,12 +42,12 @@ public class ContainerTinkerHandler extends CartTinkerHandler {
         super(new Block[]{Blocks.CHEST, Blocks.HOPPER, Blocks.FURNACE}, ChestMinecartEntity.class, HopperMinecartEntity.class, FurnaceMinecartEntity.class);
     }
 
-    private static final BiMap<Block, Class<? extends AbstractMinecartEntity>> cartMapping = HashBiMap.create();
+    private static final BiMap<Block, AbstractMinecartEntity.Type> cartMapping = HashBiMap.create();
 
     static {
-        cartMapping.put(Blocks.CHEST, ChestMinecartEntity.class);
-        cartMapping.put(Blocks.HOPPER, HopperMinecartEntity.class);
-        cartMapping.put(Blocks.FURNACE, FurnaceMinecartEntity.class);
+        cartMapping.put(Blocks.CHEST, AbstractMinecartEntity.Type.CHEST);
+        cartMapping.put(Blocks.HOPPER, AbstractMinecartEntity.Type.HOPPER);
+        cartMapping.put(Blocks.FURNACE, AbstractMinecartEntity.Type.FURNACE);
     }
 
     @Override
@@ -60,13 +58,11 @@ public class ContainerTinkerHandler extends CartTinkerHandler {
                 DISABLE_HOPPER && block == Blocks.HOPPER)
             return false;
 
-        AbstractMinecartEntity cart;
-        try {
-            Constructor<? extends AbstractMinecartEntity> constructor = cartMapping.get(sourceState.getBlock()).getDeclaredConstructor(World.class, double.class, double.class, double.class);
-            cart = constructor.newInstance(world, destinationCart.getX(), destinationCart.getY(), destinationCart.getZ());
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            return false;
-        }
+        AbstractMinecartEntity cart = AbstractMinecartEntity.create(world,
+                destinationCart.getX(),
+                destinationCart.getY(),
+                destinationCart.getZ(),
+                cartMapping.get(sourceState.getBlock()));
 
         TileEntity te = world.getTileEntity(sourcePos);
         if(!(te instanceof LockableTileEntity))
@@ -91,7 +87,7 @@ public class ContainerTinkerHandler extends CartTinkerHandler {
             contents = IntStream.range(0, cart.getSizeInventory()).mapToObj(cart::removeStackFromSlot).collect(Collectors.toList());
         }
 
-        Block block = cartMapping.inverse().get(sourceCart.getClass());
+        Block block = cartMapping.inverse().get(sourceCart.getType());
         BlockState state = block.getDefaultState();
 
         if(block != Blocks.HOPPER) {
