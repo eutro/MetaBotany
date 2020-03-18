@@ -69,10 +69,6 @@ public class EntityGenericBlockCart extends AbstractMinecartEntity {
         this(TYPE, world, x, y, z, state);
     }
 
-    public EntityGenericBlockCart(World world) {
-        this(TYPE, world);
-    }
-
     public EntityGenericBlockCart(EntityType<?> type, World world) {
         this(type, world, null);
     }

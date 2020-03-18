@@ -1,5 +1,6 @@
 package eutros.botaniapp.common.entity.cart;
 
+import eutros.botaniapp.common.block.tinkerer.cart.CartHelper;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
@@ -38,10 +39,6 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
         cachedTile = null;
     }
 
-    public EntityGenericTileEntityCart(World world) {
-        this(TYPE, world);
-    }
-
     public EntityGenericTileEntityCart(World world, double x, double y, double z, BlockState state, TileEntity tile) {
         this(TYPE, world, x, y, z, state, tile);
     }
@@ -52,7 +49,17 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
         cachedTile = null;
     }
 
+    @Nullable
     public TileEntity getTile() {
+        if(!getDisplayTile().hasTileEntity()) {
+            CartHelper.switchCarts(world, this, new EntityGenericBlockCart(world,
+                    getX(),
+                    getY(),
+                    getZ(),
+                    getDisplayTile()));
+            return null;
+        }
+
         if(cachedTile == null) {
             TileEntity tile = deserializeTile(dataManager.get(TILE));
             if (tile != null)
