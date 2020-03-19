@@ -1,6 +1,7 @@
 package eutros.botaniapp.common.entity.cart;
 
 import eutros.botaniapp.api.internal.config.Configurable;
+import eutros.botaniapp.common.block.tinkerer.cart.CartHelper;
 import eutros.botaniapp.common.utils.Reference;
 import eutros.botaniapp.common.utils.proxyworld.BotaniaPPClientWorldProxy;
 import eutros.botaniapp.common.utils.proxyworld.BotaniaPPProxyTickList;
@@ -14,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
+import net.minecraft.entity.item.minecart.MinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
@@ -154,12 +156,21 @@ public class EntityGenericBlockCart extends AbstractMinecartEntity {
             state.neighborChanged(proxyWorld, pos, oldState.getBlock(), oldPos, true);
             cachedNeighbors = neighbors;
         }
+
         if(!world.isRemote()) {
             ((ProxyServerWorld) proxyWorld).tick(null);
             if (state.ticksRandomly() &&
                     world.getRandom().nextInt(4096) <= world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED))
                 state.randomTick((ServerWorld) proxyWorld, pos, world.getRandom());
         }
+
+        if(getDisplayTile().isAir(proxyWorld, pos))
+            CartHelper.switchCarts(world,
+                    EntityGenericBlockCart.this,
+                    new MinecartEntity(world,
+                            getX(),
+                            getY(),
+                            getZ()));
     }
 
     @Override
@@ -271,6 +282,13 @@ public class EntityGenericBlockCart extends AbstractMinecartEntity {
             tool = ((LivingEntity) source.getTrueSource()).getHeldItem(((LivingEntity) source.getTrueSource()).getActiveHand());
         }
         return tool;
+    }
+
+    @Override
+    public int getComparatorLevel() {
+        if(getDisplayTile().hasComparatorInputOverride())
+            return getDisplayTile().getComparatorInputOverride(proxyWorld, getPosition());
+        return -1;
     }
 
     @Override

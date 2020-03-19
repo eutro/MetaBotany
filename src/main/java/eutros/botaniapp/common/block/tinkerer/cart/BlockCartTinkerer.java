@@ -1,5 +1,6 @@
 package eutros.botaniapp.common.block.tinkerer.cart;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import eutros.botaniapp.api.carttinkerer.CartTinkerHandler;
 import eutros.botaniapp.api.internal.block.BlockRedstoneControlled;
@@ -9,17 +10,22 @@ import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.item.minecart.MinecartEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import static eutros.botaniapp.common.registries.BotaniaPPRegistries.CART_TINKER;
 import static eutros.botaniapp.common.registries.BotaniaPPRegistries.CART_TINKER_DEFAULT;
@@ -49,20 +55,31 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
         // Prevent the cart tinkerer from being activated more than once per tick, causing unpredictable outcomes.
         lastSwitch = world.getGameTime();
 
-        List<AbstractMinecartEntity> carts = getCarts(world, pos);
+        Multimap<Direction, AbstractMinecartEntity> carts = getCarts(world, pos);
         if(carts.isEmpty()) {
             return;
         }
 
-        AbstractMinecartEntity cart = carts.get(world.rand.nextInt(carts.size()));
+        Pair<Direction, AbstractMinecartEntity> cartPair = Collections.max(carts.keySet().stream()
+                        .flatMap((key) -> carts.get(key).stream().map(val -> Pair.of(key, val))).collect(Collectors.toList()),
+                Comparator.comparingInt(a -> a.getRight().ticksExisted)); // get the oldest minecart, and the direction it came from.
 
-        BlockPos diff = pos.subtract(cart.getPosition());
-        BlockPos opposite = pos.offset(Direction.getFacingFromVector(diff.getX(), diff.getY(), diff.getZ()));
+        AbstractMinecartEntity cart = cartPair.getRight();
+
+        BlockPos opposite = pos.offset(cartPair.getLeft().getOpposite());
+
+        BlockState oppositeState = world.getBlockState(opposite);
+        Collection<AbstractMinecartEntity> oppositeCarts = carts.get(cartPair.getLeft().getOpposite());
+
+        if(!oppositeCarts.isEmpty()) {
+            AbstractMinecartEntity oppositeCart = Collections.max(oppositeCarts, Comparator.comparingInt(a -> a.ticksExisted));
+            CartHelper.swapCartPositions(cart, oppositeCart);
+            world.playSound(null, pos, SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM, SoundCategory.BLOCKS, 1F, 1F);
+            return;
+        }
 
         if(opposite.equals(from))
             return;
-
-        BlockState oppositeState = world.getBlockState(opposite);
 
         if(cart.getClass() == MinecartEntity.class) {
             Multimap<BlockState, ResourceLocation> stateMap =
@@ -100,11 +117,14 @@ public class BlockCartTinkerer extends BlockRedstoneControlled {
     }
 
     @NotNull
-    private static List<AbstractMinecartEntity> getCarts(World world, BlockPos pos) {
-        List<AbstractMinecartEntity> carts = new ArrayList<>();
+    private static Multimap<Direction, AbstractMinecartEntity> getCarts(World world, BlockPos pos) {
+        Multimap<Direction, AbstractMinecartEntity> carts = HashMultimap.create();
         for(Direction dir : MathUtils.HORIZONTALS) {
-            AxisAlignedBB aabb = new AxisAlignedBB(pos.offset(dir));
-            carts.addAll(world.getEntitiesWithinAABB(AbstractMinecartEntity.class, aabb));
+            AxisAlignedBB area = new AxisAlignedBB(pos.offset(dir));
+            carts.putAll(dir,
+                    world.getEntitiesWithinAABB(AbstractMinecartEntity.class,
+                    area,
+                    null));
         }
         return carts;
     }

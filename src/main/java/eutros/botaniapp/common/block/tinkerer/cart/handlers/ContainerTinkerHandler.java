@@ -87,7 +87,7 @@ public class ContainerTinkerHandler extends CartTinkerHandler {
             contents = IntStream.range(0, cart.getSizeInventory()).mapToObj(cart::removeStackFromSlot).collect(Collectors.toList());
         }
 
-        Block block = cartMapping.inverse().get(sourceCart.getType());
+        Block block = cartMapping.inverse().get(sourceCart.getMinecartType());
         BlockState state = block.getDefaultState();
 
         if(block != Blocks.HOPPER) {

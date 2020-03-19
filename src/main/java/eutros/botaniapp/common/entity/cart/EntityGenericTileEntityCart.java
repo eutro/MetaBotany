@@ -5,6 +5,10 @@ import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.IClearable;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -12,18 +16,23 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.function.Function;
 
-public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
+public class EntityGenericTileEntityCart extends EntityGenericBlockCart implements IInventory, ICapabilityProvider {
     @ObjectHolder(Reference.MOD_ID + ":generic_tile_entity_cart")
     public static EntityType<EntityGenericTileEntityCart> TYPE;
     private static final String TAG_TILE = "contained_tile";
@@ -143,6 +152,75 @@ public class EntityGenericTileEntityCart extends EntityGenericBlockCart {
     @Override
     protected Function<World, World> getGenericWorldFactory() {
         return ProxyWorld::new;
+    }
+
+    @Override
+    public int getSizeInventory() {
+        TileEntity tile = getTile();
+        return tile instanceof IInventory ? ((IInventory) tile).getSizeInventory() : 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        TileEntity tile = getTile();
+        return tile instanceof IInventory && ((IInventory) tile).isEmpty();
+    }
+
+    @NotNull
+    @Override
+    public ItemStack getStackInSlot(int slot) {
+        TileEntity tile = getTile();
+        return tile instanceof IInventory ? ((IInventory) tile).getStackInSlot(slot) : ItemStack.EMPTY;
+    }
+
+    @NotNull
+    @Override
+    public ItemStack decrStackSize(int slot, int amount) {
+        TileEntity tile = getTile();
+        return tile instanceof IInventory ? ((IInventory) tile).decrStackSize(slot, amount) : ItemStack.EMPTY;
+    }
+
+    @NotNull
+    @Override
+    public ItemStack removeStackFromSlot(int slot) {
+        TileEntity tile = getTile();
+        return tile instanceof IInventory ? ((IInventory) tile).removeStackFromSlot(slot) : ItemStack.EMPTY;
+    }
+
+    @Override
+    public void setInventorySlotContents(int slot, @NotNull ItemStack stack) {
+        TileEntity tile = getTile();
+        if(tile instanceof IInventory)
+            ((IInventory) tile).setInventorySlotContents(slot, stack);
+    }
+
+    @Override
+    public void markDirty() {
+        TileEntity tile = getTile();
+        if(tile != null)
+            tile.markDirty();
+    }
+
+    @Override
+    public boolean isUsableByPlayer(@NotNull PlayerEntity player) {
+        TileEntity tile = getTile();
+        return tile instanceof IInventory && ((IInventory) tile).isUsableByPlayer(player);
+    }
+
+    @Override
+    public void clear() {
+        TileEntity tile = getTile();
+        if(tile instanceof IClearable)
+            ((IClearable) tile).clear();
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        TileEntity tile = getTile();
+        if(tile != null)
+            return tile.getCapability(cap, side);
+        return super.getCapability(cap, side);
     }
 
     protected class ProxyServerWorld extends EntityGenericBlockCart.ProxyServerWorld {

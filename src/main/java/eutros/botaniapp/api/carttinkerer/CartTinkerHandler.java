@@ -5,6 +5,7 @@ import eutros.botaniapp.common.block.tinkerer.cart.CartHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -44,8 +45,10 @@ public abstract class CartTinkerHandler extends ForgeRegistryEntry<CartTinkerHan
             if(!newState.isValidPosition(world, pos))
                 return false;
             world.removeBlock(pos, false);
+            world.playSound(null, pos, world.getBlockState(pos).getSoundType().getBreakSound(), SoundCategory.BLOCKS, 1F, 1F);
             world.setBlockState(pos, newState);
             world.notifyNeighborsOfStateChange(tinkererPos, BotaniaPPBlocks.cartTinkerer);
+            world.playSound(null, pos, newState.getSoundType().getPlaceSound(), SoundCategory.BLOCKS, 1F, 1F);
         }
         CartHelper.switchCarts(world, cart, newCart);
         return true;
