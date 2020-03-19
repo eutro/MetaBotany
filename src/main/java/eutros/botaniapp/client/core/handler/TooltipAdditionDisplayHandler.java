@@ -42,8 +42,9 @@ public final class TooltipAdditionDisplayHandler {
 
     private static void drawTerraPick(ItemStack stack, int mouseX, int mouseY, int width, int height, FontRenderer font) {
         int level = ItemTerraPickPP.getLevel(stack);
-        BigInteger max = BigInteger.TEN.pow(level+5);
-        BigInteger curr = ItemTerraPickPP.getTrueMana(stack);
+        BigInteger last = BigInteger.TEN.pow(level+4);
+        BigInteger max = BigInteger.TEN.pow(level+5).subtract(last);
+        BigInteger curr = ItemTerraPickPP.getTrueMana(stack).subtract(last);
         float percent = level == 0 ? 0F : new BigDecimal(curr).divide(new BigDecimal(max), MathContext.DECIMAL32).floatValue();
         int rainbowWidth = Math.min(width, (int) (width * percent));
         float huePer = width == 0 ? 0F : 1F / width;
