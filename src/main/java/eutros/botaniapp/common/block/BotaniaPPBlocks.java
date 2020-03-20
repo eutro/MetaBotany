@@ -48,6 +48,8 @@ public class BotaniaPPBlocks {
         register(r, new BlockLeakyPool(builder), Reference.BlockNames.LEAKY_POOL);
         register(r, new BlockFrameTinkerer(builder), Reference.BlockNames.FRAME_TINKERER);
 
+        BlockSparkPainter.registerAll(r); // BlockStates plz Willie
+
         // Get Botania's blocks.
 
         final String b = "botania";
@@ -67,6 +69,9 @@ public class BotaniaPPBlocks {
         register(r, new BlockItem(chargingPlate, props), chargingPlate.getRegistryName());
         register(r, new BlockItem(leakyPool, props), leakyPool.getRegistryName());
         register(r, new BlockItem(frameTinkerer, props), frameTinkerer.getRegistryName());
+
+        for(Block block : BlockSparkPainter.dyeMap.values())
+            register(r, new BlockItem(block, props), block.getRegistryName());
     }
 
     @SubscribeEvent
