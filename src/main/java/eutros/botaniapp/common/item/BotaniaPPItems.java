@@ -6,8 +6,11 @@
 package eutros.botaniapp.common.item;
 
 import eutros.botaniapp.common.core.BotaniappCreativeTab;
+import eutros.botaniapp.common.item.dispenser.BehaviourCorporeaSpark;
+import eutros.botaniapp.common.item.dispenser.BehaviourSpark;
 import eutros.botaniapp.common.item.lens.BindingLens;
 import eutros.botaniapp.common.utils.Reference;
+import net.minecraft.block.DispenserBlock;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -20,7 +23,7 @@ import net.minecraftforge.registries.ObjectHolder;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ObjectHolder(Reference.MOD_ID)
 public class BotaniaPPItems {
-    
+
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "binding") public static BindingLens bindingLens;
 
     public static Item BOTANIA_FLARE_LENS;
@@ -29,6 +32,8 @@ public class BotaniaPPItems {
     public static Item BOTANIA_RED_STRING;
     public static Item BOTANIA_MANA_STRING;
     public static Item BOTANIA_SPARK;
+    public static Item BOTANIA_CORPOREA_SPARK;
+    public static Item BOTANIA_CORPOREA_SPARK_MASTER;
 
     public static Item.Properties defaultBuilder() {
         return new Item.Properties().group(BotaniappCreativeTab.INSTANCE);
@@ -56,6 +61,8 @@ public class BotaniaPPItems {
         BOTANIA_RED_STRING = r.getValue(new ResourceLocation(b, "red_string"));
         BOTANIA_MANA_STRING = r.getValue(new ResourceLocation(b, "mana_string"));
         BOTANIA_SPARK = r.getValue(new ResourceLocation(b, "spark"));
+        BOTANIA_CORPOREA_SPARK = r.getValue(new ResourceLocation(b, "corporea_spark"));
+        BOTANIA_CORPOREA_SPARK_MASTER = r.getValue(new ResourceLocation(b, "corporea_spark_master"));
     }
 
     public static <V extends IForgeRegistryEntry<V>> void register(IForgeRegistry<V> reg, IForgeRegistryEntry<V> thing, ResourceLocation name) {
@@ -64,5 +71,11 @@ public class BotaniaPPItems {
 
     public static <V extends IForgeRegistryEntry<V>> void register(IForgeRegistry<V> reg, IForgeRegistryEntry<V> thing, String name) {
         register(reg, thing, new ResourceLocation(Reference.MOD_ID, name));
+    }
+
+    public static void addDispenserBehaviours() {
+        DispenserBlock.registerDispenseBehavior(BOTANIA_SPARK, new BehaviourSpark());
+        DispenserBlock.registerDispenseBehavior(BOTANIA_CORPOREA_SPARK, new BehaviourCorporeaSpark());
+        DispenserBlock.registerDispenseBehavior(BOTANIA_CORPOREA_SPARK_MASTER, new BehaviourCorporeaSpark());
     }
 }
