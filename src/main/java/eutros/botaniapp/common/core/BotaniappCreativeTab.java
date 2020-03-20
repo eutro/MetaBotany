@@ -1,5 +1,6 @@
 package eutros.botaniapp.common.core;
 
+import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
 import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.utils.Reference;
@@ -7,7 +8,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.NonNullList;
-import vazkii.patchouli.common.item.PatchouliItems;
 
 import javax.annotation.Nonnull;
 
@@ -39,6 +39,10 @@ public final class BotaniappCreativeTab extends ItemGroup {
         this.list = list;
 
         addItem(BotaniaPPItems.bindingLens);
+        addItem(BotaniaPPBlocks.frameTinkerer);
+        addItem(BotaniaPPBlocks.advancedFunnel);
+        addItem(BotaniaPPBlocks.chargingPlate);
+        addItem(BotaniaPPBlocks.leakyPool);
     }
 
     private void addItem(IItemProvider item) {
