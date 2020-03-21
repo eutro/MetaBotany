@@ -1,9 +1,12 @@
 package eutros.botaniapp.common.core;
 
+import eutros.botaniapp.common.block.BlockSparkPainter;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
+import eutros.botaniapp.common.block.flower.BotaniaPPFlowers;
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
 import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.utils.Reference;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IItemProvider;
@@ -39,10 +42,14 @@ public final class BotaniappCreativeTab extends ItemGroup {
         this.list = list;
 
         addItem(BotaniaPPItems.bindingLens);
+        addItem(BotaniaPPItems.redstoneLens);
         addItem(BotaniaPPBlocks.frameTinkerer);
         addItem(BotaniaPPBlocks.advancedFunnel);
         addItem(BotaniaPPBlocks.chargingPlate);
         addItem(BotaniaPPBlocks.leakyPool);
+        addItem(BlockSparkPainter.dyeMap.get(DyeColor.WHITE));
+        addItem(BotaniaPPFlowers.bouganvillea);
+        addItem(BotaniaPPFlowers.bouganvilleaFloating);
     }
 
     private void addItem(IItemProvider item) {

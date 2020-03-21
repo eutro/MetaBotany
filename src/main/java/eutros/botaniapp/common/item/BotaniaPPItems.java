@@ -9,6 +9,7 @@ import eutros.botaniapp.common.core.BotaniappCreativeTab;
 import eutros.botaniapp.common.item.dispenser.BehaviourCorporeaSpark;
 import eutros.botaniapp.common.item.dispenser.BehaviourSpark;
 import eutros.botaniapp.common.item.lens.BindingLens;
+import eutros.botaniapp.common.item.lens.RedstoneLens;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.item.Item;
@@ -25,6 +26,7 @@ import net.minecraftforge.registries.ObjectHolder;
 public class BotaniaPPItems {
 
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "binding") public static BindingLens bindingLens;
+    @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "redstone") public static RedstoneLens redstoneLens;
 
     public static Item BOTANIA_FLARE_LENS;
     public static Item BOTANIA_WARP_LENS;
@@ -48,6 +50,7 @@ public class BotaniaPPItems {
         IForgeRegistry<Item> r = event.getRegistry();
 
         register(r, new BindingLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "binding");
+        register(r, new RedstoneLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "redstone");
 
         setBotaniaItems(r);
     }

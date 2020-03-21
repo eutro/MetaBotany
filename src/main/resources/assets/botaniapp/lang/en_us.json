@@ -2,6 +2,9 @@
   "item.botaniapp.lens_binding": "Mana Lens: Binding",
   "item.botaniapp.lens_binding.short": "Binding",
 
+  "item.botaniapp.lens_redstone": "Mana Lens: Pulse",
+  "item.botaniapp.lens_redstone.short": "Pulse",
+
   "block.botaniapp.flower_bouganvillea": "Bouganvillea",
   "block.botaniapp.floating_flower_bouganvillea": "Floating Bouganvillea",
 

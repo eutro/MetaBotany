@@ -3,6 +3,7 @@ package eutros.botaniapp.common.block;
 import eutros.botaniapp.common.block.corporea.BlockAdvancedFunnel;
 import eutros.botaniapp.common.block.tile.TileChargingPlate;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
+import eutros.botaniapp.common.block.tile.TilePoweredAir;
 import eutros.botaniapp.common.block.tile.corporea.TileAdvancedFunnel;
 import eutros.botaniapp.common.block.tinkerer.BlockFrameTinkerer;
 import eutros.botaniapp.common.block.tinkerer.tile.TileFrameTinkerer;
@@ -30,6 +31,7 @@ public class BotaniaPPBlocks {
     @ObjectHolder(Reference.BlockNames.CHARGING_PLATE) public static BlockChargingPlate chargingPlate;
     @ObjectHolder(Reference.BlockNames.LEAKY_POOL) public static BlockLeakyPool leakyPool;
     @ObjectHolder(Reference.BlockNames.FRAME_TINKERER) public static BlockFrameTinkerer frameTinkerer;
+    @ObjectHolder(Reference.BlockNames.POWERED_AIR) public static BlockPoweredAir poweredAir;
 
     public static Block BOTANIA_PISTON_RELAY;
     public static Block BOTANIA_MANA_VOID;
@@ -47,6 +49,8 @@ public class BotaniaPPBlocks {
         register(r, new BlockChargingPlate(builder), Reference.BlockNames.CHARGING_PLATE);
         register(r, new BlockLeakyPool(builder), Reference.BlockNames.LEAKY_POOL);
         register(r, new BlockFrameTinkerer(builder), Reference.BlockNames.FRAME_TINKERER);
+
+        register(r, new BlockPoweredAir(Block.Properties.create(Material.AIR)), Reference.BlockNames.POWERED_AIR);
 
         BlockSparkPainter.registerAll(r); // BlockStates plz Willie
 
@@ -74,6 +78,7 @@ public class BotaniaPPBlocks {
             register(r, new BlockItem(block, props), block.getRegistryName());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @SubscribeEvent
     public static void initTileEntities(RegistryEvent.Register<TileEntityType<?>> evt) {
         IForgeRegistry<TileEntityType<?>> r = evt.getRegistry();
@@ -82,6 +87,7 @@ public class BotaniaPPBlocks {
         register(r, TileEntityType.Builder.create(TileChargingPlate::new, chargingPlate).build(null), Reference.BlockNames.CHARGING_PLATE);
         register(r, TileEntityType.Builder.create(TileLeakyPool::new, leakyPool).build(null), Reference.BlockNames.LEAKY_POOL);
         register(r, TileEntityType.Builder.create(TileFrameTinkerer::new, frameTinkerer).build(null), Reference.BlockNames.FRAME_TINKERER);
+        register(r, TileEntityType.Builder.create(TilePoweredAir::new, poweredAir).build(null), Reference.BlockNames.POWERED_AIR);
     }
 
 }
