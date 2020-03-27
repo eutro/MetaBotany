@@ -43,6 +43,7 @@ public final class BotaniappCreativeTab extends ItemGroup {
 
         addItem(BotaniaPPItems.bindingLens);
         addItem(BotaniaPPItems.redstoneLens);
+        addItem(BotaniaPPItems.redirectPlusLens);
         addItem(BotaniaPPBlocks.frameTinkerer);
         addItem(BotaniaPPBlocks.advancedFunnel);
         addItem(BotaniaPPBlocks.chargingPlate);
