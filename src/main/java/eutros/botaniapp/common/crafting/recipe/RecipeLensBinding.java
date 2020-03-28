@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class RecipeLensBinding implements ICraftingRecipe, IShapedRecipe<CraftingInventory> {
+
     public static final IRecipeSerializer<RecipeLensBinding> SERIALIZER = new Serializer();
     private final ShapedRecipe compose;
 
@@ -40,7 +41,7 @@ public class RecipeLensBinding implements ICraftingRecipe, IShapedRecipe<Craftin
     public ItemStack getCraftingResult(CraftingInventory inv) {
         int first = -1;
         int colorId;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
+        for(int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
             Item item = stack.getItem();
 
@@ -50,7 +51,7 @@ public class RecipeLensBinding implements ICraftingRecipe, IShapedRecipe<Craftin
                 continue;
             }
 
-            if (first == -1)
+            if(first == -1)
                 first = colorId;
             else
                 return BindingLens.forColors(first, colorId);
@@ -116,6 +117,7 @@ public class RecipeLensBinding implements ICraftingRecipe, IShapedRecipe<Craftin
     }
 
     private static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<RecipeLensBinding> {
+
         @Nonnull
         @Override
         public RecipeLensBinding read(@Nonnull ResourceLocation recipeId, @Nonnull JsonObject json) {
@@ -132,5 +134,7 @@ public class RecipeLensBinding implements ICraftingRecipe, IShapedRecipe<Craftin
         public void write(@Nonnull PacketBuffer buffer, @Nonnull RecipeLensBinding recipe) {
             CRAFTING_SHAPED.write(buffer, recipe.compose);
         }
+
     }
+
 }

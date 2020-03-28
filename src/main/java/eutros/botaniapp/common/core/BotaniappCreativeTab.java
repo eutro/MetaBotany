@@ -13,6 +13,7 @@ import net.minecraft.util.IItemProvider;
 import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class BotaniappCreativeTab extends ItemGroup {
 
@@ -53,7 +54,9 @@ public final class BotaniappCreativeTab extends ItemGroup {
         addItem(BotaniaPPFlowers.bouganvilleaFloating);
     }
 
-    private void addItem(IItemProvider item) {
-        item.asItem().fillItemGroup(this, list);
+    private void addItem(@Nullable IItemProvider item) {
+        if(item != null)
+            item.asItem().fillItemGroup(this, list);
     }
+
 }

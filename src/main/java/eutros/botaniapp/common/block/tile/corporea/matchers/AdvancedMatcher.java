@@ -35,6 +35,10 @@ public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
 
     public static class InvalidMatcher extends AdvancedMatcher {
 
+        static {
+            TileCorporeaRetainer.addCorporeaRequestMatcher("invalid", InvalidMatcher.class, InvalidMatcher::new);
+        }
+
         public InvalidMatcher(CompoundNBT compoundNBT) {
             new InvalidMatcher();
         }
@@ -54,15 +58,12 @@ public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
 
         @Override
         public ITextComponent getRequestName() {
-            return new StringTextComponent(TextFormatting.RED+"INVALID");
+            return new StringTextComponent(TextFormatting.RED + "INVALID");
         }
 
         public boolean isInvalid() {
             return true;
         }
-
-        static {
-            TileCorporeaRetainer.addCorporeaRequestMatcher("invalid", InvalidMatcher.class, InvalidMatcher::new);
-        }
     }
+
 }

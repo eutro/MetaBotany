@@ -6,20 +6,20 @@ import java.awt.geom.Point2D;
 
 public class MathUtils {
 
-    public static final Direction[] HORIZONTALS = { Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST };
+    public static final Direction[] HORIZONTALS = {Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST};
 
-    public static int gcf(int a, int b)
-    {
-        while (a != b)
-        {
-            if (a > b) a -= b;
+    private MathUtils() {
+    }
+
+    public static int gcf(int a, int b) {
+        while(a != b) {
+            if(a > b) a -= b;
             else b -= a;
         }
         return a;
     }
 
-    public static int lcm(int a, int b)
-    {
+    public static int lcm(int a, int b) {
         return (a * b) / gcf(a, b);
     }
 
@@ -30,5 +30,4 @@ public class MathUtils {
         return new Point2D.Double(newX, newY);
     }
 
-    private MathUtils() {}
 }

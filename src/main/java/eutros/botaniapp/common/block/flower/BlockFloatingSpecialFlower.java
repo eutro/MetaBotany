@@ -2,10 +2,10 @@
  * This class was created by <Vazkii>. It's distributed as
  * part of the Botania Mod. Get the Source Code in github:
  * https://github.com/Vazkii/Botania
- *
+ * <p>
  * Botania is Open Source and distributed under the
  * Botania License: http://botaniamod.net/license.php
- *
+ * <p>
  * File Created @ [Nov 17, 2014, 5:31:53 PM (GMT)]
  */
 package eutros.botaniapp.common.block.flower;
@@ -39,6 +39,7 @@ import java.util.function.Supplier;
 
 @SuppressWarnings("deprecation")
 public class BlockFloatingSpecialFlower extends BlockFloatingFlower implements IWandable, IWandHUD {
+
     private final Supplier<? extends TileEntitySpecialFlower> teProvider;
 
     public BlockFloatingSpecialFlower(Properties props, Supplier<? extends TileEntitySpecialFlower> teProvider) {
@@ -73,7 +74,8 @@ public class BlockFloatingSpecialFlower extends BlockFloatingFlower implements I
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {}
+    public void animateTick(BlockState state, World world, BlockPos pos, Random rand) {
+    }
 
     @Override
     public void onBlockHarvested(World world, @NotNull BlockPos pos, BlockState state, @NotNull PlayerEntity player) {
@@ -120,4 +122,5 @@ public class BlockFloatingSpecialFlower extends BlockFloatingFlower implements I
     public TileEntity createTileEntity(@Nonnull BlockState state, @Nonnull IBlockReader world) {
         return teProvider.get();
     }
+
 }

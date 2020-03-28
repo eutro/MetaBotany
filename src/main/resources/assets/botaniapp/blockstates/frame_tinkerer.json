@@ -1,6 +1,10 @@
 {
   "variants": {
-    "powered=true":  { "model": "botaniapp:block/frame_tinkerer" },
-    "powered=false":  { "model": "botaniapp:block/frame_tinkerer" }
+    "powered=true": {
+      "model": "botaniapp:block/frame_tinkerer"
+    },
+    "powered=false": {
+      "model": "botaniapp:block/frame_tinkerer"
+    }
   }
 }

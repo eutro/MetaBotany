@@ -41,7 +41,7 @@ public class ClientProxy implements IProxy {
         ForgeRegistries.BLOCKS.getValues().stream()
                 .filter(b -> Objects.requireNonNull(b.getRegistryName()).getNamespace().equals(Reference.MOD_ID))
                 .forEach(b -> {
-                    if (b instanceof BlockFloatingSpecialFlower || b instanceof FlowerBlock) {
+                    if(b instanceof BlockFloatingSpecialFlower || b instanceof FlowerBlock) {
                         RenderTypeLookup.setRenderLayer(b, RenderType.getCutout());
                     }
                 });
@@ -51,4 +51,5 @@ public class ClientProxy implements IProxy {
         ColorHandler.init();
         RegexDissection.init();
     }
+
 }

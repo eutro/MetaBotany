@@ -34,4 +34,5 @@ public @interface Configurable {
      * The side this config value should appear on.
      */
     ModConfig.Type side() default ModConfig.Type.COMMON;
+
 }

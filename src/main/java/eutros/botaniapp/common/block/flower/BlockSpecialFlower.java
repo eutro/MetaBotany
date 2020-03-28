@@ -2,10 +2,10 @@
  * This class was created by <Vazkii>. It's distributed as
  * part of the Botania Mod. Get the Source Code in github:
  * https://github.com/Vazkii/Botania
- *
+ * <p>
  * Botania is Open Source and distributed under the
  * Botania License: http://botaniamod.net/license.php
- *
+ * <p>
  * File Created @ [Jan 22, 2014, 7:06:38 PM (GMT)]
  */
 package eutros.botaniapp.common.block.flower;
@@ -43,6 +43,7 @@ import java.util.function.Supplier;
 
 @SuppressWarnings("deprecation")
 public class BlockSpecialFlower extends FlowerBlock implements IWandable, IWandHUD {
+
     private static final VoxelShape SHAPE = makeCuboidShape(4.8, 0, 4.8, 12.8, 16, 12.8);
     private final Supplier<? extends TileEntitySpecialFlower> teProvider;
 
@@ -146,4 +147,5 @@ public class BlockSpecialFlower extends FlowerBlock implements IWandable, IWandH
     public void renderHUD(Minecraft mc, World world, BlockPos pos) {
         ((TileEntitySpecialFlower) Objects.requireNonNull(world.getTileEntity(pos))).renderHUD(mc);
     }
+
 }

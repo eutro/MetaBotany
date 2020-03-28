@@ -73,7 +73,7 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
     @Override
     @SuppressWarnings("unchecked")
     public void setIngredients(@NotNull RecipeBouganvillea recipe, @NotNull IIngredients ingredients) {
-        if (recipe instanceof RecipeBouganvilleaAnvil) {
+        if(recipe instanceof RecipeBouganvilleaAnvil) {
             List<List<ItemStack>> inputStash = Arrays.asList(new ArrayList<>(), new ArrayList<>());
             List<ItemStack> outputStash = new ArrayList<>();
             if(JEIBotaniaPPPlugin.runtime != null) {
@@ -81,7 +81,7 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
                 IRecipeCategory<Object> category = recipeManager.getRecipeCategory(VanillaRecipeCategoryUid.ANVIL);
                 assert category != null;
                 List<?> recipes = recipeManager.getRecipes(category);
-                for (Object rcp : recipes) {
+                for(Object rcp : recipes) {
                     category.setIngredients(rcp, ingredients);
                     List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
 
@@ -117,24 +117,24 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, RecipeBouganvillea recipe, IIngredients ingredients) {
         IGuiItemStackGroup stacks = recipeLayout.getItemStacks();
-        Point center = new Point(background.getWidth()/2-8, background.getHeight()/2-8);
+        Point center = new Point(background.getWidth() / 2 - 8, background.getHeight() / 2 - 8);
 
         stacks.init(0, false, center.x, center.y);
         stacks.set(0, new ItemStack(BotaniaPPFlowers.bouganvillea));
 
         List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
 
-        double angleBetweenEach = Math.min(60.0, inputs.size() > 1 ? 180.0 / (inputs.size()-1) : 0);
-        Point2D point = new Point2D.Double(center.getX(), center.getY()-background.getHeight()/3.0);
-        point = MathUtils.rotatePointAbout(point, center, -angleBetweenEach*(inputs.size()-1)/2);
+        double angleBetweenEach = Math.min(60.0, inputs.size() > 1 ? 180.0 / (inputs.size() - 1) : 0);
+        Point2D point = new Point2D.Double(center.getX(), center.getY() - background.getHeight() / 3.0);
+        point = MathUtils.rotatePointAbout(point, center, -angleBetweenEach * (inputs.size() - 1) / 2);
 
         for(int i = 0; i < inputs.size(); i++) {
-            stacks.init(i+2, true, (int) Math.round(point.getX()), (int) Math.round(point.getY()));
-            stacks.set(i+2, inputs.get(i));
+            stacks.init(i + 2, true, (int) Math.round(point.getX()), (int) Math.round(point.getY()));
+            stacks.set(i + 2, inputs.get(i));
             point = MathUtils.rotatePointAbout(point, center, angleBetweenEach);
         }
 
-        stacks.init(1, false, center.x, center.y+background.getHeight()/3);
+        stacks.init(1, false, center.x, center.y + background.getHeight() / 3);
         stacks.set(1, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
     }
 

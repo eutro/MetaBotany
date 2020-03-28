@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
 public final class RenderHelper {
+
     public static final RenderType ICON_OVERLAY;
 
     static {

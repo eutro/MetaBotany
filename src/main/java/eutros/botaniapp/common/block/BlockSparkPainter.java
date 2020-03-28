@@ -36,17 +36,34 @@ import static eutros.botaniapp.common.item.BotaniaPPItems.register;
 
 public class BlockSparkPainter extends Block {
 
+    public static Map<DyeColor, BlockSparkPainter> dyeMap = new EnumMap<>(DyeColor.class);
     private final VoxelShape BASE = makeCuboidShape(4, 0, 4, 12, 2, 12);
     private final VoxelShape ORB = makeCuboidShape(5, 5, 5, 11, 11, 11);
     private final VoxelShape SHAPE = VoxelShapes.combine(BASE, ORB, IBooleanFunction.OR);
-
-    public static Map<DyeColor, BlockSparkPainter> dyeMap = new EnumMap<>(DyeColor.class);
-
     private final DyeColor color;
 
     private BlockSparkPainter(Properties builder, DyeColor color) {
         super(builder);
         this.color = color;
+    }
+
+    public static void registerAll(IForgeRegistry<Block> r) {
+        Properties builder = Properties.create(Material.GLASS)
+                .hardnessAndResistance(1, 1F)
+                .harvestLevel(0)
+                .nonOpaque();
+        for(DyeColor color : DyeColor.values()) {
+            BlockSparkPainter block = new BlockSparkPainter(builder, color);
+            dyeMap.put(color, block);
+            register(r, block, "spark_painter_" + color);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static void onEnqueue(InterModEnqueueEvent evt) {
+        for(Block block : dyeMap.values())
+            InterModComms.sendTo("botania", "register_paintable_block",
+                    () -> new PaintableBlockMessage(dyeMap::get, block));
     }
 
     @NotNull
@@ -72,18 +89,6 @@ public class BlockSparkPainter extends Block {
     @Override
     public boolean isToolEffective(BlockState state, ToolType tool) {
         return true;
-    }
-
-    public static void registerAll(IForgeRegistry<Block> r) {
-        Properties builder = Properties.create(Material.GLASS)
-                .hardnessAndResistance(1, 1F)
-                .harvestLevel(0)
-                .nonOpaque();
-        for(DyeColor color : DyeColor.values()) {
-            BlockSparkPainter block = new BlockSparkPainter(builder, color);
-            dyeMap.put(color, block);
-            register(r, block, "spark_painter_" + color);
-        }
     }
 
     @SuppressWarnings("deprecation")
@@ -113,18 +118,11 @@ public class BlockSparkPainter extends Block {
                 try {
                     ObfuscationReflectionHelper.setPrivateValue(EntityCorporeaSpark.class, (EntityCorporeaSpark) spark, true, "firstTick");
                     ObfuscationReflectionHelper.findMethod(EntityCorporeaSpark.class, "restartNetwork").invoke(spark);
-                } catch (IllegalAccessException | InvocationTargetException e) {
+                } catch(IllegalAccessException | InvocationTargetException e) {
                     LOGGER.warn("Some hacky network restarting failed.");
                 }
             }
         }
-    }
-
-    @SuppressWarnings("unused")
-    public static void onEnqueue(InterModEnqueueEvent evt) {
-        for(Block block : dyeMap.values())
-            InterModComms.sendTo("botania", "register_paintable_block",
-                    () -> new PaintableBlockMessage(dyeMap::get, block));
     }
 
 }

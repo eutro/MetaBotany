@@ -39,4 +39,5 @@ public class BehaviourCorporeaSpark extends DefaultDispenseItemBehavior {
         }
         return super.dispenseStack(source, stack);
     }
+
 }

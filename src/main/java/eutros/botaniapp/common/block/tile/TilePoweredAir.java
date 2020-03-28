@@ -16,11 +16,9 @@ import java.util.Arrays;
 
 public class TilePoweredAir extends TileEntity implements ITickableTileEntity {
 
+    private static final String DIRECTION = "direction";
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.POWERED_AIR)
     public static TileEntityType<TilePoweredAir> TYPE;
-
-    private static final String DIRECTION = "direction";
-
     public Direction[] directions = {};
 
     public TilePoweredAir(TileEntityType<?> type) {
@@ -58,4 +56,5 @@ public class TilePoweredAir extends TileEntity implements ITickableTileEntity {
 
         return cmp;
     }
+
 }

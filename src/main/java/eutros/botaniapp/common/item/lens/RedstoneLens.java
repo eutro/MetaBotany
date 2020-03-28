@@ -63,4 +63,5 @@ public class RedstoneLens extends ItemLens {
         }
         return super.collideBurst(burst, rtr, isManaBlock, dead, stack);
     }
+
 }

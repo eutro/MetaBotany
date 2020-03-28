@@ -35,9 +35,8 @@ import java.util.function.Supplier;
 
 public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
 
-    public static IRecipeSerializer<RecipeBouganvilleaAnvil> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaAnvil::new);
-
     private static final ResourceLocation BOUG_ANVILS = new ResourceLocation(Reference.MOD_ID, "boug_anvils");
+    public static IRecipeSerializer<RecipeBouganvilleaAnvil> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaAnvil::new);
 
     public RecipeBouganvilleaAnvil(ResourceLocation id) {
         super(id, ItemStack.EMPTY, SubtileBouganvillea.BUILTIN_GROUP);
@@ -76,11 +75,11 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
         int materialCost = 0;
         boolean flag = false;
 
-        if (!combineWith.isEmpty()) {
+        if(!combineWith.isEmpty()) {
             flag = combineWith.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantments(combineWith).isEmpty();
-            if (result.isDamageable() && result.getItem().getIsRepairable(itemstack, combineWith)) {
+            if(result.isDamageable() && result.getItem().getIsRepairable(itemstack, combineWith)) {
                 int l2 = Math.min(result.getDamage(), result.getMaxDamage() / 4);
-                if (l2 <= 0) {
+                if(l2 <= 0) {
                     return defaultRet.get();
                 }
 
@@ -94,21 +93,21 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
 
                 materialCost = i3;
             } else {
-                if (!flag && (result.getItem() != combineWith.getItem() || !result.isDamageable())) {
+                if(!flag && (result.getItem() != combineWith.getItem() || !result.isDamageable())) {
                     return defaultRet.get();
                 }
 
-                if (result.isDamageable() && !flag) {
+                if(result.isDamageable() && !flag) {
                     int l = itemstack.getMaxDamage() - itemstack.getDamage();
                     int i1 = combineWith.getMaxDamage() - combineWith.getDamage();
                     int j1 = i1 + result.getMaxDamage() * 12 / 100;
                     int k1 = l + j1;
                     int l1 = result.getMaxDamage() - k1;
-                    if (l1 < 0) {
+                    if(l1 < 0) {
                         l1 = 0;
                     }
 
-                    if (l1 < result.getDamage()) {
+                    if(l1 < result.getDamage()) {
                         result.setDamage(l1);
                         i += 2;
                     }
@@ -119,24 +118,24 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
                 boolean flag3 = false;
 
                 for(Enchantment enchantment1 : map1.keySet()) {
-                    if (enchantment1 != null) {
+                    if(enchantment1 != null) {
                         int i2 = enchantMap.getOrDefault(enchantment1, 0);
                         int j2 = map1.get(enchantment1);
                         j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
                         boolean flag1 = enchantment1.canApply(itemstack) || itemstack.getItem() == Items.ENCHANTED_BOOK;
 
                         for(Enchantment enchantment : enchantMap.keySet()) {
-                            if (enchantment != enchantment1 && !enchantment1.isCompatibleWith(enchantment)) {
+                            if(enchantment != enchantment1 && !enchantment1.isCompatibleWith(enchantment)) {
                                 flag1 = false;
                                 ++i;
                             }
                         }
 
-                        if (!flag1) {
+                        if(!flag1) {
                             flag3 = true;
                         } else {
                             flag2 = true;
-                            if (j2 > enchantment1.getMaxLevel()) {
+                            if(j2 > enchantment1.getMaxLevel()) {
                                 j2 = enchantment1.getMaxLevel();
                             }
 
@@ -156,38 +155,38 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
                                     k3 = 8;
                             }
 
-                            if (flag) {
+                            if(flag) {
                                 k3 = Math.max(1, k3 / 2);
                             }
 
                             i += k3 * j2;
-                            if (itemstack.getCount() > 1) {
+                            if(itemstack.getCount() > 1) {
                                 i = 40;
                             }
                         }
                     }
                 }
 
-                if (flag3 && !flag2) {
+                if(flag3 && !flag2) {
                     return defaultRet.get();
                 }
             }
         }
 
-        if (flag && !result.isBookEnchantable(combineWith)) result = ItemStack.EMPTY;
+        if(flag && !result.isBookEnchantable(combineWith)) result = ItemStack.EMPTY;
 
         int maximumCost = j + i;
-        if (i <= 0) {
+        if(i <= 0) {
             result = ItemStack.EMPTY;
         }
 
-        if (maximumCost >= 40) {
+        if(maximumCost >= 40) {
             result = ItemStack.EMPTY;
         }
 
-        if (!result.isEmpty()) {
+        if(!result.isEmpty()) {
             int k2 = result.getRepairCost();
-            if (!combineWith.isEmpty() && k2 < combineWith.getRepairCost()) {
+            if(!combineWith.isEmpty() && k2 < combineWith.getRepairCost()) {
                 k2 = combineWith.getRepairCost();
             }
 
@@ -222,7 +221,7 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
 
             anvil = damage(anvil);
 
-            if (anvil == null) {
+            if(anvil == null) {
                 inventory.removeStackFromSlot(0);
                 inventory.cancelSound();
                 world.playSound(null, flower.getEffectivePos(), SoundEvents.BLOCK_ANVIL_DESTROY, SoundCategory.BLOCKS, 0.5F, 1F);
@@ -230,7 +229,7 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
                 inventory.setInventorySlotContents(0, anvil);
         }
 
-        flower.addMana(-maximumCost*5);
+        flower.addMana(-maximumCost * 5);
 
         return result;
     }
@@ -250,9 +249,9 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
         if(tag != null) {
             Collection<Tag.ITagEntry<Item>> entries = tag.getEntries();
 
-            for (Tag.ITagEntry<Item> entry : entries) {
+            for(Tag.ITagEntry<Item> entry : entries) {
                 List<Item> items = new ArrayList<>();
-                getItemsSorted(items,entry); // Some magic happens that hopefully doesn't break.
+                getItemsSorted(items, entry); // Some magic happens that hopefully doesn't break.
 
                 boolean flag = false; // Just get the entry that follows.
                 for(Item item : items) {
@@ -295,4 +294,5 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
     public IRecipeSerializer<?> getSerializer() {
         return SERIALIZER;
     }
+
 }

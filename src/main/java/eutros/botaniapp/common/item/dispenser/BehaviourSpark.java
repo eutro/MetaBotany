@@ -39,4 +39,5 @@ public class BehaviourSpark extends DefaultDispenseItemBehavior {
 
         return super.dispenseStack(source, stack);
     }
+
 }

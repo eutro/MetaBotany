@@ -3,11 +3,12 @@ package eutros.botaniapp.api.internal.config;
 import java.lang.reflect.Type;
 
 public interface ITomlSerializer<FieldType, SerializableType> {
+
+    ITomlSerializer<?, ?> IDENTITY = new IdentitySerializer();
+
     SerializableType serialize(FieldType toSerialize);
 
     FieldType deserialize(SerializableType toDeserialize, Type type);
-
-    ITomlSerializer<?, ?> IDENTITY = new IdentitySerializer();
 
     class IdentitySerializer implements ITomlSerializer<Object, Object> {
 
@@ -20,5 +21,7 @@ public interface ITomlSerializer<FieldType, SerializableType> {
         public Object deserialize(Object toDeserialize, Type type) {
             return toDeserialize;
         }
+
     }
+
 }

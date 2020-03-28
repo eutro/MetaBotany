@@ -30,23 +30,6 @@ public class BlockLootProvider implements IDataProvider {
         this.generator = generator;
     }
 
-    @Override
-    public void act(@NotNull DirectoryCache cache) throws IOException {
-        Map<ResourceLocation, LootTable.Builder> tables = new HashMap<>();
-
-        for (Block b : ForgeRegistries.BLOCKS) {
-            if(!Reference.MOD_ID.equals(Objects.requireNonNull(b.getRegistryName()).getNamespace()))
-                continue;
-            Function<Block, LootTable.Builder> func = BlockLootProvider::genRegular;
-            tables.put(b.getRegistryName(), func.apply(b));
-        }
-
-        for (Map.Entry<ResourceLocation, LootTable.Builder> e : tables.entrySet()) {
-            Path path = getPath(generator.getOutputFolder(), e.getKey());
-            IDataProvider.save(GSON, cache, LootTableManager.toJson(e.getValue().setParameterSet(LootParameterSets.BLOCK).build()), path);
-        }
-    }
-
     private static Path getPath(Path root, ResourceLocation id) {
         return root.resolve("data/" + id.getNamespace() + "/loot_tables/blocks/" + id.getPath() + ".json");
     }
@@ -58,9 +41,27 @@ public class BlockLootProvider implements IDataProvider {
         return LootTable.builder().addLootPool(pool);
     }
 
+    @Override
+    public void act(@NotNull DirectoryCache cache) throws IOException {
+        Map<ResourceLocation, LootTable.Builder> tables = new HashMap<>();
+
+        for(Block b : ForgeRegistries.BLOCKS) {
+            if(!Reference.MOD_ID.equals(Objects.requireNonNull(b.getRegistryName()).getNamespace()))
+                continue;
+            Function<Block, LootTable.Builder> func = BlockLootProvider::genRegular;
+            tables.put(b.getRegistryName(), func.apply(b));
+        }
+
+        for(Map.Entry<ResourceLocation, LootTable.Builder> e : tables.entrySet()) {
+            Path path = getPath(generator.getOutputFolder(), e.getKey());
+            IDataProvider.save(GSON, cache, LootTableManager.toJson(e.getValue().setParameterSet(LootParameterSets.BLOCK).build()), path);
+        }
+    }
+
     @Nonnull
     @Override
     public String getName() {
         return "BotaniaPP block loot tables";
     }
+
 }

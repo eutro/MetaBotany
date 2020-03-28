@@ -1,14 +1,14 @@
 /**
  * This class was created by <Vazkii>, and negligibly modified by <Eutros>. It's distributed as
  * part of the ThaumicTinkerer Mod.
- *
+ * <p>
  * ThaumicTinkerer is Open Source and distributed under a
  * Botania License: http://botaniamod.net/license.php
- *
+ * <p>
  * ThaumicTinkerer is a Derivative Work on Thaumcraft 4.
  * Thaumcraft 4 (c) Azanor 2012
  * (http://www.minecraftforum.net/topic/1585216-)
- *
+ * <p>
  * File Created @ [8 Sep 2013, 19:36:25 (GMT)]
  */
 
@@ -131,7 +131,9 @@ public final class ItemNBTHelper {
     /** If nullifyOnFail is true it'll return null if it doesn't find any
      * compounds, otherwise it'll return a new one. **/
     public static CompoundNBT getCompound(ItemStack stack, String tag, boolean nullifyOnFail) {
-        return verifyExistence(stack, tag) ? stack.getOrCreateTag().getCompound(tag) : nullifyOnFail ? null : new CompoundNBT();
+        return verifyExistence(stack, tag) ?
+               stack.getOrCreateTag().getCompound(tag) :
+               nullifyOnFail ? null : new CompoundNBT();
     }
 
     public static String getString(ItemStack stack, String tag, String defaultExpected) {
@@ -140,11 +142,15 @@ public final class ItemNBTHelper {
 
     @Nullable
     public static UUID getUuid(ItemStack stack, String tag) {
-        return verifyExistence(stack, tag + "Most") && verifyExistence(stack, tag + "Least") ? stack.getOrCreateTag().getUniqueId(tag) : null;
+        return verifyExistence(stack, tag + "Most") && verifyExistence(stack, tag + "Least") ?
+               stack.getOrCreateTag().getUniqueId(tag) :
+               null;
     }
 
     public static ListNBT getList(ItemStack stack, String tag, int objtype, boolean nullifyOnFail) {
-        return verifyExistence(stack, tag) ? stack.getOrCreateTag().getList(tag, objtype) : nullifyOnFail ? null : new ListNBT();
+        return verifyExistence(stack, tag) ?
+               stack.getOrCreateTag().getList(tag, objtype) :
+               nullifyOnFail ? null : new ListNBT();
     }
 
     /**
@@ -167,19 +173,20 @@ public final class ItemNBTHelper {
         if(template.size() > target.size()) return false;
 
         for(String key : template.keySet()) {
-            if (!matchTag(template.get(key), target.get(key))) return false;
+            if(!matchTag(template.get(key), target.get(key))) return false;
         }
 
         return true;
     }
 
     private static boolean matchTagList(ListNBT template, ListNBT target) {
-        if (template.size() > target.size()) return false;
+        if(template.size() > target.size()) return false;
 
-        for (int i = 0; i < template.size(); i++) {
-            if (!matchTag(template.get(i), target.get(i))) return false;
+        for(int i = 0; i < template.size(); i++) {
+            if(!matchTag(template.get(i), target.get(i))) return false;
         }
 
         return true;
     }
+
 }

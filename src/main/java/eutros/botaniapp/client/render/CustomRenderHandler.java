@@ -14,19 +14,21 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import vazkii.botania.client.render.tile.RenderTileFloatingFlower;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid= Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class CustomRenderHandler {
-	
-	@SubscribeEvent
-	public static void registerModels(ModelRegistryEvent evt) {
-		ModelLoaderRegistry.registerLoader(FloatingFlowerModel.Loader.ID, FloatingFlowerModel.Loader.INSTANCE);
 
-		ClientRegistry.bindTileEntityRenderer(SubtileBouganvillea.TYPE, RenderTileFloatingFlower::new);
+    private CustomRenderHandler() {
+    }
 
-		ClientRegistry.bindTileEntityRenderer(TileChargingPlate.TYPE, RenderTileChargingPlate::new);
-		ClientRegistry.bindTileEntityRenderer(TileFrameTinkerer.TYPE, RenderTileFrameTinkerer::new);
-		ClientRegistry.bindTileEntityRenderer(TileLeakyPool.TYPE, RenderTileLeakyPool::new);
-	}
-	
-	private CustomRenderHandler() {}
+    @SubscribeEvent
+    public static void registerModels(ModelRegistryEvent evt) {
+        ModelLoaderRegistry.registerLoader(FloatingFlowerModel.Loader.ID, FloatingFlowerModel.Loader.INSTANCE);
+
+        ClientRegistry.bindTileEntityRenderer(SubtileBouganvillea.TYPE, RenderTileFloatingFlower::new);
+
+        ClientRegistry.bindTileEntityRenderer(TileChargingPlate.TYPE, RenderTileChargingPlate::new);
+        ClientRegistry.bindTileEntityRenderer(TileFrameTinkerer.TYPE, RenderTileFrameTinkerer::new);
+        ClientRegistry.bindTileEntityRenderer(TileLeakyPool.TYPE, RenderTileLeakyPool::new);
+    }
+
 }

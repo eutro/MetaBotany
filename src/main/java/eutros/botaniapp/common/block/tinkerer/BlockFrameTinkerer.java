@@ -86,7 +86,7 @@ public class BlockFrameTinkerer extends BlockRedstoneControlled implements IWand
     @SuppressWarnings("deprecation")
     @Override
     public void onReplaced(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
+        if(state.getBlock() != newState.getBlock()) {
             TileSimpleInventory inv = (TileSimpleInventory) world.getTileEntity(pos);
             InventoryHelper.dropInventory(inv, world, state, pos);
         }
@@ -98,4 +98,5 @@ public class BlockFrameTinkerer extends BlockRedstoneControlled implements IWand
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new TileFrameTinkerer();
     }
+
 }

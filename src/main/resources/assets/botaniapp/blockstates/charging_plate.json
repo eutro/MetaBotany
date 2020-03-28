@@ -1,5 +1,7 @@
 {
   "variants": {
-    "":  { "model": "botaniapp:block/charging_plate" }
+    "": {
+      "model": "botaniapp:block/charging_plate"
+    }
   }
 }

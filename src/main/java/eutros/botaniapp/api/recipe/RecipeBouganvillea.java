@@ -34,7 +34,7 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
     /**
      * Get whether the recipe should finish crafting.
      * If this returns true, {@link RecipeBouganvillea#getRecipeOutput()} will be run, where the recipe can be carried out.
-     *
+     * <p>
      * {@link RecipeBouganvillea#matches(IBouganvilleaInventory, World)} has already been called, and returned true.
      *
      * @param inventory The inventory the Bouganvillea currently has.
@@ -45,12 +45,12 @@ public abstract class RecipeBouganvillea implements IRecipe<IBouganvilleaInvento
     /**
      * Gets whether the recipe is still valid. This should probably only be checking the last entry of {@link IBouganvilleaInventory#allEntities()},
      * as it returned true without it.
-     *
+     * <p>
      * This gets called each time a new item is given to the Bouganvillea, and should return true
      * if a completed craft is possible from this inventory.
      *
      * @param inventory The inventory the Bouganvillea currently has.
-     * @param world The current world.
+     * @param world     The current world.
      * @return Whether this recipe should be initialized with the given inventory. This is not where you should check
      * if the recipe should actually craft, as the inventory is not completely filled.
      */

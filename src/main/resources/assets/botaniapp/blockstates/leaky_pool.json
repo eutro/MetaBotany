@@ -1,6 +1,10 @@
 {
   "variants": {
-    "powered=true":  { "model": "botaniapp:block/leaky_pool" },
-    "powered=false":  { "model": "botaniapp:block/leaky_pool" }
+    "powered=true": {
+      "model": "botaniapp:block/leaky_pool"
+    },
+    "powered=false": {
+      "model": "botaniapp:block/leaky_pool"
+    }
   }
 }

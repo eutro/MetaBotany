@@ -18,6 +18,7 @@ import vazkii.botania.api.corporea.ICorporeaSpark;
 import java.util.Objects;
 
 public abstract class TileCorporeaBase extends TileSimpleInventory {
+
     public TileCorporeaBase(TileEntityType<?> type) {
         super(type);
     }

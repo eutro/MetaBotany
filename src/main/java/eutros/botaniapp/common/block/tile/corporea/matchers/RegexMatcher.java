@@ -21,68 +21,88 @@ import static eutros.botaniapp.common.utils.RegularExpressionUtils.replaceAll;
 
 public class RegexMatcher extends AdvancedMatcher {
 
-    @Configurable(comment="Time until a Regular Expression times out, in nanoseconds. " +
-                    "Used for the Advanced Corporea Funnel's RegEx Matcher to counteract ReDoSing.")
-    public static int REGEX_TIMEOUT = 500000;
-
     private static final Pattern regexPatternMatcher = Pattern.compile("/(?<exp>.+)/" + // Matches the expression itself.
             "(?<type>(N(AME)?)|(O(RE(_?DICT)?)?)|(T(AGS?)?)|(U(NLOC)?)|(M(OD)?)|(P(ATH)?)|(ID?))?" + // What should be matched?
             "(?<tags>[ixul]{0,4})"); // Normal RegEx tags: case insensitive, comments, unicode case, literal
-
-    public enum Type {
-        NAME('N'),
-        ORE_DICT('O'),
-        TAG('T'),
-        LOC_KEY('U'),
-        MOD_ID('M'),
-        ITEM_ID('P'),
-        RESOURCE_LOC('I');
-
-        public final char code;
-
-        Type(char code) {
-            this.code = code;
-        }
-
-        static Type byCode(char code) {
-            for(Type t : Type.values()) {
-                if(t.code == code)
-                    return t;
-            }
-            return NAME;
-        }
-
-        static Type byCode(String code) {
-            return code == null || code.length() == 0 ? NAME : byCode(code.charAt(0));
-        }
-
-    }
-    private final Pattern pattern;
-
     private static final String PATTERN = "pattern";
     private static final String FLAGS = "regex_flags";
     private static final String INVALID = "invalid";
     private static final String CODE = "code";
     private static final String SOURCE = "source";
-
-    public boolean invalid = false;
-    public String source;
-    public Type type;
+    private static final Pattern patternMatcher = Pattern.compile("/(.+)/([a-zA-Z]*)$");
+    // This is when the leaning toothpick syndrome hits.
+    private static final Pattern specialEscapeMatcher = Pattern.compile("[.|]|(\\\\([wWsSbBtnr]|([0-9]+)))");
+    private static final Pattern escapeMatcher = Pattern.compile("\\\\[+*\\\\?()\\[\\]](?!\u00a7r)");
+    private static final Pattern parenthesisMatcher = Pattern.compile("[()](?!\u00a7r)");
+    private static final Pattern bracketMatcher = Pattern.compile("[\\[\\]](?!\u00a7r)");
+    private static final Pattern quantifierMatcher = Pattern.compile("([+*?]|(\\{[\\d,]+?}))(?!\u00a7r)");
+    private static final Pattern tagMatcher = Pattern.compile("/([A-Z]*)([a-z]*)$");
+    @Configurable(comment = "Time until a Regular Expression times out, in nanoseconds. " +
+            "Used for the Advanced Corporea Funnel's RegEx Matcher to counteract ReDoSing.")
+    public static int REGEX_TIMEOUT = 500000;
 
     static {
         TileCorporeaRetainer.addCorporeaRequestMatcher("botaniapp_regex", RegexMatcher.class, RegexMatcher::serialize);
     }
+
+    private final Pattern pattern;
+    public boolean invalid = false;
+    public String source;
+    public Type type;
 
     public RegexMatcher(Pattern pattern, Type type, String source) {
         this.pattern = pattern;
         this.type = type;
         this.source = source;
     }
-
     public RegexMatcher(String pattern, int flags, Type type, String source) {
         this.pattern = Pattern.compile(pattern, flags);
         this.type = type;
         this.source = source;
+    }
+
+    public static RegexMatcher serialize(CompoundNBT tag) {
+        RegexMatcher regexMatcher = new RegexMatcher(tag.getString(PATTERN), tag.getInt(FLAGS), Type.byCode(tag.getString(CODE)), tag.getString(SOURCE));
+        regexMatcher.invalid = tag.getBoolean(INVALID);
+        return regexMatcher;
+    }
+
+    public static Optional<ICorporeaRequestMatcher> from(String name) {
+        Matcher matcher = regexPatternMatcher.matcher(name);
+        if(matcher.matches()) {
+            Pattern pattern;
+
+            int mask = 0;
+
+            String tags = matcher.group("tags");
+            for(int i = 0; i < tags.length(); i++) {
+                switch(tags.charAt(i)) {
+                    case 'i':
+                        mask |= Pattern.CASE_INSENSITIVE;
+                        break;
+                    case 'x':
+                        mask |= Pattern.COMMENTS;
+                        break;
+                    case 'u':
+                        mask |= Pattern.UNICODE_CASE;
+                        break;
+                    case 'l':
+                        mask |= Pattern.LITERAL;
+                        break;
+                }
+            }
+
+            try {
+                pattern = Pattern.compile(matcher.group("exp"), mask);
+            } catch(PatternSyntaxException e) {
+                return Optional.of(new AdvancedMatcher.InvalidMatcher());
+            }
+
+            RegexMatcher regexMatcher = new RegexMatcher(pattern,
+                    Type.byCode(matcher.group("type")), name);
+            return Optional.of(regexMatcher);
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -133,7 +153,7 @@ public class RegexMatcher extends AdvancedMatcher {
         Matcher matcher = RegularExpressionUtils.createMatcherWithTimeout(text, pattern, REGEX_TIMEOUT);
         try {
             return matcher.matches();
-        } catch (RegularExpressionUtils.RegexTimeout e) {
+        } catch(RegularExpressionUtils.RegexTimeout e) {
             invalid = true;
         }
 
@@ -148,21 +168,6 @@ public class RegexMatcher extends AdvancedMatcher {
         tag.putString(CODE, String.valueOf(type.code));
         tag.putString(SOURCE, source);
     }
-
-    public static RegexMatcher serialize(CompoundNBT tag) {
-        RegexMatcher regexMatcher = new RegexMatcher(tag.getString(PATTERN), tag.getInt(FLAGS), Type.byCode(tag.getString(CODE)), tag.getString(SOURCE));
-        regexMatcher.invalid = tag.getBoolean(INVALID);
-        return regexMatcher;
-    }
-
-    private static final Pattern patternMatcher = Pattern.compile("/(.+)/([a-zA-Z]*)$");
-    // This is when the leaning toothpick syndrome hits.
-    private static final Pattern specialEscapeMatcher = Pattern.compile("[.|]|(\\\\([wWsSbBtnr]|([0-9]+)))");
-    private static final Pattern escapeMatcher = Pattern.compile("\\\\[+*\\\\?()\\[\\]](?!\u00a7r)");
-    private static final Pattern parenthesisMatcher = Pattern.compile("[()](?!\u00a7r)");
-    private static final Pattern bracketMatcher = Pattern.compile("[\\[\\]](?!\u00a7r)");
-    private static final Pattern quantifierMatcher = Pattern.compile("([+*?]|(\\{[\\d,]+?}))(?!\u00a7r)");
-    private static final Pattern tagMatcher = Pattern.compile("/([A-Z]*)([a-z]*)$");
 
     @Override
     public ITextComponent getRequestName() {
@@ -186,41 +191,33 @@ public class RegexMatcher extends AdvancedMatcher {
         return invalid;
     }
 
-    public static Optional<ICorporeaRequestMatcher> from(String name) {
-        Matcher matcher = regexPatternMatcher.matcher(name);
-        if(matcher.matches()) {
-            Pattern pattern;
+    public enum Type {
+        NAME('N'),
+        ORE_DICT('O'),
+        TAG('T'),
+        LOC_KEY('U'),
+        MOD_ID('M'),
+        ITEM_ID('P'),
+        RESOURCE_LOC('I');
 
-            int mask = 0;
+        public final char code;
 
-            String tags = matcher.group("tags");
-            for(int i = 0; i < tags.length(); i++) {
-                switch(tags.charAt(i)) {
-                    case 'i':
-                        mask |= Pattern.CASE_INSENSITIVE;
-                        break;
-                    case 'x':
-                        mask |= Pattern.COMMENTS;
-                        break;
-                    case 'u':
-                        mask |= Pattern.UNICODE_CASE;
-                        break;
-                    case 'l':
-                        mask |= Pattern.LITERAL;
-                        break;
-                }
-            }
-
-            try {
-                pattern = Pattern.compile(matcher.group("exp"), mask);
-            } catch(PatternSyntaxException e) {
-                return Optional.of(new AdvancedMatcher.InvalidMatcher());
-            }
-
-            RegexMatcher regexMatcher = new RegexMatcher(pattern,
-                    Type.byCode(matcher.group("type")), name);
-            return Optional.of(regexMatcher);
+        Type(char code) {
+            this.code = code;
         }
-        return Optional.empty();
+
+        static Type byCode(char code) {
+            for(Type t : Type.values()) {
+                if(t.code == code)
+                    return t;
+            }
+            return NAME;
+        }
+
+        static Type byCode(String code) {
+            return code == null || code.length() == 0 ? NAME : byCode(code.charAt(0));
+        }
+
     }
+
 }

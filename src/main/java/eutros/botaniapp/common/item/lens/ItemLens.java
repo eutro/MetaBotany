@@ -16,8 +16,8 @@ import javax.annotation.Nonnull;
 
 public class ItemLens extends Item implements ILens, ICompositableLens, ILensControl {
 
-    private static final String TAG_COMPOSITE_LENS = "compositeLens";
     protected static final String TAG_COLOR = "color";
+    private static final String TAG_COMPOSITE_LENS = "compositeLens";
     protected boolean updateColor = true;
 
     public ItemLens(Properties properties) {
@@ -145,4 +145,5 @@ public class ItemLens extends Item implements ILens, ICompositableLens, ILensCon
         if(!compositeLens.isEmpty() && compositeLens.getItem() instanceof ILens)
             ((ILensControl) compositeLens.getItem()).onControlledSpreaderTick(compositeLens, spreader, redstone);
     }
+
 }

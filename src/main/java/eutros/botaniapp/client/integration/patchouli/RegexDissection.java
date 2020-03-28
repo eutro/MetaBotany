@@ -17,8 +17,10 @@ import java.util.function.Supplier;
 
 public class RegexDissection implements ICustomComponent {
 
-    public String text;
     private transient final float sf = 1.2f;
+    public String text;
+    private transient int x, y;
+    private transient BookTextRenderer renderer;
 
     public static void init() {
         ResourceLocation regexDissection = new ResourceLocation(Reference.MOD_ID, "patchouli/templates/regex_dissection.json");
@@ -26,7 +28,7 @@ public class RegexDissection implements ICustomComponent {
         Supplier<InputStream> regexDissectionSupplier = () -> {
             try {
                 return Minecraft.getInstance().getResourceManager().getResource(regexDissection).getInputStream();
-            } catch (IOException e) {
+            } catch(IOException e) {
                 System.out.println("Uh oh, stinky.");
             }
             return null;
@@ -35,13 +37,10 @@ public class RegexDissection implements ICustomComponent {
         PatchouliAPI.instance.registerTemplateAsBuiltin(new ResourceLocation("botania", "regex_dissection"), regexDissectionSupplier);
     }
 
-    private transient int x, y;
-    private transient BookTextRenderer renderer;
-
     @Override
     public void build(int componentX, int componentY, int pageNum) {
-        this.x = (int) (componentX/sf);
-        this.y = (int) (componentY/sf);
+        this.x = (int) (componentX / sf);
+        this.y = (int) (componentY / sf);
     }
 
     @Override
@@ -54,10 +53,12 @@ public class RegexDissection implements ICustomComponent {
     @Override
     public void render(IComponentRenderContext context, float pTicks, int mouseX, int mouseY) {
         RenderSystem.scalef(sf, sf, 1);
-        renderer.render(x + (int) ((mouseX-x)/sf), y + (int) ((mouseY-y)/sf));
-        RenderSystem.scalef(1/sf, 1/sf, 1);
+        renderer.render(x + (int) ((mouseX - x) / sf), y + (int) ((mouseY - y) / sf));
+        RenderSystem.scalef(1 / sf, 1 / sf, 1);
     }
 
     @Override
-    public void onVariablesAvailable(Function<String, String> function) {}
+    public void onVariablesAvailable(Function<String, String> function) {
+    }
+
 }

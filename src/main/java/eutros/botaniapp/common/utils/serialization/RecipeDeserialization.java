@@ -9,7 +9,8 @@ import net.minecraft.util.NonNullList;
 
 public class RecipeDeserialization {
 
-    private RecipeDeserialization() {}
+    private RecipeDeserialization() {
+    }
 
 
     public static NonNullList<Ingredient> deserializeIngredients(JsonArray ingredients) {
@@ -17,7 +18,7 @@ public class RecipeDeserialization {
 
         for(int i = 0; i < ingredients.size(); ++i) {
             Ingredient ingredient = Ingredient.deserialize(ingredients.get(i));
-            if (!ingredient.hasNoMatchingItems()) {
+            if(!ingredient.hasNoMatchingItems()) {
                 ingredientList.add(ingredient);
             }
         }
@@ -28,4 +29,5 @@ public class RecipeDeserialization {
     public static ItemStack deserializeItem(JsonObject result) {
         return ShapedRecipe.deserializeItem(result);
     }
+
 }

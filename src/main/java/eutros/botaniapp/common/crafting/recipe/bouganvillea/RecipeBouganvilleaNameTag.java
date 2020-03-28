@@ -30,11 +30,10 @@ import java.util.stream.Collectors;
 
 public class RecipeBouganvilleaNameTag extends RecipeBouganvillea {
 
-    public static IRecipeSerializer<RecipeBouganvilleaNameTag> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaNameTag::new);
-
     private static NonNullList<Ingredient> ingredients = NonNullList.create();
     private static ItemStack egg = new ItemStack(Items.CHICKEN_SPAWN_EGG);
     private static ItemStack named_egg;
+    public static IRecipeSerializer<RecipeBouganvilleaNameTag> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaNameTag::new);
 
     static {
         ItemStack name_tag = new ItemStack(Items.NAME_TAG);
@@ -103,4 +102,5 @@ public class RecipeBouganvilleaNameTag extends RecipeBouganvillea {
         }
         return ingredients;
     }
+
 }

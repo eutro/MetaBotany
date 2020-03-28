@@ -4,12 +4,14 @@
     "layer0": "botaniapp:items/lens",
     "layer1": "botaniapp:items/lens_binding",
     "layer2": "botaniapp:items/lens_petal_bottom",
-	"layer3": "botaniapp:items/lens_petal_top"
+    "layer3": "botaniapp:items/lens_petal_top"
   },
-  "overrides": [{
-    "predicate": {
-      "botaniapp:bound": 1
-    },
-    "model": "botaniapp:item/lens_binding_bound"
-  }]
+  "overrides": [
+    {
+      "predicate": {
+        "botaniapp:bound": 1
+      },
+      "model": "botaniapp:item/lens_binding_bound"
+    }
+  ]
 }

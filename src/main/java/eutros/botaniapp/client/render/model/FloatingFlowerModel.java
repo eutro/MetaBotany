@@ -28,8 +28,9 @@ import java.util.*;
 import java.util.function.Function;
 
 public class FloatingFlowerModel implements IModelGeometry<FloatingFlowerModel> {
-    private IUnbakedModel unbakedFlower;
+
     private final Map<IFloatingFlower.IslandType, IUnbakedModel> unbakedIslands = new HashMap<>();
+    private IUnbakedModel unbakedFlower;
 
     private FloatingFlowerModel(IUnbakedModel flower) {
         this.unbakedFlower = flower;
@@ -39,7 +40,7 @@ public class FloatingFlowerModel implements IModelGeometry<FloatingFlowerModel> 
     @Override
     public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
         Set<Material> ret = new HashSet<>();
-        for (Map.Entry<IFloatingFlower.IslandType, ResourceLocation> e : BotaniaAPIClient.getRegisteredIslandTypeModels().entrySet()) {
+        for(Map.Entry<IFloatingFlower.IslandType, ResourceLocation> e : BotaniaAPIClient.getRegisteredIslandTypeModels().entrySet()) {
             IUnbakedModel unbakedIsland = modelGetter.apply(e.getValue());
             ret.addAll(unbakedIsland.getTextureDependencies(modelGetter, missingTextureErrors));
             unbakedIslands.put(e.getKey(), unbakedIsland);
@@ -56,21 +57,39 @@ public class FloatingFlowerModel implements IModelGeometry<FloatingFlowerModel> 
         IBakedModel bakedFlower = unbakedFlower.bake(bakery, spriteGetter, comp, name);
 
         Map<IFloatingFlower.IslandType, IBakedModel> bakedIslands = new HashMap<>();
-        for (Map.Entry<IFloatingFlower.IslandType, IUnbakedModel> e : unbakedIslands.entrySet()) {
+        for(Map.Entry<IFloatingFlower.IslandType, IUnbakedModel> e : unbakedIslands.entrySet()) {
             IBakedModel bakedIsland = e.getValue().bake(bakery, spriteGetter, transform, name);
             bakedIslands.put(e.getKey(), bakedIsland);
         }
         return new Baked(bakedFlower, bakedIslands);
     }
 
+    public enum Loader implements IModelLoader<FloatingFlowerModel> {
+        INSTANCE;
+
+        public static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "floating_flower");
+
+        @Override
+        public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
+        }
+
+        @Nonnull
+        @Override
+        public FloatingFlowerModel read(JsonDeserializationContext ctx, JsonObject model) {
+            BlockModel flower = ctx.deserialize(model.getAsJsonObject("flower"), BlockModel.class);
+            return new FloatingFlowerModel(flower);
+        }
+    }
+
     public static class Baked extends BakedModelWrapper<IBakedModel> {
+
         private final Map<IFloatingFlower.IslandType, List<BakedQuad>> genQuads = new HashMap<>();
         private final Map<IFloatingFlower.IslandType, Map<Direction, List<BakedQuad>>> faceQuads = new HashMap<>();
 
         Baked(IBakedModel flower, Map<IFloatingFlower.IslandType, IBakedModel> islands) {
             super(flower);
             Random rand = new Random();
-            for (Map.Entry<IFloatingFlower.IslandType, IBakedModel> e : islands.entrySet()) {
+            for(Map.Entry<IFloatingFlower.IslandType, IBakedModel> e : islands.entrySet()) {
                 rand.setSeed(42);
                 List<BakedQuad> gen = new ArrayList<>(flower.getQuads(null, null, rand, EmptyModelData.INSTANCE));
                 rand.setSeed(42);
@@ -78,7 +97,7 @@ public class FloatingFlowerModel implements IModelGeometry<FloatingFlowerModel> 
                 genQuads.put(e.getKey(), gen);
 
                 Map<Direction, List<BakedQuad>> fq = new EnumMap<>(Direction.class);
-                for (Direction dir : Direction.values()) {
+                for(Direction dir : Direction.values()) {
                     rand.setSeed(42);
                     List<BakedQuad> lst = new ArrayList<>(flower.getQuads(null, dir, rand, EmptyModelData.INSTANCE));
                     rand.setSeed(42);
@@ -100,11 +119,11 @@ public class FloatingFlowerModel implements IModelGeometry<FloatingFlowerModel> 
         @Override
         public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
             IFloatingFlower.IslandType type = IFloatingFlower.IslandType.GRASS;
-            if (extraData.hasProperty(BotaniaStateProps.FLOATING_DATA)) {
+            if(extraData.hasProperty(BotaniaStateProps.FLOATING_DATA)) {
                 type = Objects.requireNonNull(extraData.getData(BotaniaStateProps.FLOATING_DATA)).getIslandType();
             }
 
-            if (side == null) {
+            if(side == null) {
                 return genQuads.get(type);
             } else {
                 return faceQuads.get(type).get(side);
@@ -117,21 +136,7 @@ public class FloatingFlowerModel implements IModelGeometry<FloatingFlowerModel> 
             super.handlePerspective(cameraTransformType, ms);
             return this;
         }
+
     }
 
-    public enum Loader implements IModelLoader<FloatingFlowerModel> {
-        INSTANCE;
-
-        public static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "floating_flower");
-
-        @Override
-        public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {}
-
-        @Nonnull
-        @Override
-        public FloatingFlowerModel read(JsonDeserializationContext ctx, JsonObject model) {
-            BlockModel flower = ctx.deserialize(model.getAsJsonObject("flower"), BlockModel.class);
-            return new FloatingFlowerModel(flower);
-        }
-    }
 }

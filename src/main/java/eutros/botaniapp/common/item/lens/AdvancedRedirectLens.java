@@ -19,6 +19,44 @@ public class AdvancedRedirectLens extends ItemLens {
         super(properties);
     }
 
+    @SuppressWarnings("unchecked")
+    private static Optional<IProperty<Direction>> getDirection(BlockState state) {
+        for(IProperty<?> prop : state.getProperties()) {
+            if(prop.getName().equals("facing") && prop.getValueClass() == Direction.class) {
+                return Optional.of((IProperty<Direction>) prop);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static BlockState rotate(BlockState state, Direction direction) {
+        Optional<IProperty<Direction>> facing = getDirection(state);
+
+        if(!facing.isPresent())
+            return state;
+
+        IProperty<Direction> prop = facing.get();
+        if(state.get(prop) != direction &&
+                prop.getAllowedValues().contains(direction))
+            return state.with(prop, direction);
+
+        return state;
+    }
+
+    private static BlockState mirror(BlockState state) {
+        Optional<IProperty<Direction>> dir = getDirection(state);
+
+        if(!dir.isPresent())
+            return state;
+
+        IProperty<Direction> prop = dir.get();
+        Direction opposite = state.get(prop).getOpposite();
+        if(prop.getAllowedValues().contains(opposite))
+            return state.with(prop, opposite);
+
+        return state;
+    }
+
     @Override
     public boolean collideBurst(IManaBurst burst, RayTraceResult rtr, boolean isManaBlock, boolean dead, ItemStack stack) {
         BlockPos coords = burst.getBurstSourceBlockPos();
@@ -40,44 +78,6 @@ public class AdvancedRedirectLens extends ItemLens {
         }
 
         return dead;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Optional<IProperty<Direction>> getDirection(BlockState state) {
-        for (IProperty<?> prop : state.getProperties()) {
-            if (prop.getName().equals("facing") && prop.getValueClass() == Direction.class) {
-                return Optional.of((IProperty<Direction>) prop);
-            }
-        }
-        return Optional.empty();
-    }
-
-    private static BlockState rotate(BlockState state, Direction direction) {
-        Optional<IProperty<Direction>> facing = getDirection(state);
-
-        if(!facing.isPresent())
-            return state;
-
-        IProperty<Direction> prop = facing.get();
-        if (state.get(prop) != direction &&
-                prop.getAllowedValues().contains(direction))
-            return state.with(prop, direction);
-
-        return state;
-    }
-
-    private static BlockState mirror(BlockState state) {
-        Optional<IProperty<Direction>> dir = getDirection(state);
-
-        if(!dir.isPresent())
-            return state;
-
-        IProperty<Direction> prop = dir.get();
-        Direction opposite = state.get(prop).getOpposite();
-        if(prop.getAllowedValues().contains(opposite))
-            return state.with(prop, opposite);
-
-        return state;
     }
 
 }

@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class BlockLeakyPool extends BlockRedstoneControlled implements IWandHUD, IWandable {
+
     private static final VoxelShape SLAB = makeCuboidShape(0, 0, 0, 16, 8, 16);
     private static final VoxelShape CUTOUT = makeCuboidShape(1, 1, 1, 15, 8, 15);
     private static final VoxelShape CUTOUT_2 = makeCuboidShape(6, 0, 6, 10, 1, 10);
@@ -78,7 +79,7 @@ public class BlockLeakyPool extends BlockRedstoneControlled implements IWandHUD,
     @SuppressWarnings("deprecation")
     @Override
     public void onReplaced(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
+        if(state.getBlock() != newState.getBlock()) {
             TileSimpleInventory inv = (TileSimpleInventory) world.getTileEntity(pos);
             InventoryHelper.dropInventory(inv, world, state, pos);
         }
@@ -121,4 +122,5 @@ public class BlockLeakyPool extends BlockRedstoneControlled implements IWandHUD,
         ((TileLeakyPool) Objects.requireNonNull(world.getTileEntity(pos))).onWanded(player);
         return true;
     }
+
 }

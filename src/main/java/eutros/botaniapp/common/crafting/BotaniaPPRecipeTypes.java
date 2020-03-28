@@ -31,7 +31,7 @@ public class BotaniaPPRecipeTypes {
     private static final Map<IRecipeType<?>, BotaniaPPRecipeType<?>> types = new HashMap<>();
 
     static {
-            types.put(BOUGANVILLEA_TYPE.type, BOUGANVILLEA_TYPE);
+        types.put(BOUGANVILLEA_TYPE.type, BOUGANVILLEA_TYPE);
     }
 
     @SubscribeEvent
@@ -42,10 +42,10 @@ public class BotaniaPPRecipeTypes {
         register(r, RecipeLensUnbinding.SERIALIZER, "lens_unbinding");
         register(r, RecipeBlackHoleTalismanInsert.SERIALIZER, "black_hole_talisman_insert");
         register(r, RecipeBouganvilleaRegular.SERIALIZER, "bouganvillea_regular");
-        register(r, RecipeBouganvilleaRename.SERIALIZER,"bouganvillea_rename");
-        register(r, RecipeBouganvilleaAnvil.SERIALIZER,"bouganvillea_anvil");
-        register(r, RecipeBouganvilleaNameTag.SERIALIZER,"bouganvillea_name_tag");
-        register(r, RecipeBouganvilleaFormattedRename.SERIALIZER,"bouganvillea_formatted_rename");
+        register(r, RecipeBouganvilleaRename.SERIALIZER, "bouganvillea_rename");
+        register(r, RecipeBouganvilleaAnvil.SERIALIZER, "bouganvillea_anvil");
+        register(r, RecipeBouganvilleaNameTag.SERIALIZER, "bouganvillea_name_tag");
+        register(r, RecipeBouganvilleaFormattedRename.SERIALIZER, "bouganvillea_formatted_rename");
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
@@ -58,19 +58,6 @@ public class BotaniaPPRecipeTypes {
         public BotaniaPPRecipeType(String path) {
             location = new ResourceLocation(Reference.MOD_ID, path);
             type = registerType(location);
-        }
-
-        public void clearRecipes() {
-            recipes = new ArrayList<>();
-        }
-
-        public List<T> getRecipes() {
-            return recipes;
-        }
-
-        @SuppressWarnings("unchecked")
-        public void addRecipe(IRecipe<?> recipe) {
-            recipes.add((T) recipe);
         }
 
         private static <T extends IRecipe<?>> IRecipeType<T> registerType(ResourceLocation location) {
@@ -93,5 +80,20 @@ public class BotaniaPPRecipeTypes {
                         .ifPresent(i -> i.addRecipe(recipe));
             }
         }
+
+        public void clearRecipes() {
+            recipes = new ArrayList<>();
+        }
+
+        public List<T> getRecipes() {
+            return recipes;
+        }
+
+        @SuppressWarnings("unchecked")
+        public void addRecipe(IRecipe<?> recipe) {
+            recipes.add((T) recipe);
+        }
+
     }
+
 }

@@ -22,6 +22,15 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
         super(p_i226006_1_);
     }
 
+    public static void renderIcon(MatrixStack ms, IVertexBuilder buffer, int x, int y, TextureAtlasSprite icon, int width, int height, float alpha) {
+        Matrix4f mat = ms.peek().getModel();
+        int fullBrightness = 0xF000F0;
+        buffer.vertex(mat, x, y + height, 0).color(1, 1, 1, alpha).texture(icon.getMinU(), icon.getMaxV()).light(fullBrightness).endVertex();
+        buffer.vertex(mat, x + width, y + height, 0).color(1, 1, 1, alpha).texture(icon.getMaxU(), icon.getMaxV()).light(fullBrightness).endVertex();
+        buffer.vertex(mat, x + width, y, 0).color(1, 1, 1, alpha).texture(icon.getMaxU(), icon.getMinV()).light(fullBrightness).endVertex();
+        buffer.vertex(mat, x, y, 0).color(1, 1, 1, alpha).texture(icon.getMinU(), icon.getMinV()).light(fullBrightness).endVertex();
+    }
+
     @Override
     public void render(@NotNull TileLeakyPool pool, float f, @NotNull MatrixStack ms, @NotNull IRenderTypeBuffer buffers, int light, int overlay) {
 
@@ -42,15 +51,17 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
 
             float dripFrequency = pool.getDripFrequency();
             final float MAX_DRIP = 1.2F;
-            float dripLevel = dripFrequency < 10 ? MAX_DRIP : pool.getDripPercentage(ClientTickHandler.partialTicks)*MAX_DRIP;
+            float dripLevel = dripFrequency < 10 ?
+                              MAX_DRIP :
+                              pool.getDripPercentage(ClientTickHandler.partialTicks) * MAX_DRIP;
 
-            ms.translate(w, -1.43F+waterLevel, w);
+            ms.translate(w, -1.43F + waterLevel, w);
             ms.scale(s, s, s);
             ms.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90F));
             IVertexBuilder buffer = buffers.getBuffer(RenderHelper.ICON_OVERLAY);
             renderIcon(ms, buffer, 0, 0, MiscellaneousIcons.INSTANCE.manaWater, 16, 16, 1);
             ms.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180F));
-            ms.translate(-16F, 0F, -waterLevel/s-dripLevel);
+            ms.translate(-16F, 0F, -waterLevel / s - dripLevel);
             renderIcon(ms, buffer, 0, 0, MiscellaneousIcons.INSTANCE.manaWater, 16, 16, 1);
 
             ms.pop();
@@ -72,12 +83,4 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
         ms.pop();
     }
 
-    public static void renderIcon(MatrixStack ms, IVertexBuilder buffer, int x, int y, TextureAtlasSprite icon, int width, int height, float alpha) {
-        Matrix4f mat = ms.peek().getModel();
-        int fullBrightness = 0xF000F0;
-        buffer.vertex(mat, x, y + height, 0).color(1, 1, 1, alpha).texture(icon.getMinU(), icon.getMaxV()).light(fullBrightness).endVertex();
-        buffer.vertex(mat, x + width, y + height, 0).color(1, 1, 1, alpha).texture(icon.getMaxU(), icon.getMaxV()).light(fullBrightness).endVertex();
-        buffer.vertex(mat, x + width, y, 0).color(1, 1, 1, alpha).texture(icon.getMaxU(), icon.getMinV()).light(fullBrightness).endVertex();
-        buffer.vertex(mat, x, y, 0).color(1, 1, 1, alpha).texture(icon.getMinU(), icon.getMinV()).light(fullBrightness).endVertex();
-    }
 }

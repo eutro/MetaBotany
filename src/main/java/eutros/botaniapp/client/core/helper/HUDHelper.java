@@ -6,5 +6,7 @@ public class HUDHelper {
 
     public static final ResourceLocation MANA_HUD = new ResourceLocation("botania", "textures/gui/mana_hud.png");
 
-    private HUDHelper() {}
+    private HUDHelper() {
+    }
+
 }
