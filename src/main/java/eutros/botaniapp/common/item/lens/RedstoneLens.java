@@ -28,6 +28,10 @@ public class RedstoneLens extends ItemLens {
             }
 
             BlockPos pos = ((BlockRayTraceResult) rtr).getPos();
+
+            if(pos.equals(burst.getBurstSourceBlockPos()))
+                return super.collideBurst(burst, rtr, isManaBlock, dead, stack);
+
             BlockPos target;
             for(Direction direction : Direction.values()) {
                 target = pos.offset(direction);
@@ -38,7 +42,7 @@ public class RedstoneLens extends ItemLens {
                         ((TilePoweredAir) tile).directions = new Direction[] {direction};
                     }
                     world.neighborChanged(pos, BotaniaPPBlocks.poweredAir, target);
-                    return false;
+                    return super.collideBurst(burst, rtr, isManaBlock, dead, stack);
                 }
             }
 
@@ -55,7 +59,7 @@ public class RedstoneLens extends ItemLens {
                                 ((TilePoweredAir) tile).directions = new Direction[] {dir, direction};
                             }
                             world.neighborChanged(pos, BotaniaPPBlocks.poweredAir, target);
-                            return false;
+                            return super.collideBurst(burst, rtr, isManaBlock, dead, stack);
                         }
                     }
             }

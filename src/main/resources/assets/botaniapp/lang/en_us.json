@@ -3,8 +3,6 @@
   "item.botaniapp.lens_binding.short": "Binding",
   "item.botaniapp.lens_redstone": "Mana Lens: Pulse",
   "item.botaniapp.lens_redstone.short": "Pulse",
-  "item.botaniapp.lens_redirect_plus": "Mana Lens: Enticing",
-  "item.botaniapp.lens_redirect_plus.short": "Enticing",
 
   "block.botaniapp.flower_bouganvillea": "Bouganvillea",
   "block.botaniapp.floating_flower_bouganvillea": "Floating Bouganvillea",
@@ -15,6 +13,11 @@
   "hud.botaniapp.advanced_funnel.post": " block(s) below.",
   "hud.botaniapp.advanced_funnel.no_match": "No requests yet.",
   "hud.botaniapp.advanced_funnel.prev_match": "Previous request:",
+
+  "item.botaniapp.lens_redirect_plus": "Mana Lens: Pivot",
+  "item.botaniapp.lens_redirect_plus.short": "Pivot",
+  "item.botaniapp.lens_redirect_plus_april": "Mana Lens: You Spin Me Right Round Baby Right Round Like A Record Baby Right Round Round Round",
+  "item.botaniapp.lens_redirect_plus_april.short": "You Spin Me Right Round Baby Right Round Like A Record Baby Right Round Round Round",
 
   "block.botaniapp.leaky_pool": "Leaky Mana Pool",
 

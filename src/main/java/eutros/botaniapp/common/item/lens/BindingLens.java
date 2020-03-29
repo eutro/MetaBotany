@@ -48,6 +48,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
         super(properties);
         addPropertyOverride(new ResourceLocation(Reference.MOD_ID, "bound"),
                 (stack, worldIn, entityIn) -> getBindingAttempt(stack).isPresent() ? 1 : 0);
+        updateColor = true;
     }
 
     public static int getColorId1(ItemStack stack) {

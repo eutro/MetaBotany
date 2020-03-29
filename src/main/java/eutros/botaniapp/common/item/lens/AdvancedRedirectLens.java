@@ -11,6 +11,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import vazkii.botania.api.internal.IManaBurst;
 
+import javax.annotation.Nonnull;
+import java.util.Calendar;
 import java.util.Optional;
 
 public class AdvancedRedirectLens extends ItemLens {
@@ -78,6 +80,15 @@ public class AdvancedRedirectLens extends ItemLens {
         }
 
         return dead;
+    }
+
+    @Nonnull
+    @Override
+    public String getTranslationKey() {
+        Calendar calendar = Calendar.getInstance();
+        return super.getTranslationKey() +
+                (calendar.get(Calendar.MONTH) == Calendar.APRIL &&
+                calendar.get(Calendar.DAY_OF_MONTH) == 1 ? "_april" : "");
     }
 
 }

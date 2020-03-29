@@ -18,7 +18,7 @@ public class ItemLens extends Item implements ILens, ICompositableLens, ILensCon
 
     protected static final String TAG_COLOR = "color";
     private static final String TAG_COMPOSITE_LENS = "compositeLens";
-    protected boolean updateColor = true;
+    protected boolean updateColor = false;
 
     public ItemLens(Properties properties) {
         super(properties);
@@ -37,7 +37,9 @@ public class ItemLens extends Item implements ILens, ICompositableLens, ILensCon
 
     @Override
     public void apply(ItemStack stack, BurstProperties props) {
-        props.color = getLensColor(stack);
+        int color = ItemNBTHelper.getInt(stack, TAG_COLOR, -1);
+        if(color != -1)
+            props.color = DyeColor.byId(color).getColorValue();
 
         ItemStack compositeLens = getCompositeLens(stack);
         if(!compositeLens.isEmpty() && compositeLens.getItem() instanceof ILens)
