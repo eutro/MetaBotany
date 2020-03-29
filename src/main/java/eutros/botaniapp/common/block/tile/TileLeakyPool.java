@@ -7,6 +7,7 @@ import eutros.botaniapp.api.internal.config.Configurable;
 import eutros.botaniapp.client.core.helper.HUDHelper;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.sound.BotaniaPPSounds;
+import eutros.botaniapp.common.utils.MathUtils;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -57,12 +58,22 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     private static final String TAG_INPUT_KEY = "inputKey";
     private static final String TAG_OUTPUT_KEY = "outputKey";
     private static final String TAG_DRIP = "drip";
+    private static final String TAG_LAST = "lastShot";
 
     private static final Color PARTICLE_COLOR = new Color(0x00C6FF);
     private static final int BURST_MAX_MANA = 650;
 
-    @Configurable(comment = "Approximately how much faster can a leaky pool dump into a mana acceptor below it?")
-    private static final int DIRECT_PUMP_MULTIPLIER = 5;
+    @Configurable(path = "leaky_pool",
+                  comment = "Approximately how much faster can a Leaky Mana Pool dump into a mana acceptor below it?")
+    public static int DIRECT_PUMP_MULTIPLIER = 5;
+
+    @Configurable(path = "leaky_pool",
+                  comment = "How many ticks should there be between a Leaky Mana Pool's drips at a minimum?")
+    public static float DRIP_RATE_MIN = 1;
+
+    @Configurable(path = "leaky_pool",
+                  comment = "How many ticks should there be at most between a Leaky Mana Pool's drips?")
+    public static float DRIP_RATE_MAX = 1;
 
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.LEAKY_POOL)
     public static TileEntityType<TileLeakyPool> TYPE;
@@ -78,6 +89,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     private boolean sendPacket = false;
     private int lastBurstDeathTick = 0;
     private int burstParticleTick = 0;
+    private long lastShot = -1;
 
     public TileLeakyPool() {
         super(TYPE);
@@ -134,6 +146,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
         if(getCurrentMana() <= 0 || !canFire) {
             shouldShoot = false;
+            lastShot = -1;
         }
 
         dripProgress = shouldShoot ? dripProgress + 1 / getDripFrequency() : 0;
@@ -219,7 +232,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     }
 
     public float getDripFrequency() {
-        return MAX_MANA / (Math.max(1F, mana));
+        return MathUtils.clamp(MAX_MANA / (Math.max(1F, mana)), DRIP_RATE_MIN, DRIP_RATE_MAX);
     }
 
     private void tryShootBurst() {
@@ -232,6 +245,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             // TODO use own sound
             world.playSound(null, pos, BotaniaPPSounds.BOTANIA_SPREADER_FIRE, SoundCategory.BLOCKS, 0.05F, 0.7F + 0.3F * (float) Math.random());
             markDispatchable();
+            lastShot = world.getGameTime();
         }
     }
 
@@ -306,6 +320,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         cmp.putInt(TAG_MANA, mana);
         cmp.putInt(TAG_COLOR, color.getId());
         cmp.putFloat(TAG_DRIP, dripProgress);
+        cmp.putLong(TAG_LAST, lastShot);
 
         cmp.putString(TAG_INPUT_KEY, inputKey);
         cmp.putString(TAG_OUTPUT_KEY, outputKey);
@@ -318,6 +333,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         mana = cmp.getInt(TAG_MANA);
         color = DyeColor.byId(cmp.getInt(TAG_COLOR));
         dripProgress = cmp.getFloat(TAG_DRIP);
+        lastShot = cmp.getLong(TAG_LAST);
 
         if(cmp.contains(TAG_INPUT_KEY))
             inputKey = cmp.getString(TAG_INPUT_KEY);
@@ -513,6 +529,10 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         if(identity == null)
             identity = UUID.randomUUID();
         return identity;
+    }
+
+    public long getLastShot() {
+        return lastShot;
     }
 
 }

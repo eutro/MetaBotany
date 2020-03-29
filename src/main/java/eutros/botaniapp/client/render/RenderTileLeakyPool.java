@@ -2,6 +2,7 @@ package eutros.botaniapp.client.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import eutros.botaniapp.api.internal.config.Configurable;
 import eutros.botaniapp.client.core.handler.ClientTickHandler;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
 import net.minecraft.client.Minecraft;
@@ -13,12 +14,18 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.config.ModConfig;
 import org.jetbrains.annotations.NotNull;
 import vazkii.botania.client.core.handler.MiscellaneousIcons;
 
 import java.util.function.Function;
 
 public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
+
+    @Configurable(side = ModConfig.Type.CLIENT,
+                  path = "leaky_pool",
+                  comment = "How long should the Leaky Mana Pool's drip be, at most. (In 1/16s of a block)")
+    public static float DRIP_LENGTH = 0.1F;
 
     public RenderTileLeakyPool(TileEntityRendererDispatcher p_i226006_1_) {
         super(p_i226006_1_);
@@ -65,13 +72,27 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
 
             float dripFrequency = pool.getDripFrequency();
 
+            final float root = 0.154F;
             // Function mapping a linear drip level to something more realistic I guess.
-            final Function<Float, Float> dripFunc = l ->
-                (float) Math.pow((l + ClientTickHandler.partialTicks / (dripFrequency - 1)) % 1F, 4);
+            final Function<Float, Float> dripFunc = l -> {
+                float progress = 1 + l + (ClientTickHandler.partialTicks / dripFrequency);
+                return Math.min(
+                        (float) Math.sin(
+                                Math.PI *
+                                        (Math.pow(
+                                                (progress - root)
+                                                        % 1F,
+                                                5)
+                                        )
+                        ),
+                        pool.getLastShot() == -1 && progress - 1 < root ?
+                        0 : 1
+                );
+            };
 
             float dripLevel = dripFrequency < 3 || !pool.canLeak(TileLeakyPool.CLEAR_SQUARES) ?
                               0 :
-                              dripFunc.apply(pool.getDripProgress());
+                              dripFunc.apply(pool.getDripProgress()) * DRIP_LENGTH;
 
             ms.push();
 
@@ -85,7 +106,7 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
 
             if(dripLevel > 0) {
                 ms.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(90F));
-                ms.scale(1F, dripLevel, 1F);
+                ms.scale(1F, dripLevel / 4, 1F);
                 ms.translate(0F, -4F, 0F);
                 renderIcon(ms, buffer, 0, 0, icon, 4, 4, 1);
 

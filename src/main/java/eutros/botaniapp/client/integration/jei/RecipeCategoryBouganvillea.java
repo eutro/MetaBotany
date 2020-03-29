@@ -55,7 +55,7 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
     @NotNull
     @Override
     public String getTitle() {
-        return I18n.format("block.botaniapp.flower_bouganvillea");
+        return I18n.format(BotaniaPPFlowers.bouganvillea.getTranslationKey());
     }
 
     @NotNull

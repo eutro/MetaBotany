@@ -30,6 +30,7 @@ public class BotaniaPPItems {
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "redstone") public static RedstoneLens redstoneLens;
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "redirect_plus") public static AdvancedRedirectLens redirectPlusLens;
 
+    public static Item BOTANIA_ENTROPIC_LENS;
     public static Item BOTANIA_FLARE_LENS;
     public static Item BOTANIA_WARP_LENS;
     public static Item BOTANIA_PAINT_LENS;
@@ -55,12 +56,9 @@ public class BotaniaPPItems {
         register(r, new RedstoneLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "redstone");
         register(r, new AdvancedRedirectLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "redirect_plus");
 
-        setBotaniaItems(r);
-    }
-
-    private static void setBotaniaItems(IForgeRegistry<Item> r) {
         final String b = "botania";
 
+        BOTANIA_ENTROPIC_LENS = r.getValue(new ResourceLocation(b, "lens_explosive"));
         BOTANIA_FLARE_LENS = r.getValue(new ResourceLocation(b, "lens_flare"));
         BOTANIA_WARP_LENS = r.getValue(new ResourceLocation(b, "lens_warp"));
         BOTANIA_PAINT_LENS = r.getValue(new ResourceLocation(b, "lens_paint"));

@@ -31,7 +31,7 @@ public class BotaniaPPConfig {
     public static final ForgeConfigSpec SERVER_SPEC;
     public static final Server SERVER;
     private static final Logger LOGGER = LogManager.getLogger();
-    private static Map<Class<?>, ITomlSerializer<?, ?>> serializers = new HashMap<>();
+    private static Map<Type, ITomlSerializer<?, ?>> serializers = new HashMap<>();
 
     static {
         org.objectweb.asm.Type annotationType = org.objectweb.asm.Type.getType(Configurable.class);
@@ -118,21 +118,29 @@ public class BotaniaPPConfig {
                 return map;
             }
         });
+        serializers.put(float.class, new ITomlSerializer<Float, Double>() {
+            @Override
+            public Double serialize(Float toSerialize) {
+                return toSerialize.doubleValue();
+            }
+
+            @Override
+            public Float deserialize(Double toDeserialize, Type type) {
+                return toDeserialize.floatValue();
+            }
+        });
     }
 
     static {
         final Pair<Common, ForgeConfigSpec> commonPair = new ForgeConfigSpec.Builder().configure(Common::new);
         COMMON_SPEC = commonPair.getRight();
         COMMON = commonPair.getLeft();
-        loadConfig(Common.fields);
         final Pair<Client, ForgeConfigSpec> clientPair = new ForgeConfigSpec.Builder().configure(Client::new);
         CLIENT_SPEC = clientPair.getRight();
         CLIENT = clientPair.getLeft();
-        loadConfig(Client.fields);
         final Pair<Server, ForgeConfigSpec> serverPair = new ForgeConfigSpec.Builder().configure(Server::new);
         SERVER_SPEC = serverPair.getRight();
         SERVER = serverPair.getLeft();
-        loadConfig(Server.fields);
     }
 
     @SuppressWarnings("unchecked")
@@ -165,6 +173,7 @@ public class BotaniaPPConfig {
                 try {
                     callback = clazz.getMethod(callbackName, String.class, field.getType());
                 } catch(NoSuchMethodException ignored) {
+                    LOGGER.warn("Couldn't find callback method, " + callbackName + " of: " + className + ". It may be private.");
                 }
 
             fields.add(Triple.of(field, value, callback));
@@ -179,9 +188,19 @@ public class BotaniaPPConfig {
             try {
                 triple.getLeft().set(null, deserialize(triple.getMiddle().get(), triple.getLeft().getGenericType()));
                 if(triple.getRight() != null)
-                    triple.getRight().invoke(null, triple.getLeft().getName(), triple.getMiddle().get());
-            } catch(IllegalAccessException | NullPointerException | InvocationTargetException e) {
-                LOGGER.debug("Couldn't set " + triple.getLeft().getDeclaringClass().getName() + "." + triple.getLeft().getName() + " to " + triple.getMiddle().get() + "because it is " + (
+                    try {
+                        triple.getRight().invoke(null, triple.getLeft().getName(), triple.getMiddle().get());
+                    } catch(IllegalAccessException | InvocationTargetException e) {
+                        LOGGER.warn("Callback on field \"" + triple.getLeft().getName() + "\" failed, method \"" + triple.getRight().getName() + "\" " +
+                                (e instanceof InvocationTargetException ?
+                                 "threw an exception." :
+                                 "is not accessible."),
+                                e instanceof InvocationTargetException ?
+                                e.getCause() :
+                                null);
+                    }
+            } catch(NullPointerException | IllegalAccessException e) {
+                LOGGER.warn("Couldn't set " + triple.getLeft().getDeclaringClass().getName() + "." + triple.getLeft().getName() + " to " + triple.getMiddle().get() + " because it is " + (
                         e instanceof IllegalAccessException ?
                         "final" :
                         "not static") + ".");
@@ -190,13 +209,14 @@ public class BotaniaPPConfig {
     }
 
     @SubscribeEvent
-    public static void onReload(ModConfig.Reloading evt) {
+    public static void onReload(ModConfig.ModConfigEvent evt) {
         switch(evt.getConfig().getType()) {
             case COMMON:
                 loadConfig(Common.fields);
                 break;
             case CLIENT:
                 loadConfig(Client.fields);
+                break;
             case SERVER:
                 loadConfig(Server.fields);
         }

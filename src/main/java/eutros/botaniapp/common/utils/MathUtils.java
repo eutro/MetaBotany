@@ -30,4 +30,10 @@ public class MathUtils {
         return new Point2D.Double(newX, newY);
     }
 
+    public static <T extends Comparable<T>> T clamp(T val, T min, T max) {
+        return val.compareTo(min) < 0 ? min :
+               val.compareTo(max) > 0 ? max :
+               val;
+    }
+
 }
