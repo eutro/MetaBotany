@@ -3,6 +3,8 @@ package eutros.botaniapp.common.block.flower.functional;
 import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.api.recipe.IBouganvilleaInventory;
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
+import eutros.botaniapp.common.core.network.BotaniaPPEffectPacket;
+import eutros.botaniapp.common.core.network.PacketHandler;
 import eutros.botaniapp.common.crafting.BotaniaPPRecipeTypes;
 import eutros.botaniapp.common.utils.MathUtils;
 import eutros.botaniapp.common.utils.Reference;
@@ -21,6 +23,7 @@ import net.minecraft.nbt.StringNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -33,12 +36,11 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import vazkii.botania.api.subtile.RadiusDescriptor;
 import vazkii.botania.api.subtile.TileEntityFunctionalFlower;
-import vazkii.botania.common.network.PacketBotaniaEffect;
-import vazkii.botania.common.network.PacketHandler;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -128,15 +130,16 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
                 }
             }
             memory.add(new ItemAndPos(e));
-            consumeItem(e);
+            consumeItem(e,
+                    memory.size() == 1 ?
+                    SoundEvents.BLOCK_ANVIL_PLACE :
+                    SoundEvents.ENTITY_ITEM_PICKUP);
             break;
         }
     }
 
     private void setRecipe(ItemEntity e) {
         assert world != null;
-
-        world.playSound(null, getEffectivePos(), SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 0.5F, 2F);
 
         BlockPos efPos = getEffectivePos();
         List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(efPos.add(-1, -1, -1), efPos.add(2, 2, 2)));
@@ -147,13 +150,16 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         });
     }
 
-    public void consumeItem(ItemEntity e) {
+    public void consumeItem(ItemEntity e, SoundEvent sound) {
+        assert world != null;
+
         e.addTag(TAG_ANVILLED);
         e.remove();
-        spawnParticles(e, getEffectivePos(), 1);
+        spawnParticles(e, 2);
         addMana(-20);
         markDirty();
         sync();
+        world.playSound(null, getEffectivePos(), sound, SoundCategory.BLOCKS, 0.5F, 2F);
     }
 
     @Nonnull
@@ -176,7 +182,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         BlockPos efPos = getEffectivePos();
 
         e.addTag(TAG_ANVILLED);
-        spawnParticles(e, efPos, 3);
+        spawnParticles(e, 3);
         e.setPickupDelay(0);
 
         dropAll();
@@ -203,9 +209,15 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         activeRecipes = Collections.emptyList();
     }
 
-    // TODO don't use internals
-    private void spawnParticles(ItemEntity e, BlockPos efPos, int p) {
-        PacketHandler.sendToNearby(world, efPos, new PacketBotaniaEffect(PacketBotaniaEffect.EffectType.ITEM_SMOKE, e.getX(), e.getY(), e.getZ(), e.getEntityId(), p));
+    private void spawnParticles(ItemEntity e, int p) {
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        buffer.putInt(e.getEntityId());
+        buffer.putInt(p);
+        PacketHandler.sendToNearby(world,
+                getEffectivePos(),
+                new BotaniaPPEffectPacket(BotaniaPPEffectPacket.EffectType.SMOKE,
+                        buffer.array())
+        );
     }
 
     @Override
@@ -278,21 +290,25 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
             double angleBetweenEach = Math.min(60.0, memory.size() > 1 ? 180.0 / (memory.size() - 1) : 0);
             Point center = new Point(mc.getWindow().getScaledWidth() / 2, mc.getWindow().getScaledHeight() / 2);
-            Point2D point = new Point2D.Double(center.getX(), center.getY() - 40);
+            int radius = 40;
+            Point2D point = new Point2D.Double(center.getX(), center.getY() - radius);
             point = MathUtils.rotatePointAbout(point, center, -angleBetweenEach * (memory.size() - 1) / 2);
 
             assert mc.player != null;
-            for(ItemAndPos itemAndPos : memory) {
+            for(int i = 0; i < memory.size(); i++) {
+                ItemAndPos itemAndPos = memory.get(i);
                 ItemStack stack = itemAndPos.stack;
                 itemRenderer.renderItemAndEffectIntoGUI(stack, (int) Math.round(point.getX() - 8), (int) Math.round(point.getY() - 8));
 
                 if(mc.player.isSneaking()) {
+                    RenderSystem.pushMatrix();
                     String formattedText = stack.getDisplayName().getFormattedText();
+                    RenderSystem.translated(point.getX(), point.getY(), 0);
                     RenderSystem.scalef(sf, sf, sf);
-                    // TODO do something about names overlapping and stuff
                     int width = mc.fontRenderer.getStringWidth(formattedText);
-                    mc.fontRenderer.drawStringWithShadow(formattedText, (float) (point.getX()) / sf - width / 2F, (float) (point.getY() / sf) - 18, 0xFFFFFF);
-                    RenderSystem.scalef(1 / sf, 1 / sf, 1 / sf);
+                    GL11.glRotated(15, 0, 0, i < memory.size() / 2 ? 1 : -1);
+                    mc.fontRenderer.drawStringWithShadow(formattedText, i < memory.size() / 2 ? -width - 10 : 10, -5, 0xFFFFFF);
+                    RenderSystem.popMatrix();
                 }
 
                 point = MathUtils.rotatePointAbout(point, center, angleBetweenEach);
@@ -310,6 +326,10 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         if(!world.isRemote()) {
             dropAll();
         }
+    }
+
+    public List<ItemStack> getMemory() {
+        return memory.stream().map(a -> a.stack).collect(Collectors.toList());
     }
 
     private static class ItemAndPos {

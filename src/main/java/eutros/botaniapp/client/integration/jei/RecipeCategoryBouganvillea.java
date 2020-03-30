@@ -87,7 +87,7 @@ public class RecipeCategoryBouganvillea implements IRecipeCategory<RecipeBouganv
 
                     for(int i = 0; i < 2; i++) {
                         for(int j = 0; j < inputs.get(1 - i).size(); j++) {
-                            inputStash.get(i).addAll(inputs.get(i));
+                            inputStash.get(1 - i).addAll(inputs.get(i));
                         }
                     }
 

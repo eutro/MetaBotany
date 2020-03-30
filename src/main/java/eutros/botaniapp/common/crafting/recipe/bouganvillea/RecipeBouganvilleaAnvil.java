@@ -68,8 +68,8 @@ public class RecipeBouganvilleaAnvil extends RecipeBouganvillea {
         ItemStack itemstack = inventory.getStackInSlot(1);
         int i = 0;
         int j;
-        ItemStack result = itemstack.copy();
-        ItemStack combineWith = inventory.getThrown().getItem();
+        ItemStack result = inventory.getThrown().getItem();
+        ItemStack combineWith = itemstack.copy();
         Map<Enchantment, Integer> enchantMap = EnchantmentHelper.getEnchantments(result);
         j = itemstack.getRepairCost() + (combineWith.isEmpty() ? 0 : combineWith.getRepairCost());
         int materialCost = 0;

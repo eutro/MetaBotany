@@ -23,7 +23,7 @@ import java.util.function.Function;
 public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
 
     @Configurable(side = ModConfig.Type.CLIENT,
-                  path = "leaky_pool",
+                  path = {"render", "leaky_pool"},
                   comment = "How long should the Leaky Mana Pool's drip be, at most. (In 1/16s of a block)")
     public static float DRIP_LENGTH = 0.1F;
 

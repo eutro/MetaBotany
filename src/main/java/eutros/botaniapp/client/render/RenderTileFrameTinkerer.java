@@ -1,6 +1,7 @@
 package eutros.botaniapp.client.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import eutros.botaniapp.api.internal.config.Configurable;
 import eutros.botaniapp.client.core.handler.ClientTickHandler;
 import eutros.botaniapp.common.block.tinkerer.tile.TileFrameTinkerer;
 import net.minecraft.client.Minecraft;
@@ -10,8 +11,9 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import net.minecraftforge.fml.config.ModConfig;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Random;
 
 public class RenderTileFrameTinkerer extends TileEntityRenderer<TileFrameTinkerer> {
@@ -20,19 +22,44 @@ public class RenderTileFrameTinkerer extends TileEntityRenderer<TileFrameTinkere
         super(p_i226006_1_);
     }
 
+    @Configurable(path = {"render", "frame_tinkerer"},
+                  side = ModConfig.Type.CLIENT,
+                  comment = "The time, in ticks, that it takes for an item to reach its maximum height from its minimum height.")
+    public static float OSC_PERIOD = 10;
+
+    @Configurable(path = {"render", "frame_tinkerer"},
+                  side = ModConfig.Type.CLIENT,
+                  comment = "The time, in ticks, that it takes for an item to rotate around once.")
+    public static float ROTATION_PERIOD = 100;
+
+    @Configurable(path = {"render", "frame_tinkerer"},
+                  side = ModConfig.Type.CLIENT,
+                  comment = "The distance, in blocks, between the maximum and minimum height of the item.")
+    public static float HEIGHT_DIFF = 0.25F;
+
+    @Configurable(path = {"render", "frame_tinkerer"},
+                  side = ModConfig.Type.CLIENT,
+                  comment = "Disable Item Frame Tinkerer special rendering.")
+    public static boolean DISABLE = false;
+
+    @ParametersAreNonnullByDefault
     @Override
-    public void render(TileFrameTinkerer plate, float v, MatrixStack ms, @NotNull IRenderTypeBuffer buffers, int light, int overlay) {
-        ms.push();
+    public void render(TileFrameTinkerer plate, float v, MatrixStack ms, IRenderTypeBuffer buffers, int light, int overlay) {
+        if(DISABLE ||
+        OSC_PERIOD * ROTATION_PERIOD == 0)
+            return;
+
         ItemStack stack = plate.getItemHandler().getStackInSlot(0);
-        if(!stack.isEmpty()) {
-            Random rand = new Random(plate.hashCode());
-            float angle = (ClientTickHandler.total + 360F * rand.nextFloat()) * 2;
-            int period = 10;
-            float height = (float) Math.sin(ClientTickHandler.total / period + Math.PI * rand.nextFloat());
-            ms.translate(0.5F, 0.5F + height * 0.125, 0.5F);
-            ms.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(angle));
-            Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, light, overlay, ms, buffers);
-        }
+
+        if(stack.isEmpty())
+            return;
+
+        ms.push();
+        Random rand = new Random(plate.hashCode());
+        float height = (float) Math.sin(ClientTickHandler.total / OSC_PERIOD + Math.PI * rand.nextFloat());
+        ms.translate(0.5F, HEIGHT_DIFF + 0.1 + height * HEIGHT_DIFF / 2, 0.5F);
+        ms.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion((float) (ClientTickHandler.total * Math.PI / ROTATION_PERIOD + Math.PI * rand.nextFloat())));
+        Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, light, overlay, ms, buffers);
         ms.pop();
     }
 

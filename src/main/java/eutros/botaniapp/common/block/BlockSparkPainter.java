@@ -1,5 +1,7 @@
 package eutros.botaniapp.common.block;
 
+import eutros.botaniapp.common.core.network.BotaniaPPEffectPacket;
+import eutros.botaniapp.common.core.network.PacketHandler;
 import eutros.botaniapp.common.utils.MathUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -27,6 +29,7 @@ import vazkii.botania.common.entity.EntitySparkBase;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,8 +115,19 @@ public class BlockSparkPainter extends Block {
             }
         }
 
+        ByteBuffer buffer;
         for(EntitySparkBase spark : sparks) {
-            spark.setNetwork(color);
+            if(!world.isRemote()) {
+                buffer = ByteBuffer.allocate(8);
+                buffer.putInt(spark.getEntityId());
+                buffer.putInt(1);
+                PacketHandler.sendToNearby(world,
+                        pos,
+                        new BotaniaPPEffectPacket(BotaniaPPEffectPacket.EffectType.SMOKE,
+                                buffer.array()));
+                spark.setNetwork(color);
+            }
+
             if(spark instanceof EntityCorporeaSpark) {
                 try {
                     ObfuscationReflectionHelper.setPrivateValue(EntityCorporeaSpark.class, (EntityCorporeaSpark) spark, true, "firstTick");

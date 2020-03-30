@@ -32,8 +32,12 @@ public class ClientTickHandler {
 
     @SubscribeEvent
     public static void renderTick(TickEvent.RenderTickEvent event) {
-        if(event.phase == TickEvent.Phase.START)
-            partialTicks = event.renderTickTime;
+        if(event.phase == TickEvent.Phase.START) {
+            Screen gui = Minecraft.getInstance().currentScreen;
+            if(gui == null || !gui.isPauseScreen()) {
+                partialTicks = event.renderTickTime;
+            }
+        }
         else {
             calcDelta();
         }

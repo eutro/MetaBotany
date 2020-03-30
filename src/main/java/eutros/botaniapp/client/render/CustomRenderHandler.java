@@ -24,7 +24,8 @@ public final class CustomRenderHandler {
     public static void registerModels(ModelRegistryEvent evt) {
         ModelLoaderRegistry.registerLoader(FloatingFlowerModel.Loader.ID, FloatingFlowerModel.Loader.INSTANCE);
 
-        ClientRegistry.bindTileEntityRenderer(SubtileBouganvillea.TYPE, RenderTileFloatingFlower::new);
+        ClientRegistry.bindTileEntityRenderer(SubtileBouganvillea.TYPE, RenderTileComposite.of(RenderTileFloatingFlower::new,
+                RenderTileBouganvillea::new));
 
         ClientRegistry.bindTileEntityRenderer(TileChargingPlate.TYPE, RenderTileChargingPlate::new);
         ClientRegistry.bindTileEntityRenderer(TileFrameTinkerer.TYPE, RenderTileFrameTinkerer::new);

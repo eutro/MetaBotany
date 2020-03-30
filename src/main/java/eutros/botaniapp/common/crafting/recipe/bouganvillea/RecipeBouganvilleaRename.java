@@ -63,6 +63,7 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     }
 
     public ItemStack getStacksResult(List<ItemStack> stacks) {
+        // TODO add limitations
         StringBuilder builder = new StringBuilder();
         for(ItemStack stack : stacks.subList(0, stacks.size() - 1)) {
             builder.append(stackName(stack));
