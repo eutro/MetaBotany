@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "botaniapp:lens_redstone"
+  },
+  "pattern": [
+    "RRR",
+    "RLR",
+    "RRR"
+  ],
+  "key": {
+    "L": {
+      "item": "botania:lens_normal"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  }
+}

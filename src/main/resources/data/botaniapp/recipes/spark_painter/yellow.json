@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "botaniapp:spark_painter_yellow"
+  },
+  "pattern": [
+    " S ",
+    " # ",
+    "LEL"
+  ],
+  "key": {
+    "E": {
+      "tag": "forge:ingots/elementium"
+    },
+    "L": {
+      "item": "botania:livingrock"
+    },
+    "#": {
+      "item": "minecraft:yellow_stained_glass"
+    },
+    "S": {
+      "item": "botania:spark"
+    }
+  }
+}
