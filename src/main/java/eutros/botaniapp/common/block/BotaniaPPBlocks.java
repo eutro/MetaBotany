@@ -49,6 +49,8 @@ public class BotaniaPPBlocks {
         builder = Block.Properties.create(Material.ROCK).hardnessAndResistance(2F, 6F);
         register(r, new BlockChargingPlate(builder), Reference.BlockNames.CHARGING_PLATE);
         register(r, new BlockLeakyPool(builder), Reference.BlockNames.LEAKY_POOL);
+
+        builder = Block.Properties.create(Material.WOOD).hardnessAndResistance(1F, 3F);
         register(r, new BlockFrameTinkerer(builder), Reference.BlockNames.FRAME_TINKERER);
 
         register(r, new BlockPoweredAir(Block.Properties.create(Material.AIR)), Reference.BlockNames.POWERED_AIR);

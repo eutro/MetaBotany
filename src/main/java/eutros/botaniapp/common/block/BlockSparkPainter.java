@@ -52,9 +52,10 @@ public class BlockSparkPainter extends Block {
 
     public static void registerAll(IForgeRegistry<Block> r) {
         Properties builder = Properties.create(Material.GLASS)
-                .hardnessAndResistance(1, 1F)
+                .hardnessAndResistance(1F, 1F)
                 .harvestLevel(0)
-                .nonOpaque();
+                .nonOpaque()
+                .harvestTool(ToolType.PICKAXE);
         for(DyeColor color : DyeColor.values()) {
             BlockSparkPainter block = new BlockSparkPainter(builder, color);
             dyeMap.put(color, block);
@@ -87,11 +88,6 @@ public class BlockSparkPainter extends Block {
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext ctx) {
         return BASE;
-    }
-
-    @Override
-    public boolean isToolEffective(BlockState state, ToolType tool) {
-        return true;
     }
 
     @SuppressWarnings("deprecation")
