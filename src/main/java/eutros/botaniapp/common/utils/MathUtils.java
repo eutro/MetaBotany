@@ -1,8 +1,11 @@
 package eutros.botaniapp.common.utils;
 
+import com.google.common.primitives.Longs;
 import net.minecraft.util.Direction;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.awt.geom.Point2D;
+import java.util.Arrays;
 
 public class MathUtils {
 
@@ -34,6 +37,19 @@ public class MathUtils {
         return val.compareTo(min) < 0 ? min :
                val.compareTo(max) > 0 ? max :
                val;
+    }
+
+    public static long[] toLongArray(byte[] bytes) {
+        int length = (int) Math.ceil(bytes.length / 8F);
+        long[] longs = new long[length];
+
+        for(int i = 0; i < length; i++)
+            longs[i] = Longs.fromByteArray(Arrays.copyOfRange(bytes, i * 8, (i + 1) * 8));
+        return longs;
+    }
+
+    public static byte[] toByteArray(long[] longs) {
+        return Arrays.stream(longs).mapToObj(Longs::toByteArray).reduce(new byte[0], ArrayUtils::addAll);
     }
 
 }

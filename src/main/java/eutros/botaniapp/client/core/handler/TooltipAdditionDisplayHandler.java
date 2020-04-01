@@ -19,13 +19,15 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 
+import static eutros.botaniapp.common.item.ItemTerraPickPP.OLD_MAX;
+
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Reference.MOD_ID)
 public final class TooltipAdditionDisplayHandler {
 
-    @SubscribeEvent(priority=EventPriority.LOW)
+    @SubscribeEvent(priority = EventPriority.LOW)
     public static void onToolTipRender(RenderTooltipEvent.PostText evt) {
 
-        if (evt.getStack().isEmpty())
+        if(evt.getStack().isEmpty())
             return;
 
         ItemStack stack = evt.getStack();
@@ -71,8 +73,8 @@ public final class TooltipAdditionDisplayHandler {
     private static String getRank(int level) {
         String plain = I18n.format("botania.rank" + Math.min(5, level)).replaceAll("&", "\u00a7");
         int pluses = 0;
-        if(level >= ItemTerraPickPP.LEVELS.length - 1)
-            pluses = (level - ItemTerraPickPP.LEVELS.length) + 1;
-        return plain + new String(new char[pluses]).replace("\0", "S");
+        if(level >= OLD_MAX)
+            pluses = level - OLD_MAX;
+        return plain + new String(new char[pluses]).replace("\0", "+");
     }
 }
