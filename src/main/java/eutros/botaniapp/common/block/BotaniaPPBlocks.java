@@ -3,9 +3,9 @@ package eutros.botaniapp.common.block;
 import eutros.botaniapp.common.block.corporea.BlockAdvancedFunnel;
 import eutros.botaniapp.common.block.tile.TileChargingPlate;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
+import eutros.botaniapp.common.block.tile.TilePoweredAir;
 import eutros.botaniapp.common.block.tile.corporea.TileAdvancedFunnel;
 import eutros.botaniapp.common.block.tinkerer.BlockFrameTinkerer;
-import eutros.botaniapp.common.block.tinkerer.cart.BlockCartTinkerer;
 import eutros.botaniapp.common.block.tinkerer.tile.TileFrameTinkerer;
 import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.utils.Reference;
@@ -27,12 +27,12 @@ import static eutros.botaniapp.common.item.BotaniaPPItems.register;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ObjectHolder(Reference.MOD_ID)
 public class BotaniaPPBlocks {
+
     @ObjectHolder(Reference.BlockNames.ADVANCED_FUNNEL) public static BlockAdvancedFunnel advancedFunnel;
     @ObjectHolder(Reference.BlockNames.CHARGING_PLATE) public static BlockChargingPlate chargingPlate;
     @ObjectHolder(Reference.BlockNames.LEAKY_POOL) public static BlockLeakyPool leakyPool;
     @ObjectHolder(Reference.BlockNames.FRAME_TINKERER) public static BlockFrameTinkerer frameTinkerer;
-    @ObjectHolder(Reference.BlockNames.CART_TINKERER) public static BlockCartTinkerer cartTinkerer;
-    @ObjectHolder(Reference.BlockNames.FRAGILE_BOX) public static BlockFragileTileEntityBox fragileBox;
+    @ObjectHolder(Reference.BlockNames.POWERED_AIR) public static BlockPoweredAir poweredAir;
 
     public static Block BOTANIA_PISTON_RELAY;
     public static Block BOTANIA_MANA_VOID;
@@ -46,17 +46,19 @@ public class BotaniaPPBlocks {
         Block.Properties builder = Block.Properties.create(Material.IRON).hardnessAndResistance(5.5F).sound(SoundType.METAL);
         register(r, new BlockAdvancedFunnel(builder), Reference.BlockNames.ADVANCED_FUNNEL);
 
-        builder = Block.Properties.create(Material.ROCK);
+        builder = Block.Properties.create(Material.ROCK).hardnessAndResistance(2F, 6F);
         register(r, new BlockChargingPlate(builder), Reference.BlockNames.CHARGING_PLATE);
         register(r, new BlockLeakyPool(builder), Reference.BlockNames.LEAKY_POOL);
+
+        builder = Block.Properties.create(Material.WOOD).hardnessAndResistance(1F, 3F);
         register(r, new BlockFrameTinkerer(builder), Reference.BlockNames.FRAME_TINKERER);
-        register(r, new BlockCartTinkerer(builder), Reference.BlockNames.CART_TINKERER);
-        register(r, new BlockFragileTileEntityBox(builder), Reference.BlockNames.FRAGILE_BOX);
 
-        setBotaniaBlocks(r);
-    }
+        register(r, new BlockPoweredAir(Block.Properties.create(Material.AIR)), Reference.BlockNames.POWERED_AIR);
 
-    private static void setBotaniaBlocks(IForgeRegistry<Block> r) {
+        BlockSparkPainter.registerAll(r); // BlockStates plz Willie
+
+        // Get Botania's blocks.
+
         final String b = "botania";
 
         BOTANIA_MANA_VOID = r.getValue(new ResourceLocation(b, "mana_void"));
@@ -74,9 +76,12 @@ public class BotaniaPPBlocks {
         register(r, new BlockItem(chargingPlate, props), chargingPlate.getRegistryName());
         register(r, new BlockItem(leakyPool, props), leakyPool.getRegistryName());
         register(r, new BlockItem(frameTinkerer, props), frameTinkerer.getRegistryName());
-        register(r, new BlockItem(cartTinkerer, props), cartTinkerer.getRegistryName());
+
+        for(Block block : BlockSparkPainter.dyeMap.values())
+            register(r, new BlockItem(block, props), block.getRegistryName());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @SubscribeEvent
     public static void initTileEntities(RegistryEvent.Register<TileEntityType<?>> evt) {
         IForgeRegistry<TileEntityType<?>> r = evt.getRegistry();
@@ -85,5 +90,7 @@ public class BotaniaPPBlocks {
         register(r, TileEntityType.Builder.create(TileChargingPlate::new, chargingPlate).build(null), Reference.BlockNames.CHARGING_PLATE);
         register(r, TileEntityType.Builder.create(TileLeakyPool::new, leakyPool).build(null), Reference.BlockNames.LEAKY_POOL);
         register(r, TileEntityType.Builder.create(TileFrameTinkerer::new, frameTinkerer).build(null), Reference.BlockNames.FRAME_TINKERER);
+        register(r, TileEntityType.Builder.create(TilePoweredAir::new, poweredAir).build(null), Reference.BlockNames.POWERED_AIR);
     }
+
 }

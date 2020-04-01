@@ -14,19 +14,21 @@ import vazkii.botania.api.mana.ILens;
 
 public final class ColorHandler {
 
+    private ColorHandler() {
+    }
+
     public static void init() {
 
         ItemColors items = Minecraft.getInstance().getItemColors();
 
-        IItemColor lensDyeHandler = (s, t) -> t == 0 ? ((ILens)s.getItem()).getLensColor(s) : -1;
+        IItemColor lensDyeHandler = (s, t) -> t == 0 ? ((ILens) s.getItem()).getLensColor(s) : -1;
 
         items.register((s, t) ->
-        t == 2 ? BindingLens.getColor2(s)
-            : t == 3 ? BindingLens.getColor1(s)
-                : lensDyeHandler.getColor(s, t),
+                        t == 2 ? BindingLens.getColor2(s)
+                               : t == 3 ? BindingLens.getColor1(s)
+                                        : lensDyeHandler.getColor(s, t),
                 BotaniaPPItems.bindingLens);
 
-        }
+    }
 
-    private ColorHandler() {}
 }

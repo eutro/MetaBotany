@@ -26,10 +26,10 @@ import java.util.Optional;
 
 public class TileChargingPlate extends TileSimpleInventory implements IManaReceiver {
 
-	@ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.CHARGING_PLATE)
-	public static TileEntityType<TileChargingPlate> TYPE;
-	
-	public TileChargingPlate() {
+    @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.CHARGING_PLATE)
+    public static TileEntityType<TileChargingPlate> TYPE;
+
+    public TileChargingPlate() {
         super(TYPE);
     }
 
@@ -43,7 +43,7 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
             @Nonnull
             @Override
             public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-                if (!stack.isEmpty() && stack.getItem() instanceof IManaItem) {
+                if(!stack.isEmpty() && stack.getItem() instanceof IManaItem) {
                     return super.insertItem(slot, stack, simulate);
                 }
                 return stack;
@@ -59,7 +59,7 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
 
     @Override
     public boolean isFull() {
-	    return getManaItem().map(item -> {
+        return getManaItem().map(item -> {
             ItemStack stack = itemHandler.getStackInSlot(0);
             return item.getMana(stack) >= item.getMaxMana(stack);
         }).orElse(true);
@@ -67,14 +67,14 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
 
     @Override
     public void recieveMana(int mana) {
-	    getManaItem().ifPresent(item -> {
-	        if(!isFull()) {
+        getManaItem().ifPresent(item -> {
+            if(!isFull()) {
                 ItemStack stack = itemHandler.getStackInSlot(0);
-                item.addMana(stack, Math.min(mana, item.getMaxMana(stack)-item.getMana(stack)));
+                item.addMana(stack, Math.min(mana, item.getMaxMana(stack) - item.getMana(stack)));
                 assert world != null;
                 world.updateComparatorOutputLevel(pos, getBlockState().getBlock());
             }
-	    });
+        });
     }
 
     @Override
@@ -118,11 +118,10 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         }
 
-
         mc.textureManager.bindTexture(HUDHelper.MANA_HUD);
 
         RenderHelper.enable();
-        mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, x+8, y-8);
+        mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, x + 8, y - 8);
         RenderHelper.disableStandardItemLighting();
 
         RenderSystem.disableLighting();
@@ -137,11 +136,12 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
     }
 
     public int comparatorPower() {
-	    ItemStack stack = itemHandler.getStackInSlot(0);
-	    Optional<IManaItem> manaItem = getManaItem();
+        ItemStack stack = itemHandler.getStackInSlot(0);
+        Optional<IManaItem> manaItem = getManaItem();
         return manaItem.map((item) -> {
             int raw = (int) ((double) item.getMana(stack) / (double) item.getMaxMana(stack) * 15.0);
             return Math.max(raw, 1);
         }).orElse(0);
     }
+
 }

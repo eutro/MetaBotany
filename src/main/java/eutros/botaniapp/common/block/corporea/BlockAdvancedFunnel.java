@@ -60,4 +60,5 @@ public class BlockAdvancedFunnel extends BlockRedstoneControlled implements IWan
     public void renderHUD(Minecraft mc, World world, BlockPos pos) {
         ((TileAdvancedFunnel) Objects.requireNonNull(world.getTileEntity(pos))).renderHUD(mc);
     }
+
 }

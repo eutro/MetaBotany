@@ -2,10 +2,10 @@
  * This class was created by <Vazkii>. It's distributed as
  * part of the Botania Mod. Get the Source Code in github:
  * https://github.com/Vazkii/Botania
- *
+ * <p>
  * Botania is Open Source and distributed under the
  * Botania License: http://botaniamod.net/license.php
- *
+ * <p>
  * File Created @ [Jan 21, 2014, 9:18:28 PM (GMT)]
  */
 package eutros.botaniapp.common.block.tile;
@@ -19,6 +19,7 @@ import net.minecraft.tileentity.TileEntityType;
 import javax.annotation.Nonnull;
 
 public class TileMod extends TileEntity {
+
     public TileMod(TileEntityType<?> type) {
         super(type);
     }
@@ -43,9 +44,11 @@ public class TileMod extends TileEntity {
         readPacketNBT(par1nbtTagCompound);
     }
 
-    public void writePacketNBT(CompoundNBT cmp) {}
+    public void writePacketNBT(CompoundNBT cmp) {
+    }
 
-    public void readPacketNBT(CompoundNBT cmp) {}
+    public void readPacketNBT(CompoundNBT cmp) {
+    }
 
     @Override
     public final SUpdateTileEntityPacket getUpdatePacket() {

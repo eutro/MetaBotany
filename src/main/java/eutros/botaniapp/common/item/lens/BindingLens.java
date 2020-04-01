@@ -37,26 +37,18 @@ import java.util.Optional;
 
 public class BindingLens extends ItemLens implements ICoordBoundItem {
 
+    public static final BlockPos UNBOUND_POS = new BlockPos(0, -1, 0);
     private static final String TAG_COLOR1 = "color1";
     private static final String TAG_COLOR2 = "color2";
     private static final String TAG_BOUND_TILE_X = "boundTileX";
     private static final String TAG_BOUND_TILE_Y = "boundTileY";
     private static final String TAG_BOUND_TILE_Z = "boundTileZ";
-    public static final BlockPos UNBOUND_POS = new BlockPos(0, -1, 0);
 
     public BindingLens(Properties properties) {
         super(properties);
         addPropertyOverride(new ResourceLocation(Reference.MOD_ID, "bound"),
                 (stack, worldIn, entityIn) -> getBindingAttempt(stack).isPresent() ? 1 : 0);
-    }
-
-    @Override
-    public int getLensColor(ItemStack stack) {
-        return getBindingAttempt(stack).isPresent() ? getColor2(stack) : getColor1(stack);
-    }
-
-    public int getLensColorId(ItemStack stack) {
-        return getBindingAttempt(stack).isPresent() ? getColorId2(stack) : getColorId1(stack);
+        updateColor = true;
     }
 
     public static int getColorId1(ItemStack stack) {
@@ -79,12 +71,42 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
         if(0 <= colorId && colorId <= 15) {
             return DyeColor.byId(colorId).getColorValue();
         } else {
-            return Color.HSBtoRGB((float)((BotaniaPP.proxy.getWorldElapsedTicks() * 2L % 360L) + offset) / 360.0F, 1.0F, 1.0F);
+            return Color.HSBtoRGB((float) ((BotaniaPP.proxy.getWorldElapsedTicks() * 2L % 360L) + offset) / 360.0F, 1.0F, 1.0F);
         }
     }
 
     public static int colorOf(int colorId) {
         return colorOf(colorId, 0);
+    }
+
+    public static void setBindingAttempt(ItemStack stack, BlockPos pos) {
+        ItemNBTHelper.setInt(stack, TAG_BOUND_TILE_X, pos.getX());
+        ItemNBTHelper.setInt(stack, TAG_BOUND_TILE_Y, pos.getY());
+        ItemNBTHelper.setInt(stack, TAG_BOUND_TILE_Z, pos.getZ());
+    }
+
+    public static Optional<BlockPos> getBindingAttempt(ItemStack stack) {
+        int x = ItemNBTHelper.getInt(stack, TAG_BOUND_TILE_X, 0);
+        int y = ItemNBTHelper.getInt(stack, TAG_BOUND_TILE_Y, -1);
+        int z = ItemNBTHelper.getInt(stack, TAG_BOUND_TILE_Z, 0);
+        return y < 0 ? Optional.empty() : Optional.of(new BlockPos(x, y, z));
+    }
+
+    public static ItemStack forColors(int color1, int color2) {
+        ItemStack stack = new ItemStack(BotaniaPPItems.bindingLens);
+        ItemNBTHelper.setInt(stack, TAG_COLOR1, color1);
+        ItemNBTHelper.setInt(stack, TAG_COLOR2, color2);
+
+        return stack;
+    }
+
+    @Override
+    public int getLensColor(ItemStack stack) {
+        return getBindingAttempt(stack).isPresent() ? getColor2(stack) : getColor1(stack);
+    }
+
+    public int getLensColorId(ItemStack stack) {
+        return getBindingAttempt(stack).isPresent() ? getColorId2(stack) : getColorId1(stack);
     }
 
     @Override
@@ -130,13 +152,15 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
             Direction side = ((BlockRayTraceResult) traceResult).getFace();
 
             LivingEntity entity = ((ThrowableEntity) burst).getThrower();
-            PlayerEntity player = entity instanceof PlayerEntity ? (PlayerEntity) entity : new BotaniaPPFakePlayer((ServerWorld) world);
+            PlayerEntity player = entity instanceof PlayerEntity ?
+                                  (PlayerEntity) entity :
+                                  new BotaniaPPFakePlayer((ServerWorld) world);
 
             if(simBind(world, stack, pos, block, side, player)) {
                 if(!sourcePos.equals(UNBOUND_POS)) {
                     world.playSound(null, sourcePos, BotaniaPPSounds.BOTANIA_DING, SoundCategory.BLOCKS, 0.5F, 1F);
                     TileEntity tileEntity = world.getTileEntity(sourcePos);
-                    if (tileEntity != null)
+                    if(tileEntity != null)
                         tileEntity.markDirty();
                 } else if(!(player instanceof FakePlayer)) {
                     world.playSound(null, player.getPosition(), BotaniaPPSounds.BOTANIA_DING, SoundCategory.PLAYERS, 0.5F, 1F);
@@ -149,7 +173,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
     private boolean simBind(World world, ItemStack stack, BlockPos pos, Block block, Direction side, PlayerEntity player) {
         Optional<BlockPos> boundPos = getBindingAttempt(stack);
 
-        if (boundPos.isPresent() && tryCompleteBinding(boundPos.get(), pos, stack, world, side, player)) {
+        if(boundPos.isPresent() && tryCompleteBinding(boundPos.get(), pos, stack, world, side, player)) {
             return true;
         }
 
@@ -158,7 +182,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
 
             if((tile instanceof IWandBindable && ((IWandBindable) tile).canSelect(player, stack, pos, side))
                     || block instanceof BlockPistonRelay) {
-                if (!boundPos.isPresent() || !boundPos.get().equals(pos)) {
+                if(!boundPos.isPresent() || !boundPos.get().equals(pos)) {
                     setBindingAttempt(stack, pos);
                     return true;
                 }
@@ -206,20 +230,6 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
         return false;
     }
 
-
-    public static void setBindingAttempt(ItemStack stack, BlockPos pos) {
-        ItemNBTHelper.setInt(stack, TAG_BOUND_TILE_X, pos.getX());
-        ItemNBTHelper.setInt(stack, TAG_BOUND_TILE_Y, pos.getY());
-        ItemNBTHelper.setInt(stack, TAG_BOUND_TILE_Z, pos.getZ());
-    }
-
-    public static Optional<BlockPos> getBindingAttempt(ItemStack stack) {
-        int x = ItemNBTHelper.getInt(stack, TAG_BOUND_TILE_X, 0);
-        int y = ItemNBTHelper.getInt(stack, TAG_BOUND_TILE_Y, -1);
-        int z = ItemNBTHelper.getInt(stack, TAG_BOUND_TILE_Z, 0);
-        return y < 0 ? Optional.empty() : Optional.of(new BlockPos(x, y, z));
-    }
-
     @Nonnull
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, @Nonnull Hand hand) {
@@ -247,8 +257,8 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
 
         if((player == null || player.isSneaking()) &&
                 ((tile instanceof IWandBindable &&
-                ((IWandBindable) tile).canSelect(player, stack, pos, side)) ||
-                block instanceof BlockPistonRelay)) {
+                        ((IWandBindable) tile).canSelect(player, stack, pos, side)) ||
+                        block instanceof BlockPistonRelay)) {
             setBindingAttempt(stack, pos);
             // TODO use own sound
             if(player != null)
@@ -258,16 +268,9 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
         return ActionResultType.FAIL;
     }
 
-    public static ItemStack forColors(int color1, int color2) {
-        ItemStack stack = new ItemStack(BotaniaPPItems.bindingLens);
-        ItemNBTHelper.setInt(stack, TAG_COLOR1, color1);
-        ItemNBTHelper.setInt(stack, TAG_COLOR2, color2);
-
-        return stack;
-    }
-
     @Override
     public BlockPos getBinding(ItemStack stack) {
         return getBindingAttempt(stack).orElse(null);
     }
+
 }

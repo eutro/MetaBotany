@@ -2,7 +2,7 @@
   "type": "botaniapp:lens_unbinding",
   "ingredients": [
     {
-    "item": "botaniapp:lens_binding"
+      "item": "botaniapp:lens_binding"
     }
   ],
   "result": {

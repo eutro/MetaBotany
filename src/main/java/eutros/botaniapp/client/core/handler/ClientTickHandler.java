@@ -21,6 +21,9 @@ public class ClientTickHandler {
     public static float total = 0;
     public static float delta = 0;
 
+    private ClientTickHandler() {
+    }
+
     private static void calcDelta() {
         float oldTotal = total;
         total = ticksInGame + partialTicks;
@@ -29,8 +32,12 @@ public class ClientTickHandler {
 
     @SubscribeEvent
     public static void renderTick(TickEvent.RenderTickEvent event) {
-        if(event.phase == TickEvent.Phase.START)
-            partialTicks = event.renderTickTime;
+        if(event.phase == TickEvent.Phase.START) {
+            Screen gui = Minecraft.getInstance().currentScreen;
+            if(gui == null || !gui.isPauseScreen()) {
+                partialTicks = event.renderTickTime;
+            }
+        }
         else {
             calcDelta();
         }
@@ -38,14 +45,13 @@ public class ClientTickHandler {
 
     @SubscribeEvent
     public static void clientTickEnd(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
+        if(event.phase == TickEvent.Phase.END) {
             Screen gui = Minecraft.getInstance().currentScreen;
-            if (gui == null || !gui.isPauseScreen()) {
+            if(gui == null || !gui.isPauseScreen()) {
                 ++ticksInGame;
                 partialTicks = 0;
             }
         }
     }
 
-    private ClientTickHandler() {}
 }

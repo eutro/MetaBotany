@@ -49,4 +49,5 @@ public class StateRedstoneControlled extends BlockState {
             world.setBlockState(pos, this.with(POWERED, power > 0), 4);
         }
     }
+
 }

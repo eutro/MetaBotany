@@ -39,7 +39,7 @@ public class RecipeBouganvilleaRegular extends RecipeBouganvillea {
     }
 
     @Override
-        public boolean shouldTrigger(IBouganvilleaInventory inventory) {
+    public boolean shouldTrigger(IBouganvilleaInventory inventory) {
         return inventory.getSizeInventory() == ingredients.size();
     }
 
@@ -47,7 +47,7 @@ public class RecipeBouganvilleaRegular extends RecipeBouganvillea {
     @Override
     public boolean matches(IBouganvilleaInventory inventory, World world) {
         ItemStack stack = inventory.getThrown().getItem();
-        return ingredients.get(inventory.getSizeInventory()-1).test(stack);
+        return ingredients.get(inventory.getSizeInventory() - 1).test(stack);
     }
 
     @NotNull
@@ -71,6 +71,7 @@ public class RecipeBouganvilleaRegular extends RecipeBouganvillea {
     }
 
     private static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<RecipeBouganvilleaRegular> {
+
         @Nonnull
         @Override
         public RecipeBouganvilleaRegular read(@Nonnull ResourceLocation recipeId, @Nonnull JsonObject json) {
@@ -107,5 +108,7 @@ public class RecipeBouganvilleaRegular extends RecipeBouganvillea {
 
             buffer.writeItemStack(recipe.getRecipeOutput());
         }
+
     }
+
 }

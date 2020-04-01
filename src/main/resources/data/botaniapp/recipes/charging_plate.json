@@ -1,0 +1,44 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "_P_",
+    "SRS"
+  ],
+  "key": {
+    "_": [
+      {
+        "item": "botania:livingrock_slab"
+      },
+      {
+        "item": "botania:livingrock_bricks_slab"
+      }
+    ],
+    "R": [
+      {
+        "tag": "botania:livingrock"
+      },
+      {
+        "item": "botania:livingrock_bricks"
+      }
+    ],
+    "S": [
+      {
+        "item": "botania:livingrock_stairs"
+      },
+      {
+        "item": "botania:livingrock_bricks_stairs"
+      }
+    ],
+    "P": [
+      {
+        "item": "botania:mana_pearl"
+      },
+      {
+        "tag": "forge:gems/mana_diamond"
+      }
+    ]
+  },
+  "result": {
+    "item": "botaniapp:charging_plate"
+  }
+}

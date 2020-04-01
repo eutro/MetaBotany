@@ -34,11 +34,11 @@ public class BlockChargingPlate extends Block implements IWandHUD {
     private static VoxelShape BASE = makeCuboidShape(2, 0, 2, 14, 2, 14);
     private static VoxelShape TOP = makeCuboidShape(0, 2, 0, 16, 4, 16);
     private static VoxelShape SHAPE = VoxelShapes.combineAndSimplify(BASE, TOP, IBooleanFunction.OR);
-	
-	public BlockChargingPlate(Properties properties) {
+
+    public BlockChargingPlate(Properties properties) {
         super(properties);
     }
-    
+
     @Override
     public boolean hasTileEntity(BlockState state) {
         return true;
@@ -91,7 +91,7 @@ public class BlockChargingPlate extends Block implements IWandHUD {
     @SuppressWarnings("deprecation")
     @Override
     public void onReplaced(@Nonnull BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
+        if(state.getBlock() != newState.getBlock()) {
             TileSimpleInventory inv = (TileSimpleInventory) world.getTileEntity(pos);
             InventoryHelper.dropInventory(inv, world, state, pos);
         }
@@ -101,7 +101,7 @@ public class BlockChargingPlate extends Block implements IWandHUD {
     @SuppressWarnings("deprecation")
     @Override
     public boolean hasComparatorInputOverride(BlockState state) {
-	    return true;
+        return true;
     }
 
     @SuppressWarnings("deprecation")
@@ -109,4 +109,5 @@ public class BlockChargingPlate extends Block implements IWandHUD {
     public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
         return ((TileChargingPlate) Objects.requireNonNull(worldIn.getTileEntity(pos))).comparatorPower();
     }
+
 }

@@ -12,4 +12,5 @@ public class DataGenerators {
     public static void gatherData(GatherDataEvent e) {
         e.getGenerator().addProvider(new BlockLootProvider(e.getGenerator()));
     }
+
 }

@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class RecipeLensUnbinding implements ICraftingRecipe {
+
     public static final IRecipeSerializer<RecipeLensUnbinding> SERIALIZER = new Serializer();
     private final ShapelessRecipe compose;
 
@@ -35,7 +36,7 @@ public class RecipeLensUnbinding implements ICraftingRecipe {
     @NotNull
     @Override
     public ItemStack getCraftingResult(CraftingInventory inv) {
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
+        for(int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
 
             if(stack.getItem() == BotaniaPPItems.bindingLens) {
@@ -95,6 +96,7 @@ public class RecipeLensUnbinding implements ICraftingRecipe {
     }
 
     private static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<RecipeLensUnbinding> {
+
         @Nonnull
         @Override
         public RecipeLensUnbinding read(@Nonnull ResourceLocation recipeId, @Nonnull JsonObject json) {
@@ -111,5 +113,7 @@ public class RecipeLensUnbinding implements ICraftingRecipe {
         public void write(@Nonnull PacketBuffer buffer, @Nonnull RecipeLensUnbinding recipe) {
             CRAFTING_SHAPELESS.write(buffer, recipe.compose);
         }
+
     }
+
 }

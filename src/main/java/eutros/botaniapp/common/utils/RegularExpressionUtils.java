@@ -39,7 +39,7 @@ public class RegularExpressionUtils {
         }
 
         public char charAt(int index) {
-            if (System.nanoTime() > timeoutTime) {
+            if(System.nanoTime() > timeoutTime) {
                 throw new RegexTimeout();
             }
             return inner.charAt(index);
@@ -61,5 +61,8 @@ public class RegularExpressionUtils {
 
     }
 
-    public static class RegexTimeout extends RuntimeException {}
+    public static class RegexTimeout extends RuntimeException {
+
+    }
+
 }

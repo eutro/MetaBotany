@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "botaniapp:spark_painter_light_gray"
+  },
+  "pattern": [
+    " S ",
+    " # ",
+    "LEL"
+  ],
+  "key": {
+    "E": {
+      "tag": "forge:ingots/elementium"
+    },
+    "L": {
+      "item": "botania:livingrock"
+    },
+    "#": {
+      "item": "minecraft:light_gray_stained_glass"
+    },
+    "S": {
+      "item": "botania:spark"
+    }
+  }
+}

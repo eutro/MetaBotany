@@ -2,7 +2,7 @@
   "type": "botaniapp:lens_binding",
   "result": {
     "item": "botaniapp:lens_binding",
-	"nbt": "{color1:16,color2:16}"
+    "nbt": "{color1:16,color2:16}"
   },
   "pattern": [
     "PP",

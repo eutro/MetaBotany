@@ -20,10 +20,24 @@ import java.util.List;
 
 public class RecipeBouganvilleaRename extends RecipeBouganvillea {
 
-    public static IRecipeSerializer<RecipeBouganvilleaRename> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaRename::new);
-
     protected static final ItemStack manaString = new ItemStack(BotaniaPPItems.BOTANIA_MANA_STRING);
     protected static final Ingredient RENAMED_INGREDIENT = Ingredient.fromItems(Items.DIRT, Items.NAME_TAG, Items.PAPER, Items.DIAMOND_SWORD);
+    public static IRecipeSerializer<RecipeBouganvilleaRename> SERIALIZER = new SpecialRecipeSerializer<>(RecipeBouganvilleaRename::new);
+    private final NonNullList<Ingredient> exampleIngredients = NonNullList.from(
+            Ingredient.EMPTY,
+            Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("What ")),
+                    manaString.copy().setDisplayName(new StringTextComponent("kimi "))),
+            Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("is ")),
+                    manaString.copy().setDisplayName(new StringTextComponent("no "))),
+            Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("your ")),
+                    manaString.copy().setDisplayName(new StringTextComponent("na "))),
+            Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("name")),
+                    manaString.copy().setDisplayName(new StringTextComponent("wa"))),
+            Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("?")),
+                    manaString.copy().setDisplayName(new StringTextComponent("?!")),
+                    manaString.copy().setDisplayName(new StringTextComponent("..?"))),
+            RENAMED_INGREDIENT
+    );
 
     public RecipeBouganvilleaRename(ResourceLocation location) {
         this(location,
@@ -49,8 +63,9 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     }
 
     public ItemStack getStacksResult(List<ItemStack> stacks) {
+        // TODO add limitations
         StringBuilder builder = new StringBuilder();
-        for(ItemStack stack : stacks.subList(0, stacks.size()-1)) {
+        for(ItemStack stack : stacks.subList(0, stacks.size() - 1)) {
             builder.append(stackName(stack));
         }
 
@@ -68,22 +83,6 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     public IRecipeSerializer<?> getSerializer() {
         return SERIALIZER;
     }
-
-    private final NonNullList<Ingredient> exampleIngredients = NonNullList.from(
-            Ingredient.EMPTY,
-                Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("What ")),
-                        manaString.copy().setDisplayName(new StringTextComponent("kimi "))),
-                Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("is ")),
-                        manaString.copy().setDisplayName(new StringTextComponent("no "))),
-                Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("your ")),
-                        manaString.copy().setDisplayName(new StringTextComponent("na "))),
-                Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("name")),
-                        manaString.copy().setDisplayName(new StringTextComponent("wa"))),
-                Ingredient.fromStacks(manaString.copy().setDisplayName(new StringTextComponent("?")),
-                        manaString.copy().setDisplayName(new StringTextComponent("?!")),
-                        manaString.copy().setDisplayName(new StringTextComponent("..?"))),
-                RENAMED_INGREDIENT
-            );
 
     @NotNull
     @Override

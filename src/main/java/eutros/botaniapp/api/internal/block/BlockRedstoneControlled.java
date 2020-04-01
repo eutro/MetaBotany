@@ -42,7 +42,8 @@ public abstract class BlockRedstoneControlled extends Block {
     /**
      * Perform whatever needs to be performed on redstone pulse.
      */
-    public void doPulse(BlockState state, BlockPos pos, World world, BlockPos from) {}
+    public void doPulse(BlockState state, BlockPos pos, World world, BlockPos from) {
+    }
 
     /**
      * Get the positions that need to be checked with {@link World#getRedstonePower(BlockPos, Direction)}.
@@ -64,4 +65,5 @@ public abstract class BlockRedstoneControlled extends Block {
     protected Direction[] getDirections() {
         return Direction.values();
     }
+
 }

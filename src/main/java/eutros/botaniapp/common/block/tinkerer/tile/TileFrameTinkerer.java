@@ -99,4 +99,5 @@ public class TileFrameTinkerer extends TileSimpleInventory {
         frame.setItemRotation(frame.getRotation() + 1);
         return true;
     }
+
 }

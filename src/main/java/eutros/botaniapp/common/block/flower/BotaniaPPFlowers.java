@@ -30,6 +30,9 @@ import static vazkii.botania.common.block.ModBlocks.register;
 @ObjectHolder(Reference.MOD_ID)
 public class BotaniaPPFlowers {
 
+    private static final List<Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation>> TYPES = ImmutableList.of(
+            Pair.of(SubtileBouganvillea::new, new ResourceLocation(Reference.MOD_ID, Reference.FlowerNames.BOUGANVILLEA))
+    );
     @ObjectHolder(Reference.FlowerNames.BOUGANVILLEA) public static Block bouganvillea;
     @ObjectHolder("floating_" + Reference.FlowerNames.BOUGANVILLEA) public static Block bouganvilleaFloating;
 
@@ -41,10 +44,6 @@ public class BotaniaPPFlowers {
         return new ResourceLocation(orig.getNamespace(), orig.getPath() + "_chibi");
     }
 
-    private static final List<Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation>> TYPES = ImmutableList.of(
-            Pair.of(SubtileBouganvillea::new, new ResourceLocation(Reference.MOD_ID, Reference.FlowerNames.BOUGANVILLEA))
-    );
-
     public static List<Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation>> getTypes() {
         return ImmutableList.copyOf(TYPES);
     }
@@ -55,7 +54,7 @@ public class BotaniaPPFlowers {
         Block.Properties props = Block.Properties.from(Blocks.POPPY);
         Block.Properties floatProps = Block.Properties.create(Material.EARTH).hardnessAndResistance(0.5F).sound(SoundType.GROUND).lightValue(15);
 
-        for (Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation> type : TYPES) {
+        for(Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation> type : TYPES) {
             register(r, new BlockSpecialFlower(props, type.getLeft()), type.getValue());
             register(r, new BlockFloatingSpecialFlower(floatProps, type.getLeft()), floating(type.getValue()));
         }
@@ -67,7 +66,7 @@ public class BotaniaPPFlowers {
         IForgeRegistry<Item> r = evt.getRegistry();
         Item.Properties props = BotaniaPPItems.defaultBuilder();
 
-        for (Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation> type : TYPES) {
+        for(Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation> type : TYPES) {
             Block block = b.getValue(type.getRight());
             Block floating = b.getValue(floating(type.getRight()));
 
@@ -81,10 +80,11 @@ public class BotaniaPPFlowers {
         IForgeRegistry<Block> b = ForgeRegistries.BLOCKS;
         IForgeRegistry<TileEntityType<?>> r = evt.getRegistry();
 
-        for (Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation> type : TYPES) {
+        for(Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation> type : TYPES) {
             Block block = b.getValue(type.getRight());
             Block floating = b.getValue(floating(type.getRight()));
             register(r, TileEntityType.Builder.create(type.getLeft(), block, floating).build(null), type.getRight());
         }
     }
+
 }

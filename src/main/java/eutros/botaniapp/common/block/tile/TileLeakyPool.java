@@ -3,9 +3,11 @@ package eutros.botaniapp.common.block.tile;
 import com.google.common.base.Predicates;
 import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.api.internal.block.state.StateRedstoneControlled;
+import eutros.botaniapp.api.internal.config.Configurable;
 import eutros.botaniapp.client.core.helper.HUDHelper;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.sound.BotaniaPPSounds;
+import eutros.botaniapp.common.utils.MathUtils;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -44,10 +46,11 @@ import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 
-// TODO make this less similar to original mana pool's
 public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKeyLocked, ISparkAttachable, IThrottledPacket, ITickableTileEntity, IManaSpreader {
 
     public static final int MAX_MANA = 1000000;
+    public static final AxisAlignedBB CLEAR_SQUARES = new AxisAlignedBB(6 / 16F, 15 / 16F, 6 / 16F, 10 / 16F, 1, 10 / 16F);
+    public static final AxisAlignedBB CLEAR_COLUMN = new AxisAlignedBB(6 / 16F, 0, 6 / 16F, 10 / 16F, 1, 10 / 16F);
 
     private static final String TAG_MANA = "mana";
     private static final String TAG_KNOWN_MANA = "knownMana";
@@ -55,25 +58,38 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     private static final String TAG_INPUT_KEY = "inputKey";
     private static final String TAG_OUTPUT_KEY = "outputKey";
     private static final String TAG_DRIP = "drip";
+    private static final String TAG_LAST = "lastShot";
+
     private static final Color PARTICLE_COLOR = new Color(0x00C6FF);
+    private static final int BURST_MAX_MANA = 650;
+
+    @Configurable(path = "leaky_pool",
+                  comment = "Approximately how much faster can a Leaky Mana Pool dump into a mana acceptor below it?")
+    public static int DIRECT_PUMP_MULTIPLIER = 5;
+
+    @Configurable(path = "leaky_pool",
+                  comment = "How many ticks should there be between a Leaky Mana Pool's drips at a minimum?")
+    public static float DRIP_RATE_MIN = 1;
+
+    @Configurable(path = "leaky_pool",
+                  comment = "How many ticks should there be at most between a Leaky Mana Pool's drips?")
+    public static float DRIP_RATE_MAX = 1;
+
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.LEAKY_POOL)
     public static TileEntityType<TileLeakyPool> TYPE;
-    private static final int BURST_MAX_MANA = 650; // How big bursts get
-    private static final int DIRECT_PUMP_MULTIPLIER = 5; // Approximately much faster direct transfer gets
 
-    private static final AxisAlignedBB CLEAR_COLUMN = new AxisAlignedBB(6 / 16F, 15 / 16F, 6 / 16F, 10 / 16F, 1, 10 / 16F);
-
+    private final String outputKey = "";
     public DyeColor color = DyeColor.WHITE;
     private int mana;
     private int knownMana = -1;
     private int ticks = 0;
-    private final String outputKey = "";
     private float dripProgress = 0;
     private String inputKey = "";
     private UUID identity;
     private boolean sendPacket = false;
     private int lastBurstDeathTick = 0;
     private int burstParticleTick = 0;
+    private long lastShot = -1;
 
     public TileLeakyPool() {
         super(TYPE);
@@ -126,20 +142,21 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         }
 
         boolean shouldShoot = true;
-        boolean canFire = canLeak();
-
-        dripProgress += 1/getDripFrequency();
+        boolean canFire = canLeak(CLEAR_SQUARES);
 
         if(getCurrentMana() <= 0 || !canFire) {
             shouldShoot = false;
+            lastShot = -1;
         }
+
+        dripProgress = shouldShoot ? dripProgress + 1 / getDripFrequency() : 0;
 
         boolean redstone = this.getBlockState().get(StateRedstoneControlled.POWERED);
 
         if(canFire) {
             ItemStack lens = itemHandler.getStackInSlot(0);
             ILensControl control = getLensController(lens);
-            if (control != null) {
+            if(control != null) {
                 control.onControlledSpreaderTick(lens, this, redstone);
 
                 shouldShoot = control.allowBurstShooting(lens, this, redstone);
@@ -147,8 +164,8 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
             if(shouldShoot && !world.isRemote()) {
                 TileEntity te = world.getTileEntity(pos.down());
-                // TODO consider hitbox checking for this
-                if(te instanceof IManaReceiver && ((IManaReceiver) te).canRecieveManaFromBursts() && !(te instanceof TileLeakyPool)) {
+                if(te instanceof IManaReceiver && ((IManaReceiver) te).canRecieveManaFromBursts() &&
+                        !canLeak(CLEAR_COLUMN)) {
                     IManaReceiver receiver = (IManaReceiver) te;
 
                     boolean filled = false;
@@ -174,10 +191,6 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             }
         }
 
-        if(!shouldShoot) {
-            dripProgress = Math.min(1, dripProgress);
-        }
-
         if(world.isRemote) {
             double particleChance = 1F - (double) getCurrentMana() / (double) MAX_MANA * 0.1;
             if(Math.random() > particleChance) {
@@ -195,7 +208,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         ticks++;
     }
 
-    public boolean canLeak() {
+    public boolean canLeak(AxisAlignedBB box) {
         assert world != null;
 
         BlockState state = world.getBlockState(pos.down());
@@ -207,24 +220,24 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         List<AxisAlignedBB> boundingBoxes = shape.toBoundingBoxList();
 
         for(AxisAlignedBB boundingBox : boundingBoxes) {
-            if(boundingBox.intersects(CLEAR_COLUMN))
+            if(boundingBox.intersects(box))
                 return false;
         }
 
         return true;
     }
 
-    public float getDripPercentage(float offset) {
-        return Math.min(dripProgress + offset/getDripFrequency(), 1F);
+    public float getDripProgress() {
+        return dripProgress;
     }
 
     public float getDripFrequency() {
-        return MAX_MANA/(Math.max(1F, mana));
+        return MathUtils.clamp(MAX_MANA / (Math.max(1F, mana)), DRIP_RATE_MIN, DRIP_RATE_MAX);
     }
 
     private void tryShootBurst() {
         EntityManaBurst burst = getBurst(false);
-        if (world != null && !world.isRemote) {
+        if(world != null && !world.isRemote) {
             mana -= burst.getMana();
             burst.setShooterUUID(getIdentifier());
             world.addEntity(burst);
@@ -232,6 +245,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             // TODO use own sound
             world.playSound(null, pos, BotaniaPPSounds.BOTANIA_SPREADER_FIRE, SoundCategory.BLOCKS, 0.05F, 0.7F + 0.3F * (float) Math.random());
             markDispatchable();
+            lastShot = world.getGameTime();
         }
     }
 
@@ -283,7 +297,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
         // Move burst half a block down so it starts at the bottom of the pool.
         Vec3d vec = burst.getPositionVector();
-        burst.setPosition(vec.x, vec.y-0.5, vec.z);
+        burst.setPosition(vec.x, vec.y - 0.5, vec.z);
 
         burst.setSourceLens(lens);
 
@@ -306,6 +320,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         cmp.putInt(TAG_MANA, mana);
         cmp.putInt(TAG_COLOR, color.getId());
         cmp.putFloat(TAG_DRIP, dripProgress);
+        cmp.putLong(TAG_LAST, lastShot);
 
         cmp.putString(TAG_INPUT_KEY, inputKey);
         cmp.putString(TAG_OUTPUT_KEY, outputKey);
@@ -318,6 +333,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         mana = cmp.getInt(TAG_MANA);
         color = DyeColor.byId(cmp.getInt(TAG_COLOR));
         dripProgress = cmp.getFloat(TAG_DRIP);
+        lastShot = cmp.getLong(TAG_LAST);
 
         if(cmp.contains(TAG_INPUT_KEY))
             inputKey = cmp.getString(TAG_INPUT_KEY);
@@ -401,7 +417,8 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     }
 
     @Override
-    public void attachSpark(ISparkEntity entity) {}
+    public void attachSpark(ISparkEntity entity) {
+    }
 
     @Override
     public ISparkEntity getAttachedSpark() {
@@ -470,7 +487,8 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         lastBurstDeathTick = i;
     }
 
-    public void setCanShoot(boolean canShoot) {}
+    public void setCanShoot(boolean canShoot) {
+    }
 
     @Override
     public IManaBurst runBurstSimulation() {
@@ -486,7 +504,8 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     }
 
     @Override
-    public void setRotationX(float rot) {}
+    public void setRotationX(float rot) {
+    }
 
     @Override
     public float getRotationY() {
@@ -494,13 +513,16 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     }
 
     @Override
-    public void setRotationY(float rot) {}
+    public void setRotationY(float rot) {
+    }
 
     @Override
-    public void commitRedirection() {}
+    public void commitRedirection() {
+    }
 
     @Override
-    public void pingback(IManaBurst burst, UUID expectedIdentity) {}
+    public void pingback(IManaBurst burst, UUID expectedIdentity) {
+    }
 
     @Override
     public UUID getIdentifier() {
@@ -508,4 +530,9 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             identity = UUID.randomUUID();
         return identity;
     }
+
+    public long getLastShot() {
+        return lastShot;
+    }
+
 }

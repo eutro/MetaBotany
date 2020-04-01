@@ -36,12 +36,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaRequestor, ITileBound {
-    @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.ADVANCED_FUNNEL)
 
-    public static TileEntityType<TileAdvancedFunnel> TYPE;
     private static final String TAG_RANGE = "range";
     private static final String PREV_MATCH = "match";
-
+    @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.ADVANCED_FUNNEL)
+    public static TileEntityType<TileAdvancedFunnel> TYPE;
     private int range = 3;
     private String match = I18n.format("hud.botaniapp.advanced_funnel.no_match");
 
@@ -68,7 +67,7 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
                     }
                     match = I18n.format("hud.botaniapp.advanced_funnel.prev_match") + " " +
                             requestMatcher.getRequestName().getFormattedText();
-                    VanillaPacketDispatcher.dispatchTEToNearbyPlayers(this) ;
+                    VanillaPacketDispatcher.dispatchTEToNearbyPlayers(this);
                 }
             }
         }
@@ -139,9 +138,9 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
         for(int down = 1; down < this.range; down++) {
             te = world.getTileEntity(pos.down(down));
             ret = InventoryHelper.getInventory(world, pos.down(down), Direction.UP);
-            if (ret == null)
+            if(ret == null)
                 ret = InventoryHelper.getInventory(world, pos.down(down), null);
-            if (ret != null && !(te instanceof TileCorporeaFunnel))
+            if(ret != null && !(te instanceof TileCorporeaFunnel))
                 return ret;
         }
 
@@ -156,9 +155,9 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
         for(int down = 1; down < this.range; down++) {
             te = world.getTileEntity(pos.down(down));
             itemHandler = InventoryHelper.getInventory(world, pos.down(down), Direction.UP);
-            if (itemHandler == null)
+            if(itemHandler == null)
                 itemHandler = InventoryHelper.getInventory(world, pos.down(down), null);
-            if (itemHandler != null && !(te instanceof TileCorporeaFunnel))
+            if(itemHandler != null && !(te instanceof TileCorporeaFunnel))
                 return pos.down(down);
         }
 
@@ -212,5 +211,7 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
             this.frame = frame;
             this.stack = stack;
         }
+
     }
+
 }

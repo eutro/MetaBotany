@@ -2,10 +2,10 @@
  * This class was created by <Mikeemoo/boq/nevercast>. It's distributed as
  * part of the Botania Mod. Get the Source Code in github:
  * https://github.com/Vazkii/Botania
- *
+ * <p>
  * Botania is Open Source and distributed under the
  * Botania License: http://botaniamod.net/license.php
- *
+ * <p>
  * File Created @ [? (GMT)]
  */
 package eutros.botaniapp.common.core.helper;
@@ -40,7 +40,7 @@ public class InventoryHelper {
             return null;
 
         LazyOptional<IItemHandler> ret = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
-        if (!ret.isPresent())
+        if(!ret.isPresent())
             ret = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         return ret.orElse(null);
     }

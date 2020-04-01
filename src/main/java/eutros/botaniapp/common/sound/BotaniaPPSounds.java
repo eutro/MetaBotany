@@ -29,4 +29,5 @@ public class BotaniaPPSounds {
         BOTANIA_DING = r.getValue(new ResourceLocation(b, "ding"));
         BOTANIA_SPREADER_FIRE = r.getValue(new ResourceLocation(b, "spreaderfire"));
     }
+
 }

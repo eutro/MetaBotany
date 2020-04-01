@@ -16,9 +16,9 @@ import javax.annotation.Nonnull;
 
 public class ItemLens extends Item implements ILens, ICompositableLens, ILensControl {
 
-    private static final String TAG_COMPOSITE_LENS = "compositeLens";
     protected static final String TAG_COLOR = "color";
-    protected boolean updateColor = true;
+    private static final String TAG_COMPOSITE_LENS = "compositeLens";
+    protected boolean updateColor = false;
 
     public ItemLens(Properties properties) {
         super(properties);
@@ -37,7 +37,9 @@ public class ItemLens extends Item implements ILens, ICompositableLens, ILensCon
 
     @Override
     public void apply(ItemStack stack, BurstProperties props) {
-        props.color = getLensColor(stack);
+        int color = ItemNBTHelper.getInt(stack, TAG_COLOR, -1);
+        if(color != -1)
+            props.color = DyeColor.byId(color).getColorValue();
 
         ItemStack compositeLens = getCompositeLens(stack);
         if(!compositeLens.isEmpty() && compositeLens.getItem() instanceof ILens)
@@ -145,4 +147,5 @@ public class ItemLens extends Item implements ILens, ICompositableLens, ILensCon
         if(!compositeLens.isEmpty() && compositeLens.getItem() instanceof ILens)
             ((ILensControl) compositeLens.getItem()).onControlledSpreaderTick(compositeLens, spreader, redstone);
     }
+
 }
