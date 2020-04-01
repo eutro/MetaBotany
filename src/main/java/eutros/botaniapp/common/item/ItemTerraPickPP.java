@@ -56,6 +56,7 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
 
     private static final String TAG_ENABLED = "enabled";
     private static final String TAG_MANA = "mana";
+    private static final String TAG_TIPPED = "tipped";
     public static int OLD_MAX = 5;
     private static final List<Material> MATERIALS = Arrays.asList(Material.ROCK, Material.IRON, Material.ICE,
             Material.GLASS, Material.PISTON, Material.ANVIL, Material.ORGANIC, Material.EARTH, Material.SAND,
@@ -67,7 +68,15 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
     private static final int MANA_PER_DAMAGE = 100;
 
     public ItemTerraPickPP(Properties props) {
-        super(props);
+        super(BotaniaAPI.TERRASTEEL_ITEM_TIER, props, -2.8F);
+        addPropertyOverride(new ResourceLocation("botania", TAG_TIPPED), (itemStack, world, entityLivingBase) ->
+                isTipped(itemStack) ?
+                1 :
+                0);
+        addPropertyOverride(new ResourceLocation("botania", TAG_ENABLED), (itemStack, world, entityLivingBase) ->
+                isEnabled(itemStack) ?
+                1 :
+                0);
     }
 
     @Override
@@ -263,15 +272,15 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
     }
 
     public static boolean isTipped(ItemStack stack) {
-        return ItemNBTHelper.getBoolean(stack, "tipped", false);
+        return ItemNBTHelper.getBoolean(stack, TAG_TIPPED, false);
     }
 
     public static void setTipped(ItemStack stack) {
-        ItemNBTHelper.setBoolean(stack, "tipped", true);
+        ItemNBTHelper.setBoolean(stack, TAG_TIPPED, true);
     }
 
     public static boolean isEnabled(ItemStack stack) {
-        return ItemNBTHelper.getBoolean(stack, "enabled", false);
+        return ItemNBTHelper.getBoolean(stack, TAG_ENABLED, false);
     }
 
     @Override

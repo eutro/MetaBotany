@@ -41,10 +41,11 @@ public class MathUtils {
 
     public static long[] toLongArray(byte[] bytes) {
         int length = (int) Math.ceil(bytes.length / 8F);
+        byte[] padded = ArrayUtils.addAll(new byte[length * 8 - bytes.length], bytes);
         long[] longs = new long[length];
 
         for(int i = 0; i < length; i++)
-            longs[i] = Longs.fromByteArray(Arrays.copyOfRange(bytes, i * 8, (i + 1) * 8));
+            longs[i] = Longs.fromByteArray(Arrays.copyOfRange(padded, i * 8, (i + 1) * 8));
         return longs;
     }
 

@@ -64,7 +64,9 @@ public final class TooltipAdditionDisplayHandler {
         RenderSystem.disableLighting();
         font.drawStringWithShadow(rank, mouseX, mouseY - 12, 0xFFFFFF);
         rank = getRank(level + 1);
-        font.drawStringWithShadow(rank, mouseX + width - font.getStringWidth(rank), mouseY - 12, 0xFFFFFF);
+        int stringWidth = font.getStringWidth(rank);
+        if(stringWidth < width / 2)
+            font.drawStringWithShadow(rank, mouseX + width - stringWidth, mouseY - 12, 0xFFFFFF);
         RenderSystem.enableLighting();
         RenderSystem.enableDepthTest();
         GL11.glPopAttrib();
