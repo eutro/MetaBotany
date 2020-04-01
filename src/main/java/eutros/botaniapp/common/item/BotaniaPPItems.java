@@ -34,6 +34,9 @@ public class BotaniaPPItems {
     public static Item BOTANIA_FLARE_LENS;
     public static Item BOTANIA_WARP_LENS;
     public static Item BOTANIA_PAINT_LENS;
+    public static Item BOTANIA_MINE_LENS;
+    public static Item BOTANIA_WEIGHT_LENS;
+
     public static Item BOTANIA_RED_STRING;
     public static Item BOTANIA_MANA_STRING;
     public static Item BOTANIA_SPARK;
@@ -62,6 +65,9 @@ public class BotaniaPPItems {
         BOTANIA_FLARE_LENS = r.getValue(new ResourceLocation(b, "lens_flare"));
         BOTANIA_WARP_LENS = r.getValue(new ResourceLocation(b, "lens_warp"));
         BOTANIA_PAINT_LENS = r.getValue(new ResourceLocation(b, "lens_paint"));
+        BOTANIA_MINE_LENS = r.getValue(new ResourceLocation(b, "lens_mine"));
+        BOTANIA_WEIGHT_LENS = r.getValue(new ResourceLocation(b, "lens_weight"));
+
         BOTANIA_RED_STRING = r.getValue(new ResourceLocation(b, "red_string"));
         BOTANIA_MANA_STRING = r.getValue(new ResourceLocation(b, "mana_string"));
         BOTANIA_SPARK = r.getValue(new ResourceLocation(b, "spark"));
