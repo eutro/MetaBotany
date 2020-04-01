@@ -4,19 +4,24 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.client.core.helper.HUDHelper;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.utils.Reference;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.ObjectHolder;
 import org.lwjgl.opengl.GL11;
 import vazkii.botania.api.BotaniaAPI;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.mana.IManaItem;
 import vazkii.botania.api.mana.IManaReceiver;
+import vazkii.botania.common.item.equipment.tool.terrasteel.ItemTerraPick;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.Optional;
 
 public class TileChargingPlate extends TileSimpleInventory implements IManaReceiver {
@@ -92,18 +97,26 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
     public void renderHUD(Minecraft mc) {
         int color = 0x4444FF;
         ItemStack stack = itemHandler.getStackInSlot(0);
-        BotaniaAPI.internalHandler.drawSimpleManaHUD(color,
-                getCurrentMana(),
-                getManaItem().map(item -> item.getMaxMana(stack)).orElse(1),
-                stack.isEmpty() ?
-                I18n.format(BotaniaPPBlocks.chargingPlate.getTranslationKey()) :
-                stack.getDisplayName().getFormattedText());
+        MainWindow window = mc.getWindow();
+        int scaledWidth = window.getScaledWidth();
+        int scaledHeight = window.getScaledHeight();
+        int x = scaledWidth / 2;
+        int y = scaledHeight / 2;
+        String name = stack.isEmpty() ? I18n.format(BotaniaPPBlocks.chargingPlate.getTranslationKey()) : stack.getDisplayName().getFormattedText();
 
-        int x = Minecraft.getInstance().getWindow().getScaledWidth() / 2;
-        int y = Minecraft.getInstance().getWindow().getScaledHeight() / 2;
-
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        if(stack.getItem() instanceof ItemTerraPick) {
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostText(stack, Collections.emptyList(), x - 51, y + 36, mc.fontRenderer, 102, 0));
+            mc.fontRenderer.drawStringWithShadow(name, x - mc.fontRenderer.getStringWidth(name)/2F, y + 8, color);
+        } else {
+            BotaniaAPI.internalHandler.drawSimpleManaHUD(color,
+                    getCurrentMana(),
+                    getManaItem().map(item -> item.getMaxMana(stack)).orElse(1),
+                    name);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        }
 
         mc.textureManager.bindTexture(HUDHelper.MANA_HUD);
 
@@ -113,6 +126,7 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
 
         RenderSystem.disableLighting();
         RenderSystem.disableBlend();
+
     }
 
     @Override
