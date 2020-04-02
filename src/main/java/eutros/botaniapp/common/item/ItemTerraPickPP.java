@@ -10,9 +10,11 @@
  */
 package eutros.botaniapp.common.item;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.math.BigIntegerMath;
+import eutros.botaniapp.common.core.handler.TerraPickMiningHandler;
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
-import eutros.botaniapp.common.utils.MathUtils;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -61,6 +63,8 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
     private static final List<Material> MATERIALS = Arrays.asList(Material.ROCK, Material.IRON, Material.ICE,
             Material.GLASS, Material.PISTON, Material.ANVIL, Material.ORGANIC, Material.EARTH, Material.SAND,
             Material.SNOW, Material.SNOW_BLOCK, Material.CLAY);
+
+    private Stopwatch timer = Stopwatch.createUnstarted();
 
     private static final int[] CREATIVE_MANA = new int[] {
             10000 - 1, 1000000 - 1, 10000000 - 1, 100000000 - 1, 1000000000 - 1, Integer.MAX_VALUE - 1
@@ -126,9 +130,9 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
         Vec3i beginDiff = new Vec3i(doX ? -range : 0, doY ? -1 : 0, doZ ? -range : 0);
         Vec3i endDiff = new Vec3i(doX ? range : 0, doY ? rangeY * 2 - 1 : 0, doZ ? range : 0);
 
-        ToolCommons.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, state -> MATERIALS.contains(state.getMaterial()), isTipped(stack));
+        TerraPickMiningHandler.createEvent(player, stack, world, pos, beginDiff, endDiff, (BlockState state) -> MATERIALS.contains(state.getMaterial()), isTipped(stack));
 
-        if(origLevel == 5) {
+        if(origLevel >= 5) {
             PlayerHelper.grantCriterion((ServerPlayerEntity) player, new ResourceLocation("botania:challenge/rank_ss_pick"), "code_triggered");
         }
     }
@@ -214,19 +218,12 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
     }
 
     public static void setTrueMana(ItemStack stack, BigInteger mana) {
-        byte[] bytes = mana.toByteArray();
-        long[] longs = MathUtils.toLongArray(bytes);
-
-        stack.getOrCreateTag().putLongArray(TAG_MANA, longs);
+        ItemNBTHelper.setString(stack, TAG_MANA, mana.toString());
     }
 
     public static BigInteger getTrueMana(ItemStack stack) {
-        long[] longs = stack.getOrCreateTag().getLongArray(TAG_MANA);
-        byte[] bytes = MathUtils.toByteArray(longs);
-        if(bytes.length == 0) {
-            return BigInteger.ZERO;
-        }
-        return new BigInteger(bytes);
+        String s = ItemNBTHelper.getString(stack, TAG_MANA, "0");
+        return new BigInteger(s.length() == 0 ? "0" : s);
     }
 
     public void setEnabled(ItemStack stack, boolean enabled) {

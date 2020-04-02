@@ -1,9 +1,7 @@
 package eutros.botaniapp.common.crafting;
 
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
-import eutros.botaniapp.common.crafting.recipe.RecipeBlackHoleTalismanInsert;
-import eutros.botaniapp.common.crafting.recipe.RecipeLensBinding;
-import eutros.botaniapp.common.crafting.recipe.RecipeLensUnbinding;
+import eutros.botaniapp.common.crafting.recipe.*;
 import eutros.botaniapp.common.crafting.recipe.bouganvillea.*;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.inventory.IInventory;
@@ -46,6 +44,8 @@ public class BotaniaPPRecipeTypes {
         register(r, RecipeBouganvilleaAnvil.SERIALIZER, "bouganvillea_anvil");
         register(r, RecipeBouganvilleaNameTag.SERIALIZER, "bouganvillea_name_tag");
         register(r, RecipeBouganvilleaFormattedRename.SERIALIZER, "bouganvillea_formatted_rename");
+        register(r, RecipeLensSplit.SERIALIZER, "lens_split");
+        register(r, RecipeCombineBrews.SERIALIZER, "combine_brews");
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)

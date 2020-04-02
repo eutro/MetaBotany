@@ -42,17 +42,13 @@
   "block.botaniapp.spark_painter_red": "Red Spark Painter",
   "block.botaniapp.spark_painter_white": "White Spark Painter",
   "block.botaniapp.spark_painter_yellow": "Yellow Spark Painter",
-
   "botaniapp.customize.preset.botanist_ready": "Botanist Ready",
-
+  "botaniapp.tooltip.composite": "Composite:",
   "itemGroup.botaniapp": "Botania Plus Plus",
-
   "botaniapp.category.botaniapp": "$(4)Botania Plus Plus$(0) is an add-on mod for $(1)Botania$(0). It aims to create new possibilities for automation of things that were not possible before.",
   "botaniapp.text.botaniapp": "$(4)Botania Plus Plus$(0) is a mod by Eutros.",
-
   "botaniapp.category.lenses": "Additional Mana Lenses",
   "botaniapp.category.text.lenses": "More lenses for your mana bursts!",
-
   "botaniapp.entry.lens_binding": "Mana Lens: Binding",
   "botaniapp.page.lens_binding0": "The $(item)Binding Lens$(0) allows $(thing)Mana Bursts$(0) to bind blocks automatically, like a $(l:basics/wand)$(item)Wand of the Forest$(0)$(/l) would.$(p)Striking any applicable block with the mana burst from this lens will $(thing)bind$(0) that location to the lens, dropping the first petal.$(p)Striking a second block will, if possible, $(thing)bind$(0) the $(thing)first block$(0) to the $(thing)second$(0).",
   "botaniapp.page.lens_binding1": "If the $(thing)first block$(0) $(l)cannot$() be bound to the $(thing)second$(0), $(o)the lens will not unbind from the first block$().$(p)The $(item)Binding Lens$(0) can even be moved around without losing its binding. Furthermore, it can be bound by hand, by sneak-right clicking on an applicable block. It can also be $(thing)unbound$(0) by sneak-right clicking into space, or putting it in a $(thing)crafting grid$(0).",

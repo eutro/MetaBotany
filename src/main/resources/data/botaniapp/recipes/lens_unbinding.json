@@ -1,12 +1,4 @@
 {
   "type": "botaniapp:lens_unbinding",
-  "ingredients": [
-    {
-      "item": "botaniapp:lens_binding"
-    }
-  ],
-  "result": {
-    "item": "botaniapp:lens_binding"
-  },
   "group": "botaniapp:lens_binding"
 }

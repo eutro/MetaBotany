@@ -1,36 +1,50 @@
 package eutros.botaniapp.common.crafting.recipe;
 
-import com.google.gson.JsonObject;
 import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.item.lens.BindingLens;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapelessRecipe;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.item.crafting.SpecialRecipe;
+import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-public class RecipeLensUnbinding implements ICraftingRecipe {
+public class RecipeLensUnbinding extends SpecialRecipe {
 
-    public static final IRecipeSerializer<RecipeLensUnbinding> SERIALIZER = new Serializer();
-    private final ShapelessRecipe compose;
+    public static final IRecipeSerializer<RecipeLensUnbinding> SERIALIZER = new SpecialRecipeSerializer<>(RecipeLensUnbinding::new);
 
-    public RecipeLensUnbinding(ShapelessRecipe compose) {
-        this.compose = compose;
+    public RecipeLensUnbinding(ResourceLocation location) {
+        super(location);
     }
 
     @Override
     public boolean matches(@NotNull CraftingInventory inv, @NotNull World worldIn) {
-        return compose.matches(inv, worldIn);
+        boolean bound = false;
+        boolean found = false;
+
+        for(int i = 0; i < inv.getSizeInventory(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
+            if(stack.isEmpty())
+                continue;
+
+            if(found)
+                return false;
+
+            if(stack.getItem() == BotaniaPPItems.bindingLens) {
+                stack = stack.copy();
+                bound = BindingLens.getBindingAttempt(stack).isPresent();
+                found = true;
+            }
+        }
+
+        return bound;
     }
 
     @NotNull
@@ -50,70 +64,29 @@ public class RecipeLensUnbinding implements ICraftingRecipe {
 
     @Override
     public boolean canFit(int width, int height) {
-        return compose.canFit(width, height);
-    }
-
-    @Nonnull
-    @Override
-    public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
-        return compose.getRemainingItems(inv);
+        return width * height > 0;
     }
 
     @Nonnull
     @Override
     public NonNullList<Ingredient> getIngredients() {
-        return compose.getIngredients();
-    }
+        ItemStack stack = new ItemStack(BotaniaPPItems.bindingLens);
 
-    @Nonnull
-    @Override
-    public String getGroup() {
-        return compose.getGroup();
-    }
+        BindingLens.setBindingAttempt(stack, new BlockPos(0, 0, 0));
 
-    @Nonnull
-    @Override
-    public ItemStack getIcon() {
-        return compose.getIcon();
+        return NonNullList.withSize(1, Ingredient.fromStacks(stack));
     }
 
     @NotNull
     @Override
     public ItemStack getRecipeOutput() {
-        return compose.getRecipeOutput();
-    }
-
-    @NotNull
-    @Override
-    public ResourceLocation getId() {
-        return compose.getId();
+        return new ItemStack(BotaniaPPItems.bindingLens);
     }
 
     @NotNull
     @Override
     public IRecipeSerializer<?> getSerializer() {
         return SERIALIZER;
-    }
-
-    private static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<RecipeLensUnbinding> {
-
-        @Nonnull
-        @Override
-        public RecipeLensUnbinding read(@Nonnull ResourceLocation recipeId, @Nonnull JsonObject json) {
-            return new RecipeLensUnbinding(CRAFTING_SHAPELESS.read(recipeId, json));
-        }
-
-        @Nullable
-        @Override
-        public RecipeLensUnbinding read(@Nonnull ResourceLocation recipeId, @Nonnull PacketBuffer buffer) {
-            return new RecipeLensUnbinding(CRAFTING_SHAPELESS.read(recipeId, buffer));
-        }
-
-        @Override
-        public void write(@Nonnull PacketBuffer buffer, @Nonnull RecipeLensUnbinding recipe) {
-            CRAFTING_SHAPELESS.write(buffer, recipe.compose);
-        }
-
     }
 
 }

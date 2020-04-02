@@ -2,6 +2,7 @@ package eutros.botaniapp.common.crafting.recipe;
 
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -46,17 +47,22 @@ public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
         Block talismanBlock = ItemBlackHoleTalisman.getBlock(talisman);
         boolean otherItem = false;
 
-        if(talismanBlock == null)
-            return false;
-
         for(int i = 0; i < inv.getSizeInventory(); i++) {
             if(i == pop)
                 continue;
             ItemStack stack = inv.getStackInSlot(i);
             if(!stack.isEmpty()) {
                 Item item = stack.getItem();
-                if(!(item instanceof BlockItem && ((BlockItem) item).getBlock() == talismanBlock)) {
+                if(!(item instanceof BlockItem)) {
                     return false;
+                } else {
+                    Block block = ((BlockItem) item).getBlock();
+                    if(talismanBlock != Blocks.AIR &&
+                            ItemBlackHoleTalisman.getBlockCount(talisman) != 0 &&
+                            (block != talismanBlock)) {
+                        return false;
+                    }
+                    talismanBlock = block;
                 }
                 otherItem = true;
             }
@@ -70,6 +76,7 @@ public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
     public ItemStack getCraftingResult(@Nonnull CraftingInventory inv) {
         ItemStack talisman = ItemStack.EMPTY;
         int pop = 0;
+        String name = "";
 
         for(int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
@@ -91,10 +98,14 @@ public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
             ItemStack stack = inv.getStackInSlot(i);
             if(!stack.isEmpty()) {
                 count += stack.getCount();
+                ResourceLocation id = stack.getItem().getRegistryName();
+                if(id != null)
+                    name = id.toString();
             }
         }
 
         ItemNBTHelper.setInt(newTalisman, "blockCount", count);
+        ItemNBTHelper.setString(newTalisman, "blockName", name);
 
         return newTalisman;
     }
