@@ -14,7 +14,6 @@ import com.google.common.base.Stopwatch;
 import com.google.common.math.BigIntegerMath;
 import eutros.botaniapp.common.core.handler.TerraPickMiningHandler;
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -130,7 +129,11 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
         Vec3i beginDiff = new Vec3i(doX ? -range : 0, doY ? -1 : 0, doZ ? -range : 0);
         Vec3i endDiff = new Vec3i(doX ? range : 0, doY ? rangeY * 2 - 1 : 0, doZ ? range : 0);
 
-        TerraPickMiningHandler.createEvent(player, stack, world, pos, beginDiff, endDiff, (BlockState state) -> MATERIALS.contains(state.getMaterial()), isTipped(stack));
+        if(level > 6)
+            TerraPickMiningHandler.createEvent(player, stack, world, pos, beginDiff, endDiff, state -> MATERIALS.contains(state.getMaterial()), isTipped(stack));
+        else {
+            ToolCommons.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, state -> MATERIALS.contains(state.getMaterial()), isTipped(stack));
+        }
 
         if(origLevel >= 5) {
             PlayerHelper.grantCriterion((ServerPlayerEntity) player, new ResourceLocation("botania:challenge/rank_ss_pick"), "code_triggered");

@@ -30,6 +30,7 @@ public class BotaniaPPItems {
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "redstone") public static RedstoneLens redstoneLens;
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "redirect_plus") public static AdvancedRedirectLens redirectPlusLens;
     @ObjectHolder("terra_pick") public static ItemTerraPickPP terraPick;
+    @ObjectHolder("compacted_stacks") public static ItemManaCompactedStacks compactedStacks;
 
     public static Item BOTANIA_ENTROPIC_LENS;
     public static Item BOTANIA_FLARE_LENS;
@@ -60,6 +61,7 @@ public class BotaniaPPItems {
         register(r, new RedstoneLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "redstone");
         register(r, new AdvancedRedirectLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "redirect_plus");
         register(r, new ItemTerraPickPP(unstackable()), "terra_pick");
+        register(r, new ItemManaCompactedStacks(unstackable()), "compacted_stacks");
 
         final String b = "botania";
 

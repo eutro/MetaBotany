@@ -1,26 +1,32 @@
 package eutros.botaniapp.common.core.handler;
 
 import com.google.common.base.Stopwatch;
+import eutros.botaniapp.common.item.BotaniaPPItems;
+import eutros.botaniapp.common.item.ItemManaCompactedStacks;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.Stats;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import vazkii.botania.api.mana.ManaItemHandler;
-import vazkii.botania.common.item.equipment.tool.elementium.ItemElementiumPick;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
@@ -32,13 +38,14 @@ public class TerraPickMiningHandler {
 
     @SubscribeEvent
     public static void tickEnd(TickEvent.ServerTickEvent evt) {
-        if(evt.phase != TickEvent.Phase.END)
+        if(evt.phase != TickEvent.Phase.END || agents.isEmpty())
             return;
 
         timer.start();
         long elapsed;
         do {
-            agents.forEach(MiningAgent::advance);
+            if(agents.stream().map(MiningAgent::advance).reduce(true, Boolean::logicalAnd))
+                break;
             elapsed = timer.elapsed(TimeUnit.MILLISECONDS);
         } while(elapsed < 40);
         timer.reset();
@@ -48,10 +55,14 @@ public class TerraPickMiningHandler {
 
     public static void createEvent(PlayerEntity player, ItemStack stack, World world, BlockPos pos, Vec3i beginDiff, Vec3i endDiff, Predicate<BlockState> filter, boolean tipped) {
         agents.add(new MiningAgent(player, stack, world, pos, beginDiff, endDiff, filter, tipped));
+        Vec3d diff = new Vec3d(endDiff).add(1, 1, 1).subtract(new Vec3d(beginDiff));
+        player.getFoodStats().addExhaustion((float) Math.abs(diff.getX() + 1 * diff.getY() * diff.getZ()) / 10F);
     }
 
     private static class MiningAgent {
 
+        private final Tag<Item> E_PICK_TAG =
+                ItemTags.getCollection().get(new ResourceLocation("botania", "disposable"));
         private final PlayerEntity player;
         private final ItemStack stack;
         private final World world;
@@ -59,6 +70,8 @@ public class TerraPickMiningHandler {
         private final Predicate<BlockState> filter;
         private final boolean tipped;
         private Iterator<BlockPos> iterator;
+        private Collection<ItemStack> drops = new HashSet<>();
+        private int xp = 0;
 
         public MiningAgent(PlayerEntity player, ItemStack stack, World world, BlockPos pos, Vec3i beginDiff, Vec3i endDiff, Predicate<BlockState> filter, boolean tipped) {
             this.player = player;
@@ -70,14 +83,15 @@ public class TerraPickMiningHandler {
             this.iterator = BlockPos.getAllInBoxMutable(pos.add(beginDiff), pos.add(endDiff)).iterator();
         }
 
-        public void advance() {
-            if(!iterator.hasNext()) return;
+        public boolean advance() {
+            if(!iterator.hasNext() || stack.isEmpty())
+                return true;
 
             BlockPos pos = iterator.next();
-            if(pos.equals(centerPos)) return;
+            if(pos.equals(centerPos)) return false;
 
             if(!world.isAreaLoaded(pos, 0))
-                return;
+                return false;
 
             BlockState state = world.getBlockState(pos);
             Block block = state.getBlock();
@@ -87,7 +101,8 @@ public class TerraPickMiningHandler {
                     && state.canHarvestBlock(player.world, pos, player)) {
                 int exp = ForgeHooks.onBlockBreakEvent(world, ((ServerPlayerEntity) player).interactionManager.getGameType(), (ServerPlayerEntity) player, pos);
                 if(exp == -1)
-                    return;
+                    return false;
+                xp += exp;
 
                 if(!player.abilities.isCreativeMode) {
                     TileEntity tile = world.getTileEntity(pos);
@@ -95,15 +110,17 @@ public class TerraPickMiningHandler {
                     if(block.removedByPlayer(state, world, pos, player, true, world.getFluidState(pos))) {
                         block.onPlayerDestroy(world, pos, state);
 
-                        if(!tipped || !ItemElementiumPick.isDisposable(block)) {
-                            block.harvestBlock(world, player, pos, state, tile, stack);
-                            block.dropXpOnBlockBreak(world, pos, exp);
+                        if(E_PICK_TAG != null && (!tipped || !E_PICK_TAG.contains(block.asItem()))) {
+                            player.addStat(Stats.BLOCK_MINED.get(block));
+                            drops.addAll(Block.getDrops(state, (ServerWorld) world, pos, tile, player, stack));
+                            state.spawnAdditionalDrops(world, pos, stack);
                         }
                     }
 
                     damageItem();
                 } else world.removeBlock(pos, false);
             }
+            return false;
         }
 
         private void damageItem() {
@@ -114,8 +131,47 @@ public class TerraPickMiningHandler {
                 });
         }
 
+        /**
+         * Executed once at the end of each cycle.
+         *
+         * @return whether this agent has finished its job
+         */
         public boolean isComplete() {
-            return !iterator.hasNext();
+            if(iterator.hasNext() && !stack.isEmpty())
+                return false;
+
+            player.giveExperiencePoints(xp);
+            xp = 0;
+            if(!drops.isEmpty()) {
+                drops = this.drops.stream().reduce(new LinkedList<>(), // Collapse adjacent stacks of the same item.
+                        (LinkedList<ItemStack> list, ItemStack secondStack) -> {
+                            if(!list.isEmpty()) {
+                                ItemStack firstStack = list.get(list.size() - 1);
+                                if(firstStack.isItemEqual(secondStack)) {
+                                    int max = firstStack.getMaxStackSize();
+                                    int diff = max - firstStack.getCount();
+                                    if(diff < secondStack.getCount()) {
+                                        secondStack.setCount(secondStack.getCount() - diff);
+                                        firstStack.setCount(max);
+                                    } else {
+                                        firstStack.setCount(secondStack.getCount() + firstStack.getCount());
+                                        return list;
+                                    }
+                                }
+                            }
+                            list.add(secondStack);
+                            return list;
+                        },
+                        (a, b) -> b);
+            }
+
+            if(!drops.isEmpty()) {
+                ItemStack stack = new ItemStack(BotaniaPPItems.compactedStacks);
+                ItemManaCompactedStacks.setStacks(stack, drops.stream());
+                Block.spawnAsEntity(world, centerPos, stack);
+            }
+
+            return true;
         }
 
     }

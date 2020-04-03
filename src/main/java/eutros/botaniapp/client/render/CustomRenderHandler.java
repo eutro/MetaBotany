@@ -24,6 +24,8 @@ public final class CustomRenderHandler {
     public static void registerModels(ModelRegistryEvent evt) {
         ModelLoaderRegistry.registerLoader(FloatingFlowerModel.Loader.ID, FloatingFlowerModel.Loader.INSTANCE);
 
+        // intellij is being stupid.
+        //noinspection unchecked
         ClientRegistry.bindTileEntityRenderer(SubtileBouganvillea.TYPE, RenderTileComposite.of(RenderTileFloatingFlower::new,
                 RenderTileBouganvillea::new));
 
