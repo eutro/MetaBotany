@@ -128,7 +128,7 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
 
         if(level > 6) {
             BlockPos truePos = pos;
-            int depth = range + 1;
+            int depth = thor ? range + 1 : 1;
             switch(side) {
                 case NORTH:
                 case SOUTH:
@@ -137,10 +137,10 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
                     pos = pos.offset(Direction.UP, range - 1);
                     break;
                 case DOWN:
-                    depth = range * 2 - 1;
+                    if(thor) depth = range * 2 - 1;
                     break;
                 case UP:
-                    depth = 2;
+                    if(thor) depth = 2;
                     break;
             }
             TerraPickMiningHandler.createEvent(player,

@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
@@ -43,15 +44,18 @@ public class TerraPickMiningHandler {
             return;
 
         timer.start();
-        long elapsed;
-        do {
-            if(agents.stream().map(MiningAgent::advance).reduce(true, Boolean::logicalAnd))
-                break;
-            elapsed = timer.elapsed(TimeUnit.MILLISECONDS);
-        } while(elapsed < 40);
+        boolean flag = false;
+        while(!flag && !agents.isEmpty()) {
+            for(Iterator<MiningAgent> iterator = agents.iterator(); iterator.hasNext(); ) {
+                MiningAgent agent = iterator.next();
+                if(agent.advance()) {
+                    agent.complete();
+                    iterator.remove();
+                }
+                if(timer.elapsed(TimeUnit.MILLISECONDS) > 40) flag = true;
+            }
+        }
         timer.reset();
-
-        agents.removeIf(MiningAgent::isComplete);
     }
 
     public static void createEvent(PlayerEntity player, ItemStack stack, World world, BlockPos pos, int range, int depth, Predicate<BlockState> filter, boolean tipped, Direction side, BlockPos trueMid) {
@@ -164,15 +168,7 @@ public class TerraPickMiningHandler {
                 });
         }
 
-        /**
-         * Executed once at the end of each cycle.
-         *
-         * @return whether this agent has finished its job
-         */
-        public boolean isComplete() {
-            if(iterator.hasNext() && !stack.isEmpty())
-                return false;
-
+        public void complete() {
             player.giveExperiencePoints(xp);
             xp = 0;
             if(!drops.isEmpty()) {
@@ -203,8 +199,6 @@ public class TerraPickMiningHandler {
                 ItemManaCompactedStacks.setStacks(stack, drops.stream());
                 Block.spawnAsEntity(world, centerPos, stack);
             }
-
-            return true;
         }
 
     }
