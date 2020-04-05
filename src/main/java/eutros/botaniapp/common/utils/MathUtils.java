@@ -53,4 +53,54 @@ public class MathUtils {
         return Arrays.stream(longs).mapToObj(Longs::toByteArray).reduce(new byte[0], ArrayUtils::addAll);
     }
 
+    public static Direction rotateAround(Direction direction, Direction.Axis axis) {
+        switch(axis) {
+            case X: {
+                switch(direction) {
+                    case DOWN:
+                        return Direction.SOUTH;
+                    case SOUTH:
+                        return Direction.UP;
+                    case UP:
+                        return Direction.NORTH;
+                    case NORTH:
+                        return Direction.DOWN;
+                }
+                break;
+            }
+            case Y: {
+                switch(direction) {
+                    case NORTH:
+                        return Direction.EAST;
+                    case EAST:
+                        return Direction.SOUTH;
+                    case SOUTH:
+                        return Direction.WEST;
+                    case WEST:
+                        return Direction.NORTH;
+                }
+                break;
+            }
+            case Z: {
+                switch(direction) {
+                    case DOWN:
+                        return Direction.WEST;
+                    case WEST:
+                        return Direction.UP;
+                    case UP:
+                        return Direction.EAST;
+                    case EAST:
+                        return Direction.DOWN;
+                }
+                break;
+            }
+        }
+
+        return direction;
+    }
+
+    public static Direction roll(Direction direction) {
+        return Direction.byIndex(direction.getIndex() + 3);
+    }
+
 }

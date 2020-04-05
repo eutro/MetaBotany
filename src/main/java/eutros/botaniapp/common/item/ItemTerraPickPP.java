@@ -10,7 +10,6 @@
  */
 package eutros.botaniapp.common.item;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.math.BigIntegerMath;
 import eutros.botaniapp.common.core.handler.TerraPickMiningHandler;
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
@@ -62,8 +61,6 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
     private static final List<Material> MATERIALS = Arrays.asList(Material.ROCK, Material.IRON, Material.ICE,
             Material.GLASS, Material.PISTON, Material.ANVIL, Material.ORGANIC, Material.EARTH, Material.SAND,
             Material.SNOW, Material.SNOW_BLOCK, Material.CLAY);
-
-    private Stopwatch timer = Stopwatch.createUnstarted();
 
     private static final int[] CREATIVE_MANA = new int[] {
             10000 - 1, 1000000 - 1, 10000000 - 1, 100000000 - 1, 1000000000 - 1, Integer.MAX_VALUE - 1
@@ -129,9 +126,47 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
         Vec3i beginDiff = new Vec3i(doX ? -range : 0, doY ? -1 : 0, doZ ? -range : 0);
         Vec3i endDiff = new Vec3i(doX ? range : 0, doY ? rangeY * 2 - 1 : 0, doZ ? range : 0);
 
-        if(level > 6)
-            TerraPickMiningHandler.createEvent(player, stack, world, pos, beginDiff, endDiff, state -> MATERIALS.contains(state.getMaterial()), isTipped(stack));
-        else {
+        if(level > 6) {
+            BlockPos truePos = pos;
+            int depth = range + 1;
+            switch(side) {
+                case NORTH:
+                case SOUTH:
+                case EAST:
+                case WEST:
+                    pos = pos.offset(Direction.UP, range - 1);
+                    break;
+                case DOWN:
+                    depth = range * 2 - 1;
+                    break;
+                case UP:
+                    depth = 2;
+                    break;
+            }
+            TerraPickMiningHandler.createEvent(player,
+                    stack,
+                    world,
+                    pos,
+                    range,
+                    thor ?
+                    depth :
+                    1,
+                    state -> MATERIALS.contains(state.getMaterial()),
+                    isTipped(stack),
+                    side,
+                    truePos);
+            if(thor)
+                TerraPickMiningHandler.createEvent(player,
+                        stack,
+                        world,
+                        pos.offset(side),
+                        range,
+                        range * 2 + 1 - depth,
+                        state -> MATERIALS.contains(state.getMaterial()),
+                        isTipped(stack),
+                        side.getOpposite(),
+                        truePos);
+        } else {
             ToolCommons.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, state -> MATERIALS.contains(state.getMaterial()), isTipped(stack));
         }
 

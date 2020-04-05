@@ -1,8 +1,10 @@
 package eutros.botaniapp.common.core.handler;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.AbstractIterator;
 import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.item.ItemManaCompactedStacks;
+import eutros.botaniapp.common.utils.MathUtils;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,10 +16,9 @@ import net.minecraft.stats.Stats;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeHooks;
@@ -33,7 +34,7 @@ import java.util.function.Predicate;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class TerraPickMiningHandler {
 
-    private static Set<MiningAgent> agents = new HashSet<>();
+    private static List<MiningAgent> agents = new LinkedList<>();
     private static Stopwatch timer = Stopwatch.createUnstarted();
 
     @SubscribeEvent
@@ -53,10 +54,9 @@ public class TerraPickMiningHandler {
         agents.removeIf(MiningAgent::isComplete);
     }
 
-    public static void createEvent(PlayerEntity player, ItemStack stack, World world, BlockPos pos, Vec3i beginDiff, Vec3i endDiff, Predicate<BlockState> filter, boolean tipped) {
-        agents.add(new MiningAgent(player, stack, world, pos, beginDiff, endDiff, filter, tipped));
-        Vec3d diff = new Vec3d(endDiff).add(1, 1, 1).subtract(new Vec3d(beginDiff));
-        player.getFoodStats().addExhaustion((float) Math.abs(diff.getX() + 1 * diff.getY() * diff.getZ()) / 10F);
+    public static void createEvent(PlayerEntity player, ItemStack stack, World world, BlockPos pos, int range, int depth, Predicate<BlockState> filter, boolean tipped, Direction side, BlockPos trueMid) {
+        agents.add(new MiningAgent(player, stack, world, pos, range, depth, filter, tipped, side, trueMid));
+        player.getFoodStats().addExhaustion(range * range * depth / 10F);
     }
 
     private static class MiningAgent {
@@ -69,18 +69,51 @@ public class TerraPickMiningHandler {
         private final BlockPos centerPos;
         private final Predicate<BlockState> filter;
         private final boolean tipped;
+        private final int range;
+        private final BlockPos trueMid;
+        private Direction side;
         private Iterator<BlockPos> iterator;
         private Collection<ItemStack> drops = new HashSet<>();
         private int xp = 0;
 
-        public MiningAgent(PlayerEntity player, ItemStack stack, World world, BlockPos pos, Vec3i beginDiff, Vec3i endDiff, Predicate<BlockState> filter, boolean tipped) {
+        public MiningAgent(PlayerEntity player, ItemStack stack, World world, BlockPos pos, int range, int depth, Predicate<BlockState> filter, boolean tipped, Direction side, BlockPos trueMid) {
             this.player = player;
             this.stack = stack;
             this.world = world;
             this.centerPos = pos;
             this.filter = filter;
             this.tipped = tipped;
-            this.iterator = BlockPos.getAllInBoxMutable(pos.add(beginDiff), pos.add(endDiff)).iterator();
+            this.side = side;
+            this.range = range * 2 + 1;
+            this.trueMid = trueMid;
+            this.iterator = new SpiralIterator();
+            if(depth > 1) {
+                createEvent(player, stack, world, pos.offset(side.getOpposite()), range, depth - 1, filter, tipped, side, pos);
+            }
+        }
+
+        private class SpiralIterator extends AbstractIterator<BlockPos> {
+
+            private BlockPos.Mutable pos = new BlockPos.Mutable(centerPos);
+            private Direction facing = MathUtils.roll(side);
+            private int cap = 1;
+            private int dist = 1;
+
+            @Override
+            protected BlockPos computeNext() {
+                if((cap + 3) / 2 > range && dist == 0)
+                    return endOfData();
+                if(dist > 0) {
+                    BlockPos ret = pos.toImmutable();
+                    dist--;
+                    pos.move(facing);
+                    return ret;
+                }
+                dist = cap++ / 2 + 1;
+                facing = MathUtils.rotateAround(facing, side.getAxis());
+                return computeNext();
+            }
+
         }
 
         public boolean advance() {
@@ -88,7 +121,7 @@ public class TerraPickMiningHandler {
                 return true;
 
             BlockPos pos = iterator.next();
-            if(pos.equals(centerPos)) return false;
+            if(pos.equals(trueMid)) return false;
 
             if(!world.isAreaLoaded(pos, 0))
                 return false;
