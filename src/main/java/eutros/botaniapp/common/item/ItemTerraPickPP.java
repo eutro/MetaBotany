@@ -58,7 +58,7 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
     private static final String TAG_MANA = "mana";
     private static final String TAG_TIPPED = "tipped";
     public static int OLD_MAX = 5;
-    private static final List<Material> MATERIALS = Arrays.asList(Material.ROCK, Material.IRON, Material.ICE,
+    public static final List<Material> MATERIALS = Arrays.asList(Material.ROCK, Material.IRON, Material.ICE,
             Material.GLASS, Material.PISTON, Material.ANVIL, Material.ORGANIC, Material.EARTH, Material.SAND,
             Material.SNOW, Material.SNOW_BLOCK, Material.CLAY);
 
@@ -151,7 +151,6 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
                     thor ?
                     depth :
                     1,
-                    state -> MATERIALS.contains(state.getMaterial()),
                     isTipped(stack),
                     side,
                     truePos);
@@ -162,7 +161,6 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
                         pos.offset(side),
                         range,
                         range * 2 + 1 - depth,
-                        state -> MATERIALS.contains(state.getMaterial()),
                         isTipped(stack),
                         side.getOpposite(),
                         truePos);
