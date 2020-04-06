@@ -72,6 +72,34 @@ function initializeCoreMod() {
         return method;
     }
 
+    function enchantabilityTransformer(clazz) {
+        var node = new MethodNode(1, // public
+                                  "isEnchantable",
+                                  "(Lnet/minecraft/item/ItemStack;)Z",
+                                  null,
+                                  []);
+
+        node.instructions.add(new InsnNode(Opcodes.ICONST_1));
+        node.instructions.add(new InsnNode(Opcodes.IRETURN));
+        // return true;
+
+        clazz.methods.add(node);
+
+        node = new MethodNode(1, // public
+                              "getItemEnchantability",
+                              "(Lnet/minecraft/item/ItemStack;)I",
+                              null,
+                              []);
+
+        node.instructions.add(new InsnNode(Opcodes.ICONST_5));
+        node.instructions.add(new InsnNode(Opcodes.IRETURN));
+        // return 5;
+
+        clazz.methods.add(node);
+
+        return clazz;
+    }
+
     var obj = {
         "bore-lens-hooks": {
             "target": {
@@ -96,33 +124,7 @@ function initializeCoreMod() {
                 "type": "CLASS",
                 "name": "vazkii.botania.common.item.lens.ItemLens",
             },
-            "transformer": function(clazz) {
-                var node = new MethodNode(1, // public
-                                          "isEnchantable",
-                                          "(Lnet/minecraft/item/ItemStack;)Z",
-                                          null,
-                                          []);
-
-                node.instructions.add(new InsnNode(Opcodes.ICONST_1));
-                node.instructions.add(new InsnNode(Opcodes.IRETURN));
-                // return true;
-
-                clazz.methods.add(node);
-
-                node = new MethodNode(1, // public
-                                      "getItemEnchantability",
-                                      "(Lnet/minecraft/item/ItemStack;)I",
-                                      null,
-                                      []);
-
-                node.instructions.add(new InsnNode(Opcodes.ICONST_5));
-                node.instructions.add(new InsnNode(Opcodes.IRETURN));
-                // return 5;
-
-                clazz.methods.add(node);
-
-                return clazz;
-            }
+            "transformer": enchantabilityTransformer
         }
     }
 
