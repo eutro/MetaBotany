@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
  * Logic is performed in {@link ASMHooks#manaLensEnchantSharper(int, ItemStack)} and {@link ASMHooks#manaLensEnchantSharperHardness(float, ItemStack)}.
  */
 public class EnchantmentSharper extends Enchantment {
-    // TODO work in enchantment tables or something
 
     @Configurable(path = {"enchantment", "sharper"},
                   comment = "\"Sharper\" enchantment max level")
@@ -39,6 +38,11 @@ public class EnchantmentSharper extends Enchantment {
     public boolean canApplyAtEnchantingTable(ItemStack stack) {
         Item item = stack.getItem();
         return item == BotaniaPPItems.BOTANIA_MINE_LENS || item == BotaniaPPItems.BOTANIA_WEIGHT_LENS;
+    }
+
+    @Override
+    public int getMinEnchantability(int level) {
+        return level;
     }
 
 }

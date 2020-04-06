@@ -148,4 +148,9 @@ public class ItemLens extends Item implements ILens, ICompositableLens, ILensCon
             ((ILensControl) compositeLens.getItem()).onControlledSpreaderTick(compositeLens, spreader, redstone);
     }
 
+    @Override
+    public boolean isEnchantable(@Nonnull ItemStack stack) {
+        return true;
+    }
+
 }
