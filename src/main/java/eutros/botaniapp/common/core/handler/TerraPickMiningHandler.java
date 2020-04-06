@@ -144,6 +144,7 @@ public class TerraPickMiningHandler extends WorldSavedData {
         private Direction side;
         private SpiralIterator iterator;
         private Collection<ItemStack> drops = new HashSet<>();
+        private boolean frozen = false;
 
         public MiningAgent(PlayerEntity player, ItemStack stack, BlockPos pos, int range, int depth, boolean tipped, Direction side, BlockPos trueMid) {
             this.playerUUID = player.getUniqueID();
@@ -164,7 +165,7 @@ public class TerraPickMiningHandler extends WorldSavedData {
 
         private class SpiralIterator extends AbstractIterator<BlockPos> {
 
-            private BlockPos.Mutable pos = new BlockPos.Mutable(centerPos);
+            public BlockPos.Mutable pos = new BlockPos.Mutable(centerPos);
             private Direction facing = MathUtils.roll(side);
             private int cap = 1;
             private int dist = 1;
@@ -204,9 +205,6 @@ public class TerraPickMiningHandler extends WorldSavedData {
         }
 
         public boolean advance() {
-            if(!iterator.hasNext() || stack.isEmpty())
-                return true;
-
             PlayerEntity player = world.getPlayerByUuid(playerUUID);
             if(player == null) {
                 disabled = true;
@@ -216,11 +214,23 @@ public class TerraPickMiningHandler extends WorldSavedData {
                 disabled = false;
             }
 
-            BlockPos pos = iterator.next();
+            if(!frozen) {
+                if(!iterator.hasNext() || stack.isEmpty()) {
+                    return true;
+                }
+
+                iterator.next();
+            }
+            BlockPos pos = iterator.pos;
+
             if(pos.equals(trueMid)) return false;
 
             if(!world.isAreaLoaded(pos, 0)) {
-                return false;
+                frozen = true;
+                disabled = true;
+                return true;
+            } else {
+                frozen = false;
             }
 
             BlockState state = world.getBlockState(pos);
