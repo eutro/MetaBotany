@@ -57,7 +57,7 @@ public class RenderTileFrameTinkerer extends TileEntityRenderer<TileFrameTinkere
         ms.push();
         Random rand = new Random(plate.hashCode());
         float height = (float) Math.sin(ClientTickHandler.total / OSC_PERIOD + Math.PI * rand.nextFloat());
-        ms.translate(0.5F, HEIGHT_DIFF + 0.1 + height * HEIGHT_DIFF / 2, 0.5F);
+        ms.translate(0.5F, HEIGHT_DIFF * 2 + height * HEIGHT_DIFF / 2, 0.5F);
         ms.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion((float) (ClientTickHandler.total * Math.PI / ROTATION_PERIOD + Math.PI * rand.nextFloat())));
         Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, light, overlay, ms, buffers);
         ms.pop();

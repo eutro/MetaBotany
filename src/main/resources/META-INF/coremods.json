@@ -1,3 +1,4 @@
 {
-  "botaniapp_mana_lens_enchants": "asm/mana_lens_enchants.js"
+  "botaniapp_mana_lens_enchants": "asm/mana_lens_enchants.js",
+  "botaniapp_unresponsive_lens": "asm/unresponsive_lens.js"
 }

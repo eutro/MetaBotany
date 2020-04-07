@@ -1,28 +1,44 @@
 {
   "item.botaniapp.lens_binding": "Mana Lens: Binding",
   "item.botaniapp.lens_binding.short": "Binding",
+
   "item.botaniapp.lens_redstone": "Mana Lens: Pulse",
   "item.botaniapp.lens_redstone.short": "Pulse",
+
+  "item.botaniapp.lens_unresponsive": "Mana Lens: Unresponsive",
+  "item.botaniapp.lens_unresponsive.short": "Unresponsive",
+
   "item.botaniapp.terra_pick": "Terra Shatterer",
+
   "item.botaniapp.compacted_stacks": "Mana Compacted Item Stacks",
+  "botaniapp.tooltip.stack_count": "Stacks: ",
+
   "block.botaniapp.flower_bouganvillea": "Bouganvillea",
   "block.botaniapp.floating_flower_bouganvillea": "Floating Bouganvillea",
   "botaniapp.name_tag.animal": "Animal",
+
   "block.botaniapp.advanced_funnel": "Advanced Corporea Funnel",
   "hud.botaniapp.advanced_funnel.pre": "Reaches up to ",
   "hud.botaniapp.advanced_funnel.post": " block(s) below.",
   "hud.botaniapp.advanced_funnel.no_match": "No requests yet.",
   "hud.botaniapp.advanced_funnel.prev_match": "Previous request:",
+
   "item.botaniapp.lens_redirect_plus": "Mana Lens: Pivot",
   "item.botaniapp.lens_redirect_plus.short": "Pivot",
+
   "item.botaniapp.lens_redirect_plus_april": "Mana Lens: You Spin Me Right Round Baby Right Round Like A Record Baby Right Round Round Round",
   "item.botaniapp.lens_redirect_plus_april.short": "You Spin Me Right Round Baby Right Round Like A Record Baby Right Round Round Round",
+
   "block.botaniapp.leaky_pool": "Leaky Mana Pool",
   "recipe.block.botaniapp.leaky_pool": "Leaky Mana Pool Crafting",
   "botaniapp.explosion.explosion": "Any Explosion",
+
   "block.botaniapp.charging_plate": "Charging Plate",
+
   "block.botaniapp.frame_tinkerer": "Item Frame Tinkerer",
+
   "enchantment.botaniapp.sharper": "Sharpened",
+
   "block.botaniapp.spark_painter_black": "Black Spark Painter",
   "block.botaniapp.spark_painter_blue": "Blue Spark Painter",
   "block.botaniapp.spark_painter_brown": "Brown Spark Painter",
@@ -39,12 +55,16 @@
   "block.botaniapp.spark_painter_red": "Red Spark Painter",
   "block.botaniapp.spark_painter_white": "White Spark Painter",
   "block.botaniapp.spark_painter_yellow": "Yellow Spark Painter",
+
   "botaniapp.customize.preset.botanist_ready": "Botanist Ready",
+
   "botaniapp.tooltip.composite": "Composite:",
-  "botaniapp.tooltip.stack_count": "Stacks: ",
+
   "itemGroup.botaniapp": "Botania Plus Plus",
+
   "botaniapp.category.botaniapp": "$(4)Botania Plus Plus$(0) is an add-on mod for $(1)Botania$(0). It aims to create new possibilities for automation of things that were not possible before.",
   "botaniapp.text.botaniapp": "$(4)Botania Plus Plus$(0) is a mod by Eutros.",
+
   "botaniapp.category.lenses": "Additional Mana Lenses",
   "botaniapp.category.text.lenses": "More lenses for your mana bursts!",
   "botaniapp.entry.lens_binding": "Mana Lens: Binding",
@@ -58,6 +78,7 @@
   "botaniapp.page.lens_binding4": "Interactions with certain $(l:mana/elven_lenses)$(item)Elven Lenses$(0)$(/l) when combined are also of note.$(p)The first is the $(item)Paintslinger Lens$(0). Should the primary lens be the $(item)Binding Lens$(0), it will be the $(item)Binding Lens$(0) whose color is used for painting.$(p)The second to note is the $(item)Warp Lens$(0). When it is combined with the $(item)Binding Lens$(0), the order matters:",
   "botaniapp.page.lens_binding5": "Should the primary lens be the $(item)Binding Lens$(0), the burst will not $(thing)bind$(0) any $(l:ender/piston_relay)$(item)Force Relays$(0)$(/l) it hits. Should the primary lens be the $(item)Warp Lens$(0), the burst will bind any $(l:ender/piston_relay)$(item)Force Relays$(0)$(/l) it goes through.$(p)The third special interaction is with $(item)Phantom Lenses$(0). By lining up several targets, a single burst can be used to select both the $(thing)source$(0) and $(thing)target$(0) of the binding, or of consecutive bindings. This works even if the lens is on a $(l:mana/prism)$(item)Mana Prism$(0)$(/l).",
   "botaniapp.page.lens_binding7": "Finally, $(l:alfhomancy/elf_resources)$(item)Pixie Dust$(0)$(/l) can be used in the $(item)Binding Lens$(0)' recipe in lieu of petals, resulting in that petal being replaced with a rainbow petal, which changes color.",
+
 
   "botaniapp.category.corporea": "Corporea Additions",
   "botaniapp.category.text.corporea": "Do more with Corporea!",

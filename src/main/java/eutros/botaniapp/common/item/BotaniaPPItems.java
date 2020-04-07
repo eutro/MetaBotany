@@ -11,6 +11,7 @@ import eutros.botaniapp.common.item.dispenser.BehaviourSpark;
 import eutros.botaniapp.common.item.lens.AdvancedRedirectLens;
 import eutros.botaniapp.common.item.lens.BindingLens;
 import eutros.botaniapp.common.item.lens.RedstoneLens;
+import eutros.botaniapp.common.item.lens.UnresponsiveLens;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.item.Item;
@@ -29,6 +30,7 @@ public class BotaniaPPItems {
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "binding") public static BindingLens bindingLens;
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "redstone") public static RedstoneLens redstoneLens;
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "redirect_plus") public static AdvancedRedirectLens redirectPlusLens;
+    @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "unresponsive") public static UnresponsiveLens unresponsiveLens;
     @ObjectHolder("terra_pick") public static ItemTerraPickPP terraPick;
     @ObjectHolder("compacted_stacks") public static ItemManaCompactedStacks compactedStacks;
 
@@ -60,6 +62,7 @@ public class BotaniaPPItems {
         register(r, new BindingLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "binding");
         register(r, new RedstoneLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "redstone");
         register(r, new AdvancedRedirectLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "redirect_plus");
+        register(r, new UnresponsiveLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "unresponsive");
         register(r, new ItemTerraPickPP(unstackable()), "terra_pick");
         register(r, new ItemManaCompactedStacks(unstackable()), "compacted_stacks");
 

@@ -118,14 +118,14 @@ public class BotaniaPPConfig {
                 return map;
             }
         });
-        serializers.put(float.class, new ITomlSerializer<Float, Double>() {
+        serializers.put(float.class, new ITomlSerializer<Float, Number>() {
             @Override
-            public Double serialize(Float toSerialize) {
+            public Number serialize(Float toSerialize) {
                 return toSerialize.doubleValue();
             }
 
             @Override
-            public Float deserialize(Double toDeserialize, Type type) {
+            public Float deserialize(Number toDeserialize, Type type) {
                 return toDeserialize.floatValue();
             }
         });
@@ -151,7 +151,14 @@ public class BotaniaPPConfig {
         String className = data.getClassType().getClassName();
 
         try {
-            Class<?> clazz = Class.forName(className);
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(className);
+            } catch(Throwable t) {
+                LOGGER.fatal("Something went wrong loading a class.", t);
+                throw t;
+            }
+
             Field field = clazz.getField(fieldName);
             Type fieldType = field.getGenericType();
 
