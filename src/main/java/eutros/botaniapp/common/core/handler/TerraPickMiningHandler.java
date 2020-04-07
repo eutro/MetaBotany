@@ -264,7 +264,7 @@ public class TerraPickMiningHandler extends WorldSavedData {
         }
 
         private void damageItem(PlayerEntity player) {
-            boolean manaRequested = ManaItemHandler.requestManaExactForTool(stack, player, 80, true);
+            boolean manaRequested = ManaItemHandler.instance().requestManaExactForTool(stack, player, 80, true);
 
             if(!manaRequested)
                 stack.damageItem(1, player, e -> {

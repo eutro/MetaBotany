@@ -84,7 +84,7 @@ public class RecipeLeakyPool {
             tile = world.getTileEntity(pos);
 
             if(tile instanceof IManaPool)
-                ((IManaPool) tile).recieveMana(mana - trueCost);
+                ((IManaPool) tile).receiveMana(mana - trueCost);
 
             event.getAffectedBlocks().remove(pos);
         }

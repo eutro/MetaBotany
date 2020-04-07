@@ -103,7 +103,7 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
     public void doCorporeaRequest(ICorporeaRequestMatcher request, int count, ICorporeaSpark spark) {
         IItemHandler inv = getInv();
 
-        List<ItemStack> stacks = CorporeaHelper.requestItem(request, count, spark, true);
+        List<ItemStack> stacks = CorporeaHelper.instance().requestItem(request, count, spark, true).getStacks();
         spark.onItemsRequested(stacks);
         for(ItemStack reqStack : stacks) {
             if(inv != null && ItemHandlerHelper.insertItemStacked(inv, reqStack, true).isEmpty())

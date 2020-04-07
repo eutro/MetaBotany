@@ -66,7 +66,7 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
     }
 
     @Override
-    public void recieveMana(int mana) {
+    public void receiveMana(int mana) {
         getManaItem().ifPresent(item -> {
             if(!isFull()) {
                 ItemStack stack = itemHandler.getStackInSlot(0);
@@ -78,7 +78,7 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
     }
 
     @Override
-    public boolean canRecieveManaFromBursts() {
+    public boolean canReceiveManaFromBursts() {
         return getManaItem().isPresent();
     }
 
@@ -110,7 +110,7 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
             MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostText(stack, Collections.emptyList(), x - 51, y + 36, mc.fontRenderer, 102, 0));
             mc.fontRenderer.drawStringWithShadow(name, x - mc.fontRenderer.getStringWidth(name)/2F, y + 8, color);
         } else {
-            BotaniaAPI.internalHandler.drawSimpleManaHUD(color,
+            BotaniaAPI.instance().internalHandler().drawSimpleManaHUD(color,
                     getCurrentMana(),
                     getManaItem().map(item -> item.getMaxMana(stack)).orElse(1),
                     name);

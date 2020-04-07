@@ -44,6 +44,8 @@ import vazkii.botania.common.item.equipment.tool.ToolCommons;
 import vazkii.botania.common.item.equipment.tool.manasteel.ItemManasteelPick;
 import vazkii.botania.common.item.relic.ItemThorRing;
 
+// TODO resolve internal references
+
 import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -68,7 +70,7 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
     private static final int MANA_PER_DAMAGE = 100;
 
     public ItemTerraPickPP(Properties props) {
-        super(BotaniaAPI.TERRASTEEL_ITEM_TIER, props, -2.8F);
+        super(BotaniaAPI.instance().getTerrasteelItemTier(), props, -2.8F);
         addPropertyOverride(new ResourceLocation("botania", TAG_TIPPED), (itemStack, world, entityLivingBase) ->
                 isTipped(itemStack) ?
                 1 :
@@ -238,7 +240,7 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
         if(!player.world.isRemote && raycast.getType() == RayTraceResult.Type.BLOCK) {
             Direction face = raycast.getFace();
             breakOtherBlock(player, stack, pos, pos, face);
-            BotaniaAPI.internalHandler.breakOnAllCursors(player, this, stack, pos, face);
+            BotaniaAPI.instance().internalHandler().breakOnAllCursors(player, this, stack, pos, face);
         }
 
         return false;

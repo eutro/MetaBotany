@@ -1,13 +1,14 @@
 package eutros.botaniapp.common.block.tile.corporea.matchers;
 
+import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import vazkii.botania.api.corporea.CorporeaHelper;
 import vazkii.botania.api.corporea.ICorporeaRequestMatcher;
-import vazkii.botania.common.block.tile.corporea.TileCorporeaRetainer;
 
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
 
     public static ICorporeaRequestMatcher fromItemStack(ItemStack stack, boolean checkNBT) {
         if(!stack.hasDisplayName())
-            return CorporeaHelper.createMatcher(stack, checkNBT);
+            return CorporeaHelper.instance().createMatcher(stack, checkNBT);
 
         String name = stack.getDisplayName().getFormattedText();
         Optional<ICorporeaRequestMatcher> matcher;
@@ -26,7 +27,7 @@ public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
         }
 
         matcher = StringMatcher.from(name);
-        return matcher.orElseGet(() -> CorporeaHelper.createMatcher(stack, checkNBT));
+        return matcher.orElseGet(() -> CorporeaHelper.instance().createMatcher(stack, checkNBT));
     }
 
     public boolean isInvalid() {
@@ -36,7 +37,9 @@ public abstract class AdvancedMatcher implements ICorporeaRequestMatcher {
     public static class InvalidMatcher extends AdvancedMatcher {
 
         static {
-            TileCorporeaRetainer.addCorporeaRequestMatcher("invalid", InvalidMatcher.class, InvalidMatcher::new);
+            CorporeaHelper.instance().registerRequestMatcher(new ResourceLocation(Reference.MOD_ID, "invalid"),
+                    InvalidMatcher.class,
+                    InvalidMatcher::new);
         }
 
         public InvalidMatcher(CompoundNBT compoundNBT) {

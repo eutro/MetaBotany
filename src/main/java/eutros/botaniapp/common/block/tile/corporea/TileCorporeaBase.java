@@ -30,7 +30,7 @@ public abstract class TileCorporeaBase extends TileSimpleInventory {
     }
 
     public ICorporeaSpark getSpark() {
-        return CorporeaHelper.getSparkForBlock(Objects.requireNonNull(world), getPos());
+        return CorporeaHelper.instance().getSparkForBlock(Objects.requireNonNull(world), getPos());
     }
 
 }

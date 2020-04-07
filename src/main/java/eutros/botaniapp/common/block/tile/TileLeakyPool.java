@@ -110,7 +110,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     }
 
     @Override
-    public void recieveMana(int mana) {
+    public void receiveMana(int mana) {
         int old = this.mana;
         this.mana = Math.max(0, Math.min(getCurrentMana() + mana, MAX_MANA));
         if(old != this.mana) {
@@ -164,7 +164,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
             if(shouldShoot && !world.isRemote()) {
                 TileEntity te = world.getTileEntity(pos.down());
-                if(te instanceof IManaReceiver && ((IManaReceiver) te).canRecieveManaFromBursts() &&
+                if(te instanceof IManaReceiver && ((IManaReceiver) te).canReceiveManaFromBursts() &&
                         !canLeak(CLEAR_COLUMN)) {
                     IManaReceiver receiver = (IManaReceiver) te;
 
@@ -173,7 +173,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
                     while(dripProgress >= dripMin && !receiver.isFull()) {
                         int transfer = Math.max(mana, BURST_MAX_MANA);
-                        receiver.recieveMana(transfer);
+                        receiver.receiveMana(transfer);
                         mana -= transfer;
                         dripProgress = Math.max(dripProgress - dripMin, 0);
                         filled = true;
@@ -367,7 +367,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         ItemStack pool = new ItemStack(getBlockState().getBlock());
         String name = pool.getDisplayName().getString();
         int color = 0xFF4444;
-        BotaniaAPI.internalHandler.drawSimpleManaHUD(color, knownMana, MAX_MANA, name);
+        BotaniaAPI.instance().internalHandler().drawSimpleManaHUD(color, knownMana, MAX_MANA, name);
 
         int x = Minecraft.getInstance().getWindow().getScaledWidth() / 2 - 11;
         int y = Minecraft.getInstance().getWindow().getScaledHeight() / 2 + 30;
@@ -387,7 +387,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     }
 
     @Override
-    public boolean canRecieveManaFromBursts() {
+    public boolean canReceiveManaFromBursts() {
         return true;
     }
 

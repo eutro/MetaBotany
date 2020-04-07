@@ -2,7 +2,6 @@ package eutros.botaniapp.common;
 
 import eutros.botaniapp.api.BotaniaPPAPI;
 import eutros.botaniapp.client.core.proxy.ClientProxy;
-import eutros.botaniapp.common.block.BlockSparkPainter;
 import eutros.botaniapp.common.config.BotaniaPPConfig;
 import eutros.botaniapp.common.core.network.PacketHandler;
 import eutros.botaniapp.common.core.proxy.IProxy;
@@ -31,7 +30,6 @@ public class BotaniaPP {
         proxy.registerHandlers();
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::commonSetup);
-        bus.addListener(BlockSparkPainter::onEnqueue);
         ModLoadingContext ctx = ModLoadingContext.get();
         ctx.registerConfig(ModConfig.Type.COMMON, BotaniaPPConfig.COMMON_SPEC);
         ctx.registerConfig(ModConfig.Type.CLIENT, BotaniaPPConfig.CLIENT_SPEC);

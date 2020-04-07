@@ -26,7 +26,7 @@ public class BehaviourCorporeaSpark extends DefaultDispenseItemBehavior {
         if(tile != null
                 && (tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).isPresent()
                 || tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent())
-                && !CorporeaHelper.doesBlockHaveSpark(world, pos)) {
+                && !CorporeaHelper.instance().doesBlockHaveSpark(world, pos)) {
             stack.shrink(1);
             if(!world.isRemote) {
                 EntityCorporeaSpark spark = new EntityCorporeaSpark(world);

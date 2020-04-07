@@ -14,13 +14,11 @@ import net.minecraft.util.math.shapes.*;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.jetbrains.annotations.NotNull;
+import vazkii.botania.api.BotaniaAPI;
 import vazkii.botania.api.corporea.CorporeaHelper;
-import vazkii.botania.api.imc.PaintableBlockMessage;
 import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.mana.spark.ISparkAttachable;
 import vazkii.botania.api.mana.spark.ISparkEntity;
@@ -60,14 +58,8 @@ public class BlockSparkPainter extends Block {
             BlockSparkPainter block = new BlockSparkPainter(builder, color);
             dyeMap.put(color, block);
             register(r, block, "spark_painter_" + color);
+            BotaniaAPI.instance().registerPaintableBlock(block, dyeMap::get);
         }
-    }
-
-    @SuppressWarnings("unused")
-    public static void onEnqueue(InterModEnqueueEvent evt) {
-        for(Block block : dyeMap.values())
-            InterModComms.sendTo("botania", "register_paintable_block",
-                    () -> new PaintableBlockMessage(dyeMap::get, block));
     }
 
     @NotNull
@@ -106,8 +98,8 @@ public class BlockSparkPainter extends Block {
                     sparks.add((EntitySparkBase) spark);
                 }
             }
-            if(CorporeaHelper.doesBlockHaveSpark(world, target)) {
-                sparks.add((EntitySparkBase) CorporeaHelper.getSparkForBlock(world, target));
+            if(CorporeaHelper.instance().doesBlockHaveSpark(world, target)) {
+                sparks.add((EntitySparkBase) CorporeaHelper.instance().getSparkForBlock(world, target));
             }
         }
 

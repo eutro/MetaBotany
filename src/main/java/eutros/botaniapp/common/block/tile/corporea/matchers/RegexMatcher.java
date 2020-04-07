@@ -1,6 +1,7 @@
 package eutros.botaniapp.common.block.tile.corporea.matchers;
 
 import eutros.botaniapp.api.internal.config.Configurable;
+import eutros.botaniapp.common.utils.Reference;
 import eutros.botaniapp.common.utils.RegularExpressionUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -9,8 +10,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import vazkii.botania.api.corporea.CorporeaHelper;
 import vazkii.botania.api.corporea.ICorporeaRequestMatcher;
-import vazkii.botania.common.block.tile.corporea.TileCorporeaRetainer;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -42,7 +43,9 @@ public class RegexMatcher extends AdvancedMatcher {
     public static int REGEX_TIMEOUT = 500000;
 
     static {
-        TileCorporeaRetainer.addCorporeaRequestMatcher("botaniapp_regex", RegexMatcher.class, RegexMatcher::serialize);
+        CorporeaHelper.instance().registerRequestMatcher(new ResourceLocation(Reference.MOD_ID, "regex"),
+                RegexMatcher.class,
+                RegexMatcher::serialize);
     }
 
     private final Pattern pattern;

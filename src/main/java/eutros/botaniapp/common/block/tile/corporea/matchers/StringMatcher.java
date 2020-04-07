@@ -15,7 +15,7 @@ public class StringMatcher {
         Matcher matcher = pattern.matcher(text);
 
         if(matcher.matches()) {
-            return Optional.of(CorporeaHelper.createMatcher(matcher.group("string").toLowerCase().trim()));
+            return Optional.of(CorporeaHelper.instance().createMatcher(matcher.group("string").toLowerCase().trim()));
         }
 
         return Optional.empty();
