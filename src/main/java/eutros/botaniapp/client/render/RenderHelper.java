@@ -13,10 +13,10 @@ public final class RenderHelper {
     static {
         RenderState.LightmapState enableLightmap = new RenderState.LightmapState(true);
         RenderState.TransparencyState translucentTransparency = net.minecraftforge.fml.common.ObfuscationReflectionHelper.getPrivateValue(RenderState.class, null, "field_228515_g_");
-        RenderState.TextureState mipmapBlockAtlasTexture = new RenderState.TextureState(PlayerContainer.BLOCK_ATLAS_TEXTURE, false, true);
+        RenderState.TextureState mipmapBlockAtlasTexture = new RenderState.TextureState(PlayerContainer.LOCATION_BLOCKS_TEXTURE, false, true);
 
         assert translucentTransparency != null;
-        RenderType.State glState = RenderType.State.builder().texture(mipmapBlockAtlasTexture).transparency(translucentTransparency).lightmap(enableLightmap).build(true);
-        ICON_OVERLAY = RenderType.of("botania:icon_overlay", DefaultVertexFormats.POSITION_COLOR_TEXTURE_LIGHT, GL11.GL_QUADS, 128, glState);
+        RenderType.State glState = RenderType.State.getBuilder().texture(mipmapBlockAtlasTexture).transparency(translucentTransparency).lightmap(enableLightmap).build(true);
+        ICON_OVERLAY = RenderType.makeType("botania:icon_overlay", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, GL11.GL_QUADS, 128, glState);
     }
 }

@@ -208,17 +208,17 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
         if(level != 0) {
             setEnabled(stack, !isEnabled(stack));
             if(!world.isRemote)
-                world.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.terraPickMode, SoundCategory.PLAYERS, 0.5F, 0.4F);
+                world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.terraPickMode, SoundCategory.PLAYERS, 0.5F, 0.4F);
         }
 
-        return ActionResult.success(stack);
+        return ActionResult.resultSuccess(stack);
     }
 
     @Nonnull
     @Override
     public ActionResultType onItemUse(ItemUseContext ctx) {
-        return ctx.getPlayer() == null || ctx.getPlayer().isSneaking() ? super.onItemUse(ctx)
-                                                                       : ActionResultType.PASS;
+        return ctx.getPlayer() == null || ctx.getPlayer().isShiftKeyDown() ? super.onItemUse(ctx)
+                                                                           : ActionResultType.PASS;
     }
 
     @Override

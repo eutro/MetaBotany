@@ -66,7 +66,7 @@ public class ItemManaCompactedStacks extends Item {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, @Nonnull Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if(player.isSneaking()) {
+        if(player.isShiftKeyDown()) {
             Stream<ItemStack> stacks = getStacks(stack);
             Stream.Builder<ItemStack> ret = Stream.builder();
             IItemHandler inv = new PlayerMainInvWrapper(player.inventory);
@@ -81,9 +81,9 @@ public class ItemManaCompactedStacks extends Item {
                 }
             }
             setStacks(stack, ret.build());
-            return contains ? ActionResult.success(stack) : ActionResult.consume(ItemStack.EMPTY);
+            return contains ? ActionResult.resultSuccess(stack) : ActionResult.resultConsume(ItemStack.EMPTY);
         }
-        return ActionResult.pass(stack);
+        return ActionResult.resultPass(stack);
     }
 
     @Nonnull
@@ -96,7 +96,7 @@ public class ItemManaCompactedStacks extends Item {
         ItemStack stack = ctx.getItem();
         PlayerEntity player = ctx.getPlayer();
 
-        if(player != null && !player.isSneaking())
+        if(player != null && !player.isShiftKeyDown())
             return ActionResultType.PASS;
 
         if(tile != null) {

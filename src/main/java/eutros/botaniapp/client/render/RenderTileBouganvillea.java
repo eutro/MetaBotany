@@ -17,6 +17,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Random;
 
@@ -68,6 +69,7 @@ public class RenderTileBouganvillea extends TileEntityRenderer<SubtileBouganvill
     public static float DISTANCE = 0.5F;
 
     @Override
+    @ParametersAreNonnullByDefault
     public void render(@Nonnull SubtileBouganvillea flower, float v, MatrixStack ms, @NotNull IRenderTypeBuffer buffers, int light, int overlay) {
         if(DISABLE)
             return;
@@ -91,10 +93,10 @@ public class RenderTileBouganvillea extends TileEntityRenderer<SubtileBouganvill
             ms.push();
             ItemStack stack = memory.remove(((int) (swapPhase) + i) % memory.size());
 
-            ms.multiply( // Rotate about the vertical axis of the flower.
+            ms.rotate( // Rotate about the vertical axis of the flower.
                     (i % 2 == 0 // Alternate between anticlockwise and clockwise.
-                             ^ flipped ? Vector3f.POSITIVE_Y : Vector3f.NEGATIVE_Y)
-                            .getRadialQuaternion((float) (random.nextFloat() * Math.PI + // Random offset.
+                             ^ flipped ? Vector3f.YP : Vector3f.YN)
+                            .rotation((float) (random.nextFloat() * Math.PI + // Random offset.
                                             (ClientTickHandler.total * Math.PI *
                                                     2 /
                                                     (ROTATION_PERIOD * (1 - 0.2 * random.nextFloat())) // Random offset to de-sync phases.
@@ -102,15 +104,15 @@ public class RenderTileBouganvillea extends TileEntityRenderer<SubtileBouganvill
                                     )
                             )
             );
-            ms.multiply(Vector3f.POSITIVE_Z // Tilt perpendicular to the vertical axis of the flower.
-                    .getDegreesQuaternion((float) (Math.sin(ClientTickHandler.total / (TILT_PERIOD * (1 - 0.2 * random.nextFloat())) + (random.nextFloat() * Math.PI)) * MAX_TILT)));
+            ms.rotate(Vector3f.ZP // Tilt perpendicular to the vertical axis of the flower.
+                    .rotationDegrees((float) (Math.sin(ClientTickHandler.total / (TILT_PERIOD * (1 - 0.2 * random.nextFloat())) + (random.nextFloat() * Math.PI)) * MAX_TILT)));
 
             ms.translate(DISTANCE, 0, 0); // Move the item so it orbits around the flower.
 
             float size = Math.abs((float) Math.sin(swapPhase * Math.PI));
             ms.scale(size, size, size); // Resize the item.
-            ms.multiply((random.nextBoolean() ? Vector3f.POSITIVE_Y : Vector3f.NEGATIVE_Y) // Rotate the item about its own vertical axis.
-                    .getRadialQuaternion((float) (ClientTickHandler.total / ITEM_ROTATION_PERIOD + random.nextFloat() * Math.PI)));
+            ms.rotate((random.nextBoolean() ? Vector3f.YP : Vector3f.YN) // Rotate the item about its own vertical axis.
+                    .rotation((float) (ClientTickHandler.total / ITEM_ROTATION_PERIOD + random.nextFloat() * Math.PI)));
 
             Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, light, overlay, ms, buffers);
 

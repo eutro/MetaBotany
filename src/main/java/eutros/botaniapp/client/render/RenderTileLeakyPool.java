@@ -32,12 +32,12 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
     }
 
     public static void renderIcon(MatrixStack ms, IVertexBuilder buffer, int x, int y, TextureAtlasSprite icon, int width, int height, float alpha) {
-        Matrix4f mat = ms.peek().getModel();
+        Matrix4f mat = ms.getLast().getMatrix();
         int fullBrightness = 0xF000F0;
-        buffer.vertex(mat, x, y + height, 0).color(1, 1, 1, alpha).texture(icon.getMinU(), icon.getMaxV()).light(fullBrightness).endVertex();
-        buffer.vertex(mat, x + width, y + height, 0).color(1, 1, 1, alpha).texture(icon.getMaxU(), icon.getMaxV()).light(fullBrightness).endVertex();
-        buffer.vertex(mat, x + width, y, 0).color(1, 1, 1, alpha).texture(icon.getMaxU(), icon.getMinV()).light(fullBrightness).endVertex();
-        buffer.vertex(mat, x, y, 0).color(1, 1, 1, alpha).texture(icon.getMinU(), icon.getMinV()).light(fullBrightness).endVertex();
+        buffer.pos(mat, x, y + height, 0).color(1, 1, 1, alpha).tex(icon.getMinU(), icon.getMaxV()).lightmap(fullBrightness).endVertex();
+        buffer.pos(mat, x + width, y + height, 0).color(1, 1, 1, alpha).tex(icon.getMaxU(), icon.getMaxV()).lightmap(fullBrightness).endVertex();
+        buffer.pos(mat, x + width, y, 0).color(1, 1, 1, alpha).tex(icon.getMaxU(), icon.getMinV()).lightmap(fullBrightness).endVertex();
+        buffer.pos(mat, x, y, 0).color(1, 1, 1, alpha).tex(icon.getMinU(), icon.getMinV()).lightmap(fullBrightness).endVertex();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
             TextureAtlasSprite icon = MiscellaneousIcons.INSTANCE.manaWater;
 
             ms.translate(w, -1.43F + waterLevel, w);
-            ms.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90F));
+            ms.rotate(Vector3f.XP.rotationDegrees(90F));
 
             ms.scale(s, s, s);
             renderIcon(ms, buffer, 0, 0, icon, 16, 16, 1);
@@ -99,19 +99,19 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
             s = 1F / 16F;
 
             ms.scale(s, s, s);
-            ms.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(90F));
+            ms.rotate(Vector3f.XN.rotationDegrees(90F));
 
             ms.translate(-2F, -2F, -24F - dripLevel);
             renderIcon(ms, buffer, 0, 0, icon, 4, 4, 1);
 
             if(dripLevel > 0) {
-                ms.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(90F));
+                ms.rotate(Vector3f.XN.rotationDegrees(90F));
                 ms.scale(1F, dripLevel / 4, 1F);
                 ms.translate(0F, -4F, 0F);
                 renderIcon(ms, buffer, 0, 0, icon, 4, 4, 1);
 
                 for(int i = 0; i < 3; i++) {
-                    ms.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90F));
+                    ms.rotate(Vector3f.YP.rotationDegrees(90F));
                     ms.translate(-4F, 0F, 0);
                     renderIcon(ms, buffer, 0, 0, icon, 4, 4, 1);
                 }
@@ -127,7 +127,7 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
             ms.push();
 
             ms.translate(0F, -1.53F, 0F);
-            ms.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90F));
+            ms.rotate(Vector3f.XP.rotationDegrees(90F));
             Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.NONE, light, overlay, ms, buffers);
             ms.pop();
         }

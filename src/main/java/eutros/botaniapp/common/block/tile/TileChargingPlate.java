@@ -97,7 +97,7 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
     public void renderHUD(Minecraft mc) {
         int color = 0x4444FF;
         ItemStack stack = itemHandler.getStackInSlot(0);
-        MainWindow window = mc.getWindow();
+        MainWindow window = mc.getMainWindow();
         int scaledWidth = window.getScaledWidth();
         int scaledHeight = window.getScaledHeight();
         int x = scaledWidth / 2;
@@ -120,7 +120,7 @@ public class TileChargingPlate extends TileSimpleInventory implements IManaRecei
 
         mc.textureManager.bindTexture(HUDHelper.MANA_HUD);
 
-        RenderHelper.enable();
+        RenderHelper.enableStandardItemLighting();
         mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, x + 8, y - 8);
         RenderHelper.disableStandardItemLighting();
 

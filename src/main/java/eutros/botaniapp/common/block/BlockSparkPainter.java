@@ -52,7 +52,6 @@ public class BlockSparkPainter extends Block {
         Properties builder = Properties.create(Material.GLASS)
                 .hardnessAndResistance(1F, 1F)
                 .harvestLevel(0)
-                .nonOpaque()
                 .harvestTool(ToolType.PICKAXE);
         for(DyeColor color : DyeColor.values()) {
             BlockSparkPainter block = new BlockSparkPainter(builder, color);

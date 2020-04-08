@@ -100,9 +100,9 @@ public class BotaniaPPEffectPacket implements IBotaniaPPPacket<BotaniaPPEffectPa
             double d2 = entity.world.rand.nextGaussian() * m;
             double d3 = 10.0D;
             entity.world.addParticle(ParticleTypes.POOF,
-                    entity.getX() + entity.world.rand.nextFloat() * entity.getWidth() * 2.0F - entity.getWidth() - d0 * d3,
-                    entity.getY() + entity.world.rand.nextFloat() * entity.getHeight() - d1 * d3,
-                    entity.getZ() + entity.world.rand.nextFloat() * entity.getWidth() * 2.0F - entity.getWidth() - d2 * d3, d0, d1, d2);
+                    entity.getPosX() + entity.world.rand.nextFloat() * entity.getWidth() * 2.0F - entity.getWidth() - d0 * d3,
+                    entity.getPosY() + entity.world.rand.nextFloat() * entity.getHeight() - d1 * d3,
+                    entity.getPosZ() + entity.world.rand.nextFloat() * entity.getWidth() * 2.0F - entity.getWidth() - d2 * d3, d0, d1, d2);
         }
     }
 

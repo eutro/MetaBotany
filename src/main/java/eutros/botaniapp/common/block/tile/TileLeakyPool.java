@@ -12,6 +12,7 @@ import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -369,8 +370,8 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         int color = 0xFF4444;
         BotaniaAPI.instance().internalHandler().drawSimpleManaHUD(color, knownMana, MAX_MANA, name);
 
-        int x = Minecraft.getInstance().getWindow().getScaledWidth() / 2 - 11;
-        int y = Minecraft.getInstance().getWindow().getScaledHeight() / 2 + 30;
+        int x = Minecraft.getInstance().getMainWindow().getScaledWidth() / 2 - 11;
+        int y = Minecraft.getInstance().getMainWindow().getScaledHeight() / 2 + 30;
 
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -378,9 +379,9 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         mc.textureManager.bindTexture(HUDHelper.MANA_HUD);
         RenderSystem.color4f(1F, 1F, 1F, 1F);
 
-        net.minecraft.client.renderer.RenderHelper.enable();
+        RenderHelper.enableStandardItemLighting();
         mc.getItemRenderer().renderItemAndEffectIntoGUI(pool, x + 26, y);
-        net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
+        RenderHelper.disableStandardItemLighting();
 
         RenderSystem.disableLighting();
         RenderSystem.disableBlend();

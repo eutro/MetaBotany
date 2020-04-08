@@ -269,7 +269,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         ListNBT recipes = new ListNBT();
 
         for(RecipeBouganvillea recipe : activeRecipes) {
-            recipes.add(StringNBT.of(recipe.getId().toString()));
+            recipes.add(StringNBT.valueOf(recipe.getId().toString()));
         }
 
         cmp.put(TAG_RECIPE, recipes);
@@ -285,11 +285,11 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            RenderHelper.enable();
+            RenderHelper.enableStandardItemLighting();
             ItemRenderer itemRenderer = mc.getItemRenderer();
 
             double angleBetweenEach = Math.min(60.0, memory.size() > 1 ? 180.0 / (memory.size() - 1) : 0);
-            Point center = new Point(mc.getWindow().getScaledWidth() / 2, mc.getWindow().getScaledHeight() / 2);
+            Point center = new Point(mc.getMainWindow().getScaledWidth() / 2, mc.getMainWindow().getScaledHeight() / 2);
             int radius = 40;
             Point2D point = new Point2D.Double(center.getX(), center.getY() - radius);
             point = MathUtils.rotatePointAbout(point, center, -angleBetweenEach * (memory.size() - 1) / 2);
@@ -300,14 +300,16 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
                 ItemStack stack = itemAndPos.stack;
                 itemRenderer.renderItemAndEffectIntoGUI(stack, (int) Math.round(point.getX() - 8), (int) Math.round(point.getY() - 8));
 
-                if(mc.player.isSneaking()) {
+                if(mc.player.isShiftKeyDown()) {
                     RenderSystem.pushMatrix();
                     String formattedText = stack.getDisplayName().getFormattedText();
                     RenderSystem.translated(point.getX(), point.getY(), 0);
                     RenderSystem.scalef(sf, sf, sf);
                     int width = mc.fontRenderer.getStringWidth(formattedText);
                     GL11.glRotated(15, 0, 0, i < memory.size() / 2 ? 1 : -1);
-                    mc.fontRenderer.drawStringWithShadow(formattedText, i < memory.size() / 2 ? -width - 10 : 10, -5, 0xFFFFFF);
+                    mc.fontRenderer.drawStringWithShadow(formattedText, i < memory.size() / 2 ?
+                                                                        -width - 10 :
+                                                                        10, -5, 0xFFFFFF);
                     RenderSystem.popMatrix();
                 }
 
@@ -370,7 +372,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
             ListNBT position = new ListNBT();
             double[] coords = {pos.x, pos.y, pos.z};
-            position.addAll(Arrays.stream(coords).mapToObj(DoubleNBT::of).collect(Collectors.toList()));
+            position.addAll(Arrays.stream(coords).mapToObj(DoubleNBT::valueOf).collect(Collectors.toList()));
             cmp.put(TAG_POS, position);
 
             return cmp;

@@ -182,15 +182,15 @@ public class TileAdvancedFunnel extends TileCorporeaBase implements ICorporeaReq
                 (range - 1) +
                 I18n.format(String.join(".", "hud", Reference.MOD_ID, Reference.BlockNames.ADVANCED_FUNNEL, "post"));
 
-        int x = mc.getWindow().getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(rangeStr) / 2;
-        int y = mc.getWindow().getScaledHeight() / 2 - 45;
+        int x = mc.getMainWindow().getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(rangeStr) / 2;
+        int y = mc.getMainWindow().getScaledHeight() / 2 - 45;
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         mc.fontRenderer.drawStringWithShadow(rangeStr, x, y, color);
 
         color = 0xFFFFFFFF;
 
-        x = mc.getWindow().getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(match) / 2;
+        x = mc.getMainWindow().getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(match) / 2;
         y += 15;
         mc.fontRenderer.drawStringWithShadow(match, x, y, color);
         GlStateManager.disableBlend();

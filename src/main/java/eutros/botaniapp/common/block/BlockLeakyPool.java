@@ -54,7 +54,7 @@ public class BlockLeakyPool extends BlockRedstoneControlled implements IWandHUD,
     @SuppressWarnings("deprecation")
     @NotNull
     @Override
-    public ActionResultType onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         TileLeakyPool pool = (TileLeakyPool) world.getTileEntity(pos);
         ItemStack pstack = player.getHeldItem(hand);
         assert pool != null;

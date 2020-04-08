@@ -48,7 +48,7 @@ public class BlockFrameTinkerer extends BlockRedstoneControlled implements IWand
     @SuppressWarnings("deprecation")
     @NotNull
     @Override
-    public ActionResultType onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         TileFrameTinkerer charger = (TileFrameTinkerer) world.getTileEntity(pos);
         ItemStack pstack = player.getHeldItem(hand);
         assert charger != null;

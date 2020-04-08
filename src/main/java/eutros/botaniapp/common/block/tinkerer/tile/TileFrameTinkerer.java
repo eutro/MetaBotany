@@ -56,7 +56,7 @@ public class TileFrameTinkerer extends TileSimpleInventory {
 
         if(!frameStack.isEmpty()) {
             //Removing an item from a frame doesn't play the sound, for some reason.
-            world.playSound(null, frame.getX(), frame.getY(), frame.getZ(), SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM, SoundCategory.BLOCKS, 1f, 1);
+            world.playSound(null, frame.getPosX(), frame.getPosY(), frame.getPosZ(), SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM, SoundCategory.BLOCKS, 1f, 1);
         }
 
         itemHandler.setStackInSlot(0, frameStack);

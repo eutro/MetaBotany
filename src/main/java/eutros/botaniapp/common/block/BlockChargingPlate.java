@@ -66,7 +66,7 @@ public class BlockChargingPlate extends Block implements IWandHUD {
     @SuppressWarnings("deprecation")
     @NotNull
     @Override
-    public ActionResultType onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         TileChargingPlate charger = (TileChargingPlate) world.getTileEntity(pos);
         ItemStack pstack = player.getHeldItem(hand);
         assert charger != null;

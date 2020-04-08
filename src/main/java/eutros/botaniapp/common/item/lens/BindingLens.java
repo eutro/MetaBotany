@@ -234,14 +234,14 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, @Nonnull Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if(player.isSneaking()) {
+        if(player.isShiftKeyDown()) {
             if(!world.isRemote)
                 setBindingAttempt(stack, UNBOUND_POS);
             player.playSound(BotaniaPPSounds.BOTANIA_DING, 0.1F, 1F);
-            return ActionResult.success(stack);
+            return ActionResult.resultSuccess(stack);
         }
 
-        return ActionResult.pass(stack);
+        return ActionResult.resultPass(stack);
     }
 
     @Nonnull
@@ -255,7 +255,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
         TileEntity tile = world.getTileEntity(pos);
         Block block = world.getBlockState(pos).getBlock();
 
-        if((player == null || player.isSneaking()) &&
+        if((player == null || player.isShiftKeyDown()) &&
                 ((tile instanceof IWandBindable &&
                         ((IWandBindable) tile).canSelect(player, stack, pos, side)) ||
                         block instanceof BlockPistonRelay)) {
