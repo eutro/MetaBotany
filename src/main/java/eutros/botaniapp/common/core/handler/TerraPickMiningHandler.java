@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class TerraPickMiningHandler extends WorldSavedData {
@@ -59,12 +60,10 @@ public class TerraPickMiningHandler extends WorldSavedData {
     public static void tickEnd(TickEvent.ServerTickEvent evt) {
         if(evt.type != TickEvent.Type.SERVER || evt.phase != TickEvent.Phase.END) return;
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        for(World world : server.getWorlds()) {
-            TerraPickMiningHandler instance = get(world);
-            if(instance != null) {
-                instance.tick();
-            }
-        }
+
+        StreamSupport.stream(server.getWorlds().spliterator(), true)
+                .map(TerraPickMiningHandler::get)
+                .filter(Objects::nonNull).forEach(TerraPickMiningHandler::tick);
     }
 
     public void tick() {
@@ -83,6 +82,7 @@ public class TerraPickMiningHandler extends WorldSavedData {
             }
         }
         timer.reset();
+
         markDirty();
     }
 
@@ -102,6 +102,7 @@ public class TerraPickMiningHandler extends WorldSavedData {
             instance.markDirty();
             ((ServerWorld) world).getSavedData().set(instance);
         }
+
         return instance;
     }
 
@@ -214,14 +215,17 @@ public class TerraPickMiningHandler extends WorldSavedData {
                 disabled = false;
             }
 
-            if(!frozen) {
+            BlockPos pos = iterator.pos;
+            if(!frozen || World.isOutsideBuildHeight(pos)) {
                 if(!iterator.hasNext() || stack.isEmpty()) {
                     return true;
                 }
 
-                iterator.next();
+                do {
+                    iterator.next();
+                    pos = iterator.pos;
+                } while(World.isOutsideBuildHeight(pos) && iterator.hasNext());
             }
-            BlockPos pos = iterator.pos;
 
             if(pos.equals(trueMid)) return false;
 
