@@ -16,7 +16,7 @@ public class EnchantmentSharper extends Enchantment {
 
     @Configurable(path = {"enchantment", "sharper"},
                   comment = "\"Sharper\" enchantment max level")
-    public static int MAX_LEVEL = 5;
+    public static int MAX_LEVEL = 3;
 
     @Configurable(path = {"enchantment", "sharper"},
                   comment = {"How much to increment the enchantment level before dividing the block hardness by it.",
@@ -42,7 +42,7 @@ public class EnchantmentSharper extends Enchantment {
 
     @Override
     public int getMinEnchantability(int level) {
-        return level;
+        return level * 2;
     }
 
 }

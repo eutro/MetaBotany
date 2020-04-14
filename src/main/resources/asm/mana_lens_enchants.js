@@ -2,6 +2,7 @@ function initializeCoreMod() {
     var ASM = Java.type("net.minecraftforge.coremod.api.ASMAPI");
     var VarInsnNode = Java.type("org.objectweb.asm.tree.VarInsnNode");
     var InsnNode = Java.type("org.objectweb.asm.tree.InsnNode");
+    var IntInsnNode = Java.type("org.objectweb.asm.tree.IntInsnNode");
     var InsnList = Java.type("org.objectweb.asm.tree.InsnList");
     var Opcodes = Java.type("org.objectweb.asm.Opcodes");
     var MethodNode = Java.type("org.objectweb.asm.tree.MethodNode");
@@ -91,9 +92,9 @@ function initializeCoreMod() {
                               null,
                               []);
 
-        node.instructions.add(new InsnNode(Opcodes.ICONST_5));
+        node.instructions.add(new IntInsnNode(Opcodes.BIPUSH, 10));
         node.instructions.add(new InsnNode(Opcodes.IRETURN));
-        // return 5;
+        // return 10;
 
         clazz.methods.add(node);
 
