@@ -1,6 +1,6 @@
 package eutros.botaniapp.common.block.tinkerer;
 
-import eutros.botaniapp.api.internal.block.BlockRedstoneControlled;
+import eutros.botaniapp.api.internal.block.BlockRedstoneControlledWaterloggable;
 import eutros.botaniapp.common.block.tile.TileSimpleInventory;
 import eutros.botaniapp.common.block.tinkerer.tile.TileFrameTinkerer;
 import eutros.botaniapp.common.core.helper.InventoryHelper;
@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class BlockFrameTinkerer extends BlockRedstoneControlled implements IWandable {
+public class BlockFrameTinkerer extends BlockRedstoneControlledWaterloggable implements IWandable {
 
     private static VoxelShape SHAPE = makeCuboidShape(0, 0, 0, 16, 3, 16);
 

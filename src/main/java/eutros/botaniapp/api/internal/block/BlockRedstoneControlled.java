@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Listen to redstone pulses on this block, either for {@link BlockRedstoneControlled#doPulse(BlockState, BlockPos, World, BlockPos)}
+ * Listens to redstone pulses on this block, for {@link BlockRedstoneControlled#doPulse(BlockState, BlockPos, World, BlockPos)}
  */
 public abstract class BlockRedstoneControlled extends Block {
 

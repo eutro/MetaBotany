@@ -1,9 +1,9 @@
 package eutros.botaniapp.common.block;
 
+import eutros.botaniapp.api.internal.block.BlockWaterloggable;
 import eutros.botaniapp.common.block.tile.TileChargingPlate;
 import eutros.botaniapp.common.block.tile.TileSimpleInventory;
 import eutros.botaniapp.common.core.helper.InventoryHelper;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,7 +29,7 @@ import vazkii.botania.api.wand.IWandHUD;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class BlockChargingPlate extends Block implements IWandHUD {
+public class BlockChargingPlate extends BlockWaterloggable implements IWandHUD {
 
     private static VoxelShape BASE = makeCuboidShape(2, 0, 2, 14, 2, 14);
     private static VoxelShape TOP = makeCuboidShape(0, 2, 0, 16, 4, 16);

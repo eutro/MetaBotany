@@ -1,5 +1,6 @@
 package eutros.botaniapp.common.block;
 
+import eutros.botaniapp.api.internal.block.BlockWaterloggable;
 import eutros.botaniapp.common.core.network.BotaniaPPEffectPacket;
 import eutros.botaniapp.common.core.network.PacketHandler;
 import eutros.botaniapp.common.utils.MathUtils;
@@ -35,7 +36,7 @@ import java.util.Map;
 
 import static eutros.botaniapp.common.item.BotaniaPPItems.register;
 
-public class BlockSparkPainter extends Block {
+public class BlockSparkPainter extends BlockWaterloggable {
 
     public static Map<DyeColor, BlockSparkPainter> dyeMap = new EnumMap<>(DyeColor.class);
     private final VoxelShape BASE = makeCuboidShape(4, 0, 4, 12, 2, 12);

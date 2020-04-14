@@ -1,6 +1,6 @@
 package eutros.botaniapp.common.block;
 
-import eutros.botaniapp.api.internal.block.BlockRedstoneControlled;
+import eutros.botaniapp.api.internal.block.BlockRedstoneControlledWaterloggable;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
 import eutros.botaniapp.common.block.tile.TileSimpleInventory;
 import eutros.botaniapp.common.core.helper.InventoryHelper;
@@ -32,7 +32,7 @@ import vazkii.botania.api.wand.IWandable;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class BlockLeakyPool extends BlockRedstoneControlled implements IWandHUD, IWandable {
+public class BlockLeakyPool extends BlockRedstoneControlledWaterloggable implements IWandHUD, IWandable {
 
     private static final VoxelShape SLAB = makeCuboidShape(0, 0, 0, 16, 8, 16);
     private static final VoxelShape CUTOUT = makeCuboidShape(1, 1, 1, 15, 8, 15);
