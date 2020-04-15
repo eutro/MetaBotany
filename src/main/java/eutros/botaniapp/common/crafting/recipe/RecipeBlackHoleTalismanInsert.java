@@ -1,6 +1,7 @@
 package eutros.botaniapp.common.crafting.recipe;
 
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
+import eutros.botaniapp.common.item.BotaniaPPItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.CraftingInventory;
@@ -15,7 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import vazkii.botania.common.item.ItemBlackHoleTalisman;
-import vazkii.botania.common.item.ModItems;
 
 import javax.annotation.Nonnull;
 
@@ -35,7 +35,7 @@ public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
         for(int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
             if(!stack.isEmpty()) {
-                if(stack.getItem() == ModItems.blackHoleTalisman) {
+                if(stack.getItem() == BotaniaPPItems.BOTANIA_BLACK_HOLE_TALISMAN) {
                     if(!talisman.isEmpty())
                         return false;
                     talisman = stack;
@@ -81,7 +81,7 @@ public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
         for(int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
             if(!stack.isEmpty()) {
-                if(stack.getItem() == ModItems.blackHoleTalisman) {
+                if(stack.getItem() == BotaniaPPItems.BOTANIA_BLACK_HOLE_TALISMAN) {
                     talisman = stack;
                     pop = i;
                     break;

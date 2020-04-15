@@ -1,6 +1,7 @@
 package eutros.botaniapp.common.item;
 
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
+import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
@@ -10,10 +11,7 @@ import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -28,13 +26,13 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import vazkii.botania.common.item.ItemBlackHoleTalisman;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class ItemManaCompactedStacks extends Item {
@@ -70,9 +68,30 @@ public class ItemManaCompactedStacks extends Item {
             Stream<ItemStack> stacks = getStacks(stack);
             Stream.Builder<ItemStack> ret = Stream.builder();
             IItemHandler inv = new PlayerMainInvWrapper(player.inventory);
+
+            //                     such map
+            Map<ResourceLocation, ItemStack> talisMap = new HashMap<>();
+
+            IntStream.range(0, inv.getSlots()).mapToObj(inv::getStackInSlot)
+                    .filter(s -> s.getItem() == BotaniaPPItems.BOTANIA_BLACK_HOLE_TALISMAN)
+                    .forEach(s -> {
+                        Block block = ItemBlackHoleTalisman.getBlock(s);
+                        if(block != null) {
+                            talisMap.put(block.getRegistryName(), s);
+                        }
+                    });
+
             boolean contains = false;
             for(Iterator<ItemStack> iterator = stacks.iterator(); iterator.hasNext(); ) {
                 ItemStack s = iterator.next();
+
+                ResourceLocation loc = s.getItem().getRegistryName();
+                if(loc != null && talisMap.containsKey(loc)) {
+                    ItemStack talismanStack = talisMap.get(loc);
+                    ItemBlackHoleTalisman.remove(talismanStack, -s.getCount()); // 200iq
+                    continue;
+                }
+
                 s = ItemHandlerHelper.insertItemStacked(inv, s, false);
 
                 if(!s.isEmpty()) {

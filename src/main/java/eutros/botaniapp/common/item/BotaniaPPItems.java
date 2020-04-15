@@ -41,6 +41,7 @@ public class BotaniaPPItems {
     public static Item BOTANIA_MINE_LENS;
     public static Item BOTANIA_WEIGHT_LENS;
 
+    public static Item BOTANIA_BLACK_HOLE_TALISMAN;
     public static Item BOTANIA_RED_STRING;
     public static Item BOTANIA_MANA_STRING;
     public static Item BOTANIA_SPARK;
@@ -80,6 +81,7 @@ public class BotaniaPPItems {
         BOTANIA_SPARK = r.getValue(new ResourceLocation(b, "spark"));
         BOTANIA_CORPOREA_SPARK = r.getValue(new ResourceLocation(b, "corporea_spark"));
         BOTANIA_CORPOREA_SPARK_MASTER = r.getValue(new ResourceLocation(b, "corporea_spark_master"));
+        BOTANIA_BLACK_HOLE_TALISMAN = r.getValue(new ResourceLocation(b, "black_hole_talisman"));
     }
 
     public static <V extends IForgeRegistryEntry<V>> void register(IForgeRegistry<V> reg, IForgeRegistryEntry<V> thing, ResourceLocation name) {

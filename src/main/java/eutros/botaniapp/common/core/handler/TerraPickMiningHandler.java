@@ -32,6 +32,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.items.ItemHandlerHelper;
 import vazkii.botania.api.mana.ManaItemHandler;
 
 import javax.annotation.Nonnull;
@@ -40,6 +41,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
@@ -256,7 +258,17 @@ public class TerraPickMiningHandler extends WorldSavedData {
 
                         if(E_PICK_TAG != null && (!tipped || !E_PICK_TAG.contains(block.asItem()))) {
                             player.addStat(Stats.BLOCK_MINED.get(block));
-                            drops.addAll(Block.getDrops(state, (ServerWorld) world, pos, tile, player, stack));
+                            List<ItemStack> blockDrops = Block.getDrops(state, (ServerWorld) world, pos, tile, player, stack);
+                            blockDrops.forEach(thisStack -> {
+                                for(ItemStack otherStack : drops) {
+                                    if(ItemHandlerHelper.canItemStacksStack(thisStack, otherStack)) {
+                                        otherStack.setCount(otherStack.getCount() + thisStack.getCount());
+                                        return;
+                                    }
+                                }
+
+                                drops.add(thisStack);
+                            });
                             state.spawnAdditionalDrops(world, pos, stack);
                         }
                     }
@@ -279,29 +291,25 @@ public class TerraPickMiningHandler extends WorldSavedData {
             if(disabled) return false;
 
             if(!drops.isEmpty()) {
-                drops = this.drops.stream().reduce(new LinkedList<>(), // Collapse adjacent stacks of the same item.
-                        (LinkedList<ItemStack> list, ItemStack secondStack) -> {
-                            if(!list.isEmpty()) {
-                                ItemStack firstStack = list.get(list.size() - 1);
-                                if(firstStack.isItemEqual(secondStack)) {
-                                    int max = firstStack.getMaxStackSize();
-                                    int diff = max - firstStack.getCount();
-                                    if(diff < secondStack.getCount()) {
-                                        secondStack.setCount(secondStack.getCount() - diff);
-                                        firstStack.setCount(max);
-                                    } else {
-                                        firstStack.setCount(secondStack.getCount() + firstStack.getCount());
-                                        return list;
-                                    }
-                                }
-                            }
-                            list.add(secondStack);
-                            return list;
-                        },
-                        (a, b) -> b);
-            }
+                drops = drops.parallelStream().flatMap(s -> {
+                    Stream.Builder<ItemStack> builder = Stream.builder();
+                    int max = s.getMaxStackSize();
+                    int fullStacks = s.getCount() / max;
+                    if(fullStacks > 0) {
+                        ItemStack full = s.copy();
+                        full.setCount(max);
+                        for(int i = 0; i < fullStacks; i++) {
+                            builder.add(full.copy());
+                        }
+                    }
+                    int partial = s.getCount() % max;
+                    if(partial > 0) {
+                        s.setCount(partial);
+                        builder.add(s);
+                    }
+                    return builder.build();
+                }).collect(Collectors.toList());
 
-            if(!drops.isEmpty()) {
                 ItemStack stack = new ItemStack(BotaniaPPItems.compactedStacks);
                 ItemManaCompactedStacks.setStacks(stack, drops.stream());
                 Block.spawnAsEntity(world, centerPos, stack);
