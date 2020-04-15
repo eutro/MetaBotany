@@ -23,6 +23,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
+import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.mana.IManaItem;
 import vazkii.botania.api.wand.IWandHUD;
 
@@ -72,15 +73,23 @@ public class BlockChargingPlate extends BlockWaterloggable implements IWandHUD {
         assert charger != null;
         ItemStack cstack = charger.getItemHandler().getStackInSlot(0);
         if(!cstack.isEmpty()) {
-            charger.getItemHandler().setStackInSlot(0, ItemStack.EMPTY);
-            world.updateComparatorOutputLevel(pos, this);
-            charger.markDirty();
-            ItemHandlerHelper.giveItemToPlayer(player, cstack);
+            if(!world.isRemote()) {
+                charger.getItemHandler().setStackInSlot(0, ItemStack.EMPTY);
+                world.updateComparatorOutputLevel(pos, this);
+                charger.markDirty();
+                VanillaPacketDispatcher.dispatchTEToNearbyPlayers(charger);
+                ItemHandlerHelper.giveItemToPlayer(player, cstack);
+            }
+
             return ActionResultType.SUCCESS;
         } else if(!pstack.isEmpty() && pstack.getItem() instanceof IManaItem) {
-            charger.getItemHandler().setStackInSlot(0, pstack.split(1));
-            world.updateComparatorOutputLevel(pos, this);
-            charger.markDirty();
+
+            if(!world.isRemote()) {
+                charger.getItemHandler().setStackInSlot(0, pstack.split(1));
+                world.updateComparatorOutputLevel(pos, this);
+                charger.markDirty();
+                VanillaPacketDispatcher.dispatchTEToNearbyPlayers(charger);
+            }
 
             return ActionResultType.SUCCESS;
         }

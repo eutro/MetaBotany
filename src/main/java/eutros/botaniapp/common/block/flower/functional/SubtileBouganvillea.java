@@ -92,10 +92,10 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
 
         BlockPos efPos = getEffectivePos();
         List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(efPos.add(-1, -1, -1), efPos.add(2, 2, 2)));
-        items.sort(Comparator.comparingInt(ItemEntity::getAge).reversed());
+        items.sort(Comparator.comparingInt((ItemEntity i) -> i.age).reversed());
 
         for(ItemEntity e : items) {
-            if(e.getTags().contains(TAG_ANVILLED) || e.getAge() < 30 + getSlowdownFactor())
+            if(e.getTags().contains(TAG_ANVILLED) || e.age < 30 + getSlowdownFactor())
                 continue;
 
             IBouganvilleaInventory inventory = getInventory(e);
@@ -144,7 +144,7 @@ public class SubtileBouganvillea extends TileEntityFunctionalFlower {
         BlockPos efPos = getEffectivePos();
         List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(efPos.add(-1, -1, -1), efPos.add(2, 2, 2)));
         items.forEach(i -> {
-            if(i != e && i.getAge() < 50) { // Hopefully prevents loop spasms.
+            if(i != e && i.age < 50) { // Hopefully prevents loop spasms.
                 i.removeTag(TAG_ANVILLED);
             }
         });

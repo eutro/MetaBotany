@@ -53,7 +53,7 @@ public final class TooltipAdditionDisplayHandler {
 
         Item item = stack.getItem();
         RenderSystem.pushMatrix();
-        RenderSystem.translated(0, 0, 300); // Z level wars
+        RenderSystem.translatef(0, 0, 300); // Z level wars
         if(item instanceof ItemTerraPickPP) {
             drawTerraPick(stack, tooltipX, tooltipY, width, height, font);
         }
@@ -123,9 +123,8 @@ public final class TooltipAdditionDisplayHandler {
     private static void drawTerraPick(ItemStack stack, int mouseX, int mouseY, int width, int height, FontRenderer font) {
         mouseY -= 4;
         int level = ItemTerraPickPP.getLevel(stack);
-        BigInteger last = BigInteger.TEN.pow(level + 4);
-        BigInteger max = BigInteger.TEN.pow(level + 5).subtract(last);
-        BigInteger curr = ItemTerraPickPP.getTrueMana(stack).subtract(last);
+        BigInteger max = BigInteger.TEN.pow(level + 5);
+        BigInteger curr = ItemTerraPickPP.getTrueMana(stack);
         float percent = level == 0 ?
                         0F :
                         new BigDecimal(curr).divide(new BigDecimal(max), MathContext.DECIMAL32).floatValue();
@@ -136,7 +135,11 @@ public final class TooltipAdditionDisplayHandler {
         RenderSystem.disableDepthTest();
         AbstractGui.fill(mouseX - 1, mouseY - height - 1, mouseX + width + 1, mouseY, 0xFF000000);
         for(int i = 0; i < rainbowWidth; i++)
-            AbstractGui.fill(mouseX + i, mouseY - height, mouseX + i + 1, mouseY, MathHelper.hsvToRGB(hueOff + huePer * i, 1F, 1F));
+            AbstractGui.fill(mouseX + i,
+                    mouseY - height,
+                    mouseX + i + 1,
+                    mouseY,
+                    0xFF000000 | MathHelper.hsvToRGB((hueOff + huePer * i) % 1F, 1F, 1F));
         AbstractGui.fill(mouseX + rainbowWidth, mouseY - height, mouseX + width, mouseY, 0xFF555555);
 
         String rank = getRank(level);

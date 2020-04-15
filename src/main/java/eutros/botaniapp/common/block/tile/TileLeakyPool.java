@@ -1,6 +1,5 @@
 package eutros.botaniapp.common.block.tile;
 
-import com.google.common.base.Predicates;
 import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.api.internal.block.state.StateRedstoneControlled;
 import eutros.botaniapp.api.internal.config.Configurable;
@@ -15,13 +14,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -51,10 +47,8 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
     public static final int MAX_MANA = 1000000;
     public static final AxisAlignedBB CLEAR_SQUARES = new AxisAlignedBB(6 / 16F, 15 / 16F, 6 / 16F, 10 / 16F, 1, 10 / 16F);
-    public static final AxisAlignedBB CLEAR_COLUMN = new AxisAlignedBB(6 / 16F, 0, 6 / 16F, 10 / 16F, 1, 10 / 16F);
 
     private static final String TAG_MANA = "mana";
-    private static final String TAG_KNOWN_MANA = "knownMana";
     private static final String TAG_COLOR = "color";
     private static final String TAG_INPUT_KEY = "inputKey";
     private static final String TAG_OUTPUT_KEY = "outputKey";
@@ -65,16 +59,12 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     private static final int BURST_MAX_MANA = 650;
 
     @Configurable(path = "leaky_pool",
-                  comment = "Approximately how much faster can a Leaky Mana Pool dump into a mana acceptor below it?")
-    public static int DIRECT_PUMP_MULTIPLIER = 5;
-
-    @Configurable(path = "leaky_pool",
                   comment = "How many ticks should there be between a Leaky Mana Pool's drips at a minimum?")
-    public static float DRIP_RATE_MIN = 1;
+    public static float DRIP_RATE_MIN = 20;
 
     @Configurable(path = "leaky_pool",
                   comment = "How many ticks should there be at most between a Leaky Mana Pool's drips?")
-    public static float DRIP_RATE_MAX = 1;
+    public static float DRIP_RATE_MAX = 200;
 
     @ObjectHolder(Reference.MOD_ID + ":" + Reference.BlockNames.LEAKY_POOL)
     public static TileEntityType<TileLeakyPool> TYPE;
@@ -82,7 +72,6 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     private final String outputKey = "";
     public DyeColor color = DyeColor.WHITE;
     private int mana;
-    private int knownMana = -1;
     private int ticks = 0;
     private float dripProgress = 0;
     private String inputKey = "";
@@ -164,27 +153,6 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             }
 
             if(shouldShoot && !world.isRemote()) {
-                TileEntity te = world.getTileEntity(pos.down());
-                if(te instanceof IManaReceiver && ((IManaReceiver) te).canReceiveManaFromBursts() &&
-                        !canLeak(CLEAR_COLUMN)) {
-                    IManaReceiver receiver = (IManaReceiver) te;
-
-                    boolean filled = false;
-                    float dripMin = 2F / DIRECT_PUMP_MULTIPLIER;
-
-                    while(dripProgress >= dripMin && !receiver.isFull()) {
-                        int transfer = Math.max(mana, BURST_MAX_MANA);
-                        receiver.receiveMana(transfer);
-                        mana -= transfer;
-                        dripProgress = Math.max(dripProgress - dripMin, 0);
-                        filled = true;
-                    }
-
-                    if(filled) {
-                        te.markDirty();
-                        tryShootBurst();
-                    }
-                }
                 while(dripProgress >= 1) {
                     tryShootBurst();
                     dripProgress = Math.max(dripProgress - 1, 0);
@@ -340,9 +308,6 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
             inputKey = cmp.getString(TAG_INPUT_KEY);
         if(cmp.contains(TAG_OUTPUT_KEY))
             inputKey = cmp.getString(TAG_OUTPUT_KEY);
-
-        if(cmp.contains(TAG_KNOWN_MANA))
-            knownMana = cmp.getInt(TAG_KNOWN_MANA);
     }
 
     public void onWanded(PlayerEntity player) {
@@ -350,14 +315,6 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
 
         if(player == null)
             return;
-
-        if(!world.isRemote) {
-            CompoundNBT nbttagcompound = new CompoundNBT();
-            writePacketNBT(nbttagcompound);
-            nbttagcompound.putInt(TAG_KNOWN_MANA, getCurrentMana());
-            if(player instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity) player).connection.sendPacket(new SUpdateTileEntityPacket(pos, -999, nbttagcompound));
-        }
 
         Vec3d playerPos = player.getPositionVec();
         world.playSound(null, playerPos.x, playerPos.y, playerPos.z, BotaniaPPSounds.BOTANIA_DING, SoundCategory.PLAYERS, 0.11F, 1F);
@@ -368,7 +325,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         ItemStack pool = new ItemStack(getBlockState().getBlock());
         String name = pool.getDisplayName().getString();
         int color = 0xFF4444;
-        BotaniaAPI.instance().internalHandler().drawSimpleManaHUD(color, knownMana, MAX_MANA, name);
+        BotaniaAPI.instance().internalHandler().drawSimpleManaHUD(color, mana, MAX_MANA, name);
 
         int x = Minecraft.getInstance().getMainWindow().getScaledWidth() / 2 - 11;
         int y = Minecraft.getInstance().getMainWindow().getScaledHeight() / 2 + 30;
@@ -424,7 +381,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
     @Override
     public ISparkEntity getAttachedSpark() {
         assert world != null;
-        List<Entity> sparks = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.up(), pos.up().add(1, 1, 1)), Predicates.instanceOf(ISparkEntity.class));
+        List<Entity> sparks = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.up(), pos.up().add(1, 1, 1)), ISparkEntity.class::isInstance);
         if(sparks.size() == 1) {
             Entity e = sparks.get(0);
             return (ISparkEntity) e;
