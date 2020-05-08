@@ -5,7 +5,6 @@ import com.google.common.collect.AbstractIterator;
 import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.item.ItemManaCompactedStacks;
 import eutros.botaniapp.common.item.ItemTerraPickPP;
-import eutros.botaniapp.common.utils.InventoryCollectionWrapper;
 import eutros.botaniapp.common.utils.MathUtils;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.Block;
@@ -15,7 +14,9 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.ItemTags;
@@ -33,6 +34,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import vazkii.botania.api.mana.ManaItemHandler;
 
 import javax.annotation.Nonnull;
@@ -47,7 +50,8 @@ import java.util.stream.StreamSupport;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class TerraPickMiningHandler extends WorldSavedData {
 
-    private List<MiningAgent> agents = new LinkedList<>();
+    private Map<UUID, MiningAgent> agents = new HashMap<>();
+    private Queue<Pair<MiningAgent, Triple<UUID, PlayerEntity, ItemStack>>> activeAgents = new ArrayDeque<>();
     private final Stopwatch timer = Stopwatch.createUnstarted();
     private World world;
 
@@ -69,33 +73,39 @@ public class TerraPickMiningHandler extends WorldSavedData {
     }
 
     public void tick() {
-        if(agents.isEmpty()) return;
+        if(activeAgents.isEmpty()) return;
 
         timer.start();
         boolean flag = false;
-        while(!flag && !agents.isEmpty()) {
-            for(Iterator<MiningAgent> iterator = agents.iterator(); iterator.hasNext(); ) {
-                MiningAgent agent = iterator.next();
-                if(agent.advance()) {
-                    if(agent.complete())
+        while(!flag && !activeAgents.isEmpty()) {
+            for(Iterator<Pair<MiningAgent, Triple<UUID, PlayerEntity, ItemStack>>> iterator = activeAgents.iterator(); iterator.hasNext(); ) {
+                Pair<MiningAgent, Triple<UUID, PlayerEntity, ItemStack>> pair = iterator.next();
+                MiningAgent agent = pair.getLeft();
+                Triple<UUID, PlayerEntity, ItemStack> triple = pair.getRight();
+                if(agent.advance(triple.getMiddle(), triple.getRight())) {
+                    if(agent.complete()) {
+                        agents.remove(triple.getLeft());
                         iterator.remove();
+                    }
                 }
                 if(timer.elapsed(TimeUnit.MILLISECONDS) > 40) flag = true;
             }
         }
+        activeAgents.clear();
         timer.reset();
 
         markDirty();
     }
 
-    public static void createEvent(PlayerEntity player, ItemStack stack, World world, BlockPos pos, int range, int depth, boolean tipped, Direction side, BlockPos trueMid) {
+    @Nullable
+    public static UUID createEvent(PlayerEntity player, ItemStack stack, World world, BlockPos pos, int range, int depth, boolean tipped, Direction side, BlockPos trueMid) {
         TerraPickMiningHandler instance = get(world);
-        if(instance == null) return;
-        instance.createEvent(player, stack, pos, range, depth, tipped, side, trueMid);
+        if(instance == null) return null;
+        return instance.createEvent(player, stack, pos, range, depth, tipped, side, trueMid);
     }
 
     @Nullable
-    private static TerraPickMiningHandler get(World world) {
+    public static TerraPickMiningHandler get(World world) {
         if(!(world instanceof ServerWorld)) return null;
 
         TerraPickMiningHandler instance = ((ServerWorld) world).getSavedData().get(() -> new TerraPickMiningHandler(world), ID);
@@ -108,37 +118,50 @@ public class TerraPickMiningHandler extends WorldSavedData {
         return instance;
     }
 
-    public void createEvent(PlayerEntity player, ItemStack stack, BlockPos pos, int range, int depth, boolean tipped, Direction side, BlockPos trueMid) {
-        agents.add(new MiningAgent(player, stack, pos, range, depth, tipped, side, trueMid));
+    public UUID createEvent(PlayerEntity player, ItemStack stack, BlockPos pos, int range, int depth, boolean tipped, Direction side, BlockPos trueMid) {
+        UUID uuid = UUID.randomUUID();
+        agents.put(uuid, new MiningAgent(player, stack, pos, range, depth, tipped, side, trueMid));
         player.getFoodStats().addExhaustion(range * range * depth / 10F);
         markDirty();
+        return uuid;
     }
 
     @Override
     public void read(@Nonnull CompoundNBT cmp) {
-        agents = cmp.getList("agents", 10).stream().map(CompoundNBT.class::cast).map(n -> {
+        CompoundNBT agents = cmp.getCompound("agents");
+        this.agents = agents.keySet().stream().map(k -> Pair.of(k, agents.get(k))).map(n -> {
             MiningAgent agent = new MiningAgent();
-            agent.read(n);
-            return agent;
-        }).collect(Collectors.toCollection(LinkedList::new));
+            agent.read((CompoundNBT) n.getRight());
+            return Pair.of(UUID.fromString(n.getLeft()), agent);
+        }).collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
     }
 
     @Nonnull
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT cmp) {
-        ListNBT ags = new ListNBT();
-        agents.stream().map(MiningAgent::write).forEach(ags::add);
+        CompoundNBT ags = new CompoundNBT();
+        agents.keySet().stream().map(k -> Pair.of(k.toString(), agents.get(k)))
+                .forEach(pair -> ags.put(pair.getLeft(), pair.getRight().write()));
         cmp.put("agents", ags);
         return cmp;
+    }
+
+    public boolean prod(INBT nbt, PlayerEntity player, ItemStack stack) {
+        if(!(nbt instanceof StringNBT)) return false;
+
+        UUID uuid = UUID.fromString(nbt.getString());
+        MiningAgent agent = agents.get(uuid);
+
+        if(agent == null)
+            return false;
+
+        return activeAgents.add(Pair.of(agent, Triple.of(uuid, player, stack)));
     }
 
     private class MiningAgent {
 
         private final Tag<Item> E_PICK_TAG =
                 ItemTags.getCollection().get(new ResourceLocation("botania", "disposable"));
-        private boolean disabled = true;
-        private UUID playerUUID;
-        private ItemStack stack = ItemStack.EMPTY;
         private BlockPos centerPos;
         private Predicate<BlockState> filter = state -> ItemTerraPickPP.MATERIALS.contains(state.getMaterial());
         private boolean tipped;
@@ -148,10 +171,9 @@ public class TerraPickMiningHandler extends WorldSavedData {
         private SpiralIterator iterator;
         private Collection<ItemStack> drops = new HashSet<>();
         private boolean frozen = false;
+        private boolean disabled = false;
 
         public MiningAgent(PlayerEntity player, ItemStack stack, BlockPos pos, int range, int depth, boolean tipped, Direction side, BlockPos trueMid) {
-            this.playerUUID = player.getUniqueID();
-            this.stack = stack;
             this.centerPos = pos;
             this.tipped = tipped;
             this.side = side;
@@ -159,7 +181,7 @@ public class TerraPickMiningHandler extends WorldSavedData {
             this.trueMid = trueMid;
             this.iterator = new SpiralIterator();
             if(depth > 1) {
-                TerraPickMiningHandler.this.createEvent(player, stack, pos, range, depth - 1, tipped, side, trueMid);
+                ItemTerraPickPP.addHandler(stack, TerraPickMiningHandler.this.createEvent(player, stack, pos, range, depth - 1, tipped, side, trueMid));
             }
         }
 
@@ -207,19 +229,16 @@ public class TerraPickMiningHandler extends WorldSavedData {
 
         }
 
-        public boolean advance() {
-            PlayerEntity player = world.getPlayerByUuid(playerUUID);
-            if(player == null) {
-                disabled = true;
-                return true;
-            } else if(disabled) {
-                setStackReference(player, stack);
-                disabled = false;
-            }
-
+        public boolean advance(PlayerEntity player, ItemStack stack) {
             BlockPos pos = iterator.pos;
             if(!frozen || World.isOutsideBuildHeight(pos)) {
-                if(!iterator.hasNext() || stack.isEmpty()) {
+                if(stack.isEmpty()) {
+                    disabled = true;
+                    return true;
+                }
+
+                if(!iterator.hasNext()) {
+                    frozen = false;
                     return true;
                 }
 
@@ -233,7 +252,6 @@ public class TerraPickMiningHandler extends WorldSavedData {
 
             if(!world.isAreaLoaded(pos, 0)) {
                 frozen = true;
-                disabled = true;
                 return true;
             } else {
                 frozen = false;
@@ -273,13 +291,14 @@ public class TerraPickMiningHandler extends WorldSavedData {
                         }
                     }
 
-                    damageItem(player);
+                    damageItem(player, stack);
+                    return !stack.isEmpty();
                 } else world.removeBlock(pos, false);
             }
             return false;
         }
 
-        private void damageItem(PlayerEntity player) {
+        private void damageItem(PlayerEntity player, ItemStack stack) {
             boolean manaRequested = ManaItemHandler.instance().requestManaExactForTool(stack, player, 80, true);
 
             if(!manaRequested)
@@ -288,7 +307,7 @@ public class TerraPickMiningHandler extends WorldSavedData {
         }
 
         public boolean complete() {
-            if(disabled) return false;
+            if(frozen || disabled) return false;
 
             if(!drops.isEmpty()) {
                 drops = drops.parallelStream().flatMap(s -> {
@@ -327,8 +346,6 @@ public class TerraPickMiningHandler extends WorldSavedData {
             drops.stream().map(s -> s.write(new CompoundNBT())).forEach(stacks::add);
             cmp.put("drops", stacks);
             cmp.put("iterator", iterator.write());
-            cmp.put("stack", stack.write(new CompoundNBT()));
-            cmp.putUniqueId("player", playerUUID);
             cmp.putIntArray("centerPos", new int[] {centerPos.getX(), centerPos.getY(), centerPos.getZ()});
             cmp.putIntArray("trueMid", new int[] {trueMid.getX(), trueMid.getY(), trueMid.getZ()});
             return cmp;
@@ -349,26 +366,6 @@ public class TerraPickMiningHandler extends WorldSavedData {
 
             iterator = new SpiralIterator();
             iterator.read(cmp.getCompound("iterator"));
-            playerUUID = cmp.getUniqueId("player");
-            PlayerEntity player = world.getPlayerByUuid(playerUUID);
-
-            ItemStack stacc = ItemStack.read(cmp.getCompound("stack"));
-
-            if(player == null) {
-                stack = stacc;
-                return;
-            }
-
-            setStackReference(player, stacc);
-        }
-
-        private void setStackReference(PlayerEntity player, ItemStack stacc) {
-            for(ItemStack stack : new InventoryCollectionWrapper(player.inventory)) {
-                if(stacc.isItemEqual(stack) && ItemStack.areItemStacksEqual(stacc, stack)) {
-                    this.stack = stack;
-                    break;
-                }
-            }
         }
 
     }

@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
+import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -161,6 +162,7 @@ public final class ItemNBTHelper {
                null;
     }
 
+    @Contract("_, _, _, false -> !null")
     public static ListNBT getList(ItemStack stack, String tag, int objtype, boolean nullifyOnFail) {
         return verifyExistence(stack, tag) ?
                stack.getOrCreateTag().getList(tag, objtype) :

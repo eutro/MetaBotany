@@ -21,6 +21,8 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -44,13 +46,17 @@ import vazkii.botania.common.item.equipment.tool.ToolCommons;
 import vazkii.botania.common.item.equipment.tool.manasteel.ItemManasteelPick;
 import vazkii.botania.common.item.relic.ItemThorRing;
 
-// TODO resolve internal references
-
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+// TODO resolve internal references
 
 public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISequentialBreaker {
 
@@ -59,6 +65,7 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
     private static final String TAG_ENABLED = "enabled";
     private static final String TAG_MANA = "mana";
     private static final String TAG_TIPPED = "tipped";
+    private static final String TAG_AGENTS = "mining_agents";
     public static int OLD_MAX = 5;
     public static final List<Material> MATERIALS = Arrays.asList(Material.ROCK, Material.IRON, Material.ICE,
             Material.GLASS, Material.PISTON, Material.ANVIL, Material.ORGANIC, Material.EARTH, Material.SAND,
@@ -145,27 +152,32 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
                     if(thor) depth = 2;
                     break;
             }
-            TerraPickMiningHandler.createEvent(player,
-                    stack,
-                    world,
-                    pos,
-                    range,
-                    thor ?
-                    depth :
-                    1,
-                    isTipped(stack),
-                    side,
-                    truePos);
-            if(thor)
-                TerraPickMiningHandler.createEvent(player,
-                        stack,
-                        world,
-                        pos.offset(side),
-                        range,
-                        range * 2 + 1 - depth,
-                        isTipped(stack),
-                        side.getOpposite(),
-                        truePos);
+            addHandler(stack,
+                    TerraPickMiningHandler.createEvent(player,
+                            stack,
+                            world,
+                            pos,
+                            range,
+                            thor ?
+                            depth :
+                            1,
+                            isTipped(stack),
+                            side,
+                            truePos)
+            );
+            if(thor) {
+                addHandler(stack,
+                        TerraPickMiningHandler.createEvent(player,
+                                stack,
+                                world,
+                                pos.offset(side),
+                                range,
+                                range * 2 + 1 - depth,
+                                isTipped(stack),
+                                side.getOpposite(),
+                                truePos)
+                );
+            }
         } else {
             ToolCommons.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, state -> MATERIALS.contains(state.getMaterial()), isTipped(stack));
         }
@@ -175,14 +187,22 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
         }
     }
 
+    public static void addHandler(ItemStack stack, @Nullable UUID id) {
+        if(id == null) return;
+        ListNBT list = ItemNBTHelper.getList(stack, TAG_AGENTS, 8, false);
+        list.add(StringNBT.valueOf(id.toString()));
+        ItemNBTHelper.setList(stack, TAG_AGENTS, list);
+    }
+
     @Override
     public boolean disposeOfTrashBlocks(ItemStack stack) {
         return isTipped(stack);
     }
 
     @OnlyIn(Dist.CLIENT)
+    @ParametersAreNonnullByDefault
     @Override
-    public void addInformation(ItemStack stack, World world, List<ITextComponent> stacks, ITooltipFlag flags) {
+    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> stacks, ITooltipFlag flags) {
         int level = getLevel(stack);
         ITextComponent rank = new TranslationTextComponent("botania.rank" + Math.min(5, level));
 
@@ -199,7 +219,7 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, @Nonnull Hand hand) {
+    public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, PlayerEntity player, @Nonnull Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
 
         getMana(stack);
@@ -231,6 +251,19 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
                 setEnabled(stack, false);
             else if(entity instanceof PlayerEntity && !((PlayerEntity) entity).isSwingInProgress)
                 addMana(stack, -level);
+        }
+        if(!(entity instanceof PlayerEntity) || world.isRemote)
+            return;
+
+        ListNBT list = ItemNBTHelper.getList(stack, TAG_AGENTS, 8, true);
+        if(list == null) return;
+        TerraPickMiningHandler handler = TerraPickMiningHandler.get(world);
+        if(handler != null) {
+            list = list.stream().filter(nbt -> handler.prod(nbt, (PlayerEntity) entity, stack)).collect(Collectors.toCollection(ListNBT::new));
+            if(list.isEmpty())
+                ItemNBTHelper.removeEntry(stack, TAG_AGENTS);
+            else
+                ItemNBTHelper.setList(stack, TAG_AGENTS, list);
         }
     }
 
