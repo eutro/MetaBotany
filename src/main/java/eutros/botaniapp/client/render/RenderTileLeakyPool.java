@@ -31,13 +31,35 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
         super(p_i226006_1_);
     }
 
-    public static void renderIcon(MatrixStack ms, IVertexBuilder buffer, int x, int y, TextureAtlasSprite icon, int width, int height, float alpha) {
+    public static void renderIcon(MatrixStack ms, IVertexBuilder buffer, float x, float y, TextureAtlasSprite icon, float width, float height, float alpha) {
+        renderIcon(ms, buffer, 0, 0, 1, 1, x, y, icon, width, height, alpha);
+    }
+
+    public static void renderIcon(MatrixStack ms, IVertexBuilder buffer, float minU, float minV, float maxU, float maxV, float x, float y, TextureAtlasSprite icon, float width, float height, float alpha) {
+        if(maxU > 1) {
+            float singleIconWidth = width / maxU;
+            renderIcon(ms, buffer, 0, minV, maxU - 1, maxV, x + singleIconWidth, y, icon, width - singleIconWidth, height, alpha);
+            width = singleIconWidth;
+            maxU = 1;
+        }
+        if(maxV > 1) {
+            float singleIconHeight = height / maxV;
+            renderIcon(ms, buffer, minU, 0, maxU, maxV - 1, x, y + singleIconHeight, icon, width, height - singleIconHeight, alpha);
+            height = singleIconHeight;
+            maxV = 1;
+        }
         Matrix4f mat = ms.getLast().getMatrix();
         int fullBrightness = 0xF000F0;
-        buffer.pos(mat, x, y + height, 0).color(1, 1, 1, alpha).tex(icon.getMinU(), icon.getMaxV()).lightmap(fullBrightness).endVertex();
-        buffer.pos(mat, x + width, y + height, 0).color(1, 1, 1, alpha).tex(icon.getMaxU(), icon.getMaxV()).lightmap(fullBrightness).endVertex();
-        buffer.pos(mat, x + width, y, 0).color(1, 1, 1, alpha).tex(icon.getMaxU(), icon.getMinV()).lightmap(fullBrightness).endVertex();
-        buffer.pos(mat, x, y, 0).color(1, 1, 1, alpha).tex(icon.getMinU(), icon.getMinV()).lightmap(fullBrightness).endVertex();
+        float uDiff = icon.getMaxU() - icon.getMinU();
+        float vDiff = icon.getMaxV() - icon.getMinV();
+        buffer.pos(mat, x, y + height, 0)
+                .color(1, 1, 1, alpha).tex(icon.getMinU() + uDiff * minU, icon.getMaxV() - vDiff * (1 - maxV)).lightmap(fullBrightness).endVertex();
+        buffer.pos(mat, x + width, y + height, 0)
+                .color(1, 1, 1, alpha).tex(icon.getMaxU() - uDiff * (1 - maxU), icon.getMaxV() - vDiff * (1 - maxV)).lightmap(fullBrightness).endVertex();
+        buffer.pos(mat, x + width, y, 0)
+                .color(1, 1, 1, alpha).tex(icon.getMaxU() - uDiff * (1 - maxU), icon.getMinV() + vDiff * minV).lightmap(fullBrightness).endVertex();
+        buffer.pos(mat, x, y, 0)
+                .color(1, 1, 1, alpha).tex(icon.getMinU() + uDiff * minU, icon.getMinV() + vDiff * minV).lightmap(fullBrightness).endVertex();
     }
 
     @Override
@@ -99,23 +121,27 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
             s = 1F / 16F;
 
             ms.scale(s, s, s);
-            ms.rotate(Vector3f.XN.rotationDegrees(90F));
+            ms.rotate(Vector3f.XN.rotationDegrees(90));
 
-            ms.translate(-2F, -2F, -24F - dripLevel);
-            renderIcon(ms, buffer, 0, 0, icon, 4, 4, 1);
+            ms.translate(-2, -2, -24);
 
             if(dripLevel > 0) {
+                ms.push();
+                ms.translate(0, 0, -4);
                 ms.rotate(Vector3f.XN.rotationDegrees(90F));
-                ms.scale(1F, dripLevel / 4, 1F);
                 ms.translate(0F, -4F, 0F);
-                renderIcon(ms, buffer, 0, 0, icon, 4, 4, 1);
+                renderIcon(ms, buffer, 6 / 16F, 0, 10 / 16F, dripLevel / 4, 0, 0, icon, 4, dripLevel, 1);
 
                 for(int i = 0; i < 3; i++) {
                     ms.rotate(Vector3f.YP.rotationDegrees(90F));
                     ms.translate(-4F, 0F, 0);
-                    renderIcon(ms, buffer, 0, 0, icon, 4, 4, 1);
+                    renderIcon(ms, buffer, 6 / 16F, 0, 10 / 16F, dripLevel / 4, 0, 0, icon, 4, dripLevel, 1);
                 }
+                ms.pop();
             }
+
+            ms.translate(0, 0, -dripLevel);
+            renderIcon(ms, buffer, 6 / 16F, 6 / 16F, 10 / 16F, 10 / 16F, 0, 0, icon, 4, 4, 1);
 
             ms.pop();
         }
