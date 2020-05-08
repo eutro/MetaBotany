@@ -20,12 +20,11 @@ public final class CustomRenderHandler {
     private CustomRenderHandler() {
     }
 
+    @SuppressWarnings("unchecked") // IntelliJ more like DumbJ
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent evt) {
         ModelLoaderRegistry.registerLoader(FloatingFlowerModel.Loader.ID, FloatingFlowerModel.Loader.INSTANCE);
 
-        // intellij is being stupid.
-        //noinspection unchecked
         ClientRegistry.bindTileEntityRenderer(SubtileBouganvillea.TYPE, RenderTileComposite.of(RenderTileFloatingFlower::new,
                 RenderTileBouganvillea::new));
 

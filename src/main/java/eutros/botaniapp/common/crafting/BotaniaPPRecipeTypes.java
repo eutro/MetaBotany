@@ -8,16 +8,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
-import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
-
-import java.util.*;
 
 import static eutros.botaniapp.common.item.BotaniaPPItems.register;
 
@@ -25,12 +21,6 @@ import static eutros.botaniapp.common.item.BotaniaPPItems.register;
 public class BotaniaPPRecipeTypes {
 
     public static final BotaniaPPRecipeType<RecipeBouganvillea> BOUGANVILLEA_TYPE = new BotaniaPPRecipeType<>("bouganvillea");
-
-    private static final Map<IRecipeType<?>, BotaniaPPRecipeType<?>> types = new HashMap<>();
-
-    static {
-        types.put(BOUGANVILLEA_TYPE.type, BOUGANVILLEA_TYPE);
-    }
 
     @SubscribeEvent
     public static void registerRecipeSerializers(RegistryEvent.Register<IRecipeSerializer<?>> event) {
@@ -53,7 +43,6 @@ public class BotaniaPPRecipeTypes {
 
         public final ResourceLocation location;
         public final IRecipeType<T> type;
-        private List<T> recipes = Collections.emptyList();
 
         public BotaniaPPRecipeType(String path) {
             location = new ResourceLocation(Reference.MOD_ID, path);
@@ -67,31 +56,6 @@ public class BotaniaPPRecipeTypes {
                             return location.toString();
                         }
                     });
-        }
-
-        @SubscribeEvent
-        public static void reloadRecipes(RecipesUpdatedEvent event) {
-            RecipeManager manager = event.getRecipeManager();
-
-            types.values().forEach(BotaniaPPRecipeType::clearRecipes);
-
-            for(IRecipe<?> recipe : manager.getRecipes()) {
-                Optional.ofNullable(types.getOrDefault(recipe.getType(), null))
-                        .ifPresent(i -> i.addRecipe(recipe));
-            }
-        }
-
-        public void clearRecipes() {
-            recipes = new ArrayList<>();
-        }
-
-        public List<T> getRecipes() {
-            return recipes;
-        }
-
-        @SuppressWarnings("unchecked")
-        public void addRecipe(IRecipe<?> recipe) {
-            recipes.add((T) recipe);
         }
 
     }

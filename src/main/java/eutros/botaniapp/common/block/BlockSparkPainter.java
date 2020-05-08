@@ -82,6 +82,7 @@ public class BlockSparkPainter extends BlockWaterloggable {
         return BASE;
     }
 
+    @ParametersAreNonnullByDefault
     @SuppressWarnings("deprecation")
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState otherState, boolean moving) {

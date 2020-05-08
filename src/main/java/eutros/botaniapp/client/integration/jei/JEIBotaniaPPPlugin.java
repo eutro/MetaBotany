@@ -14,7 +14,10 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import vazkii.botania.common.core.helper.ItemNBTHelper;
@@ -43,7 +46,10 @@ public class JEIBotaniaPPPlugin implements IModPlugin { // Ample 'P's here
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        registration.addRecipes(BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.getRecipes(), RecipeCategoryBouganvillea.LOCATION);
+        ClientWorld world = Minecraft.getInstance().world;
+        assert world != null;
+        RecipeManager rm = world.getRecipeManager();
+        registration.addRecipes(rm.getRecipes(BotaniaPPRecipeTypes.BOUGANVILLEA_TYPE.type).values(), RecipeCategoryBouganvillea.LOCATION);
         registration.addRecipes(Collections.singletonList(RecipeLeakyPool.getInstance()), RecipeCategoryTNTPool.LOCATION);
     }
 
@@ -60,7 +66,7 @@ public class JEIBotaniaPPPlugin implements IModPlugin { // Ample 'P's here
     }
 
     @Override
-    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+    public void onRuntimeAvailable(@NotNull IJeiRuntime jeiRuntime) {
         runtime = jeiRuntime;
         RecipeLeakyPool.onChange("LEAKY_POOL_EXPLOSION_RECIPE", RecipeLeakyPool.LEAKY_POOL_EXPLOSION_RECIPE);
     }
