@@ -4,6 +4,7 @@ import eutros.botaniapp.api.recipe.IBouganvilleaInventory;
 import eutros.botaniapp.api.recipe.RecipeBouganvillea;
 import eutros.botaniapp.common.block.flower.functional.SubtileBouganvillea;
 import eutros.botaniapp.common.item.BotaniaPPItems;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -11,12 +12,18 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RecipeBouganvilleaRename extends RecipeBouganvillea {
 
@@ -39,6 +46,16 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
             RENAMED_INGREDIENT
     );
 
+    private static final Map<Item, TextFormatting> tfMap = new HashMap<>();
+
+    static {
+        tfMap.put(Items.INK_SAC, TextFormatting.BOLD);
+        tfMap.put(Items.WATER_BUCKET, TextFormatting.RESET);
+        tfMap.put(Items.ARROW, TextFormatting.STRIKETHROUGH);
+        tfMap.put(Items.FEATHER, TextFormatting.UNDERLINE);
+        tfMap.put(ForgeRegistries.ITEMS.getValue(new ResourceLocation("botania", "gaia_head")), TextFormatting.OBFUSCATED);
+    }
+
     public RecipeBouganvilleaRename(ResourceLocation location) {
         this(location,
                 manaString.copy().setDisplayName(new StringTextComponent("What is your name?")),
@@ -52,27 +69,58 @@ public class RecipeBouganvilleaRename extends RecipeBouganvillea {
     @Override
     public boolean shouldTrigger(IBouganvilleaInventory inv) {
         ItemStack stack = inv.getThrown().getItem();
-        return stack.getCount() != 1 || stack.getItem() != BotaniaPPItems.BOTANIA_MANA_STRING;
+        Item item = stack.getItem();
+        return stack.getCount() != 1 || (item != BotaniaPPItems.BOTANIA_MANA_STRING
+                && !Tags.Items.DYES.contains(item) && !tfMap.containsKey(item));
     }
 
     @ParametersAreNonnullByDefault
     @Override
     public boolean matches(IBouganvilleaInventory inventory, World world) {
+        Item item = inventory.getThrown().getItem().getItem();
         return inventory.getSizeInventory() > 1 ||
-                inventory.getThrown().getItem().getItem() == BotaniaPPItems.BOTANIA_MANA_STRING;
+                item == BotaniaPPItems.BOTANIA_MANA_STRING ||
+                Tags.Items.DYES.contains(item) ||
+                tfMap.containsKey(item);
     }
 
     public ItemStack getStacksResult(List<ItemStack> stacks) {
-        // TODO add limitations
+        int MAX_LENGTH = 36;
+
         StringBuilder builder = new StringBuilder();
         for(ItemStack stack : stacks.subList(0, stacks.size() - 1)) {
+            Item item = stack.getItem();
+            if(Tags.Items.DYES.contains(item)) {
+                item.getTags().stream()
+                        .map(Object::toString)
+                        .filter(s -> s.startsWith(Tags.Items.DYES.getId() + "/"))
+                        .findFirst()
+                        .map(s -> s.substring(Tags.Items.DYES.getId().toString().length() + 1))
+                        .map(TextFormatting::getValueByName)
+                        .map(Object::toString)
+                        .map(f -> f + TextFormatting.ITALIC)
+                        .ifPresent(builder::append);
+                continue;
+            }
+
+            if(tfMap.containsKey(item)) {
+                builder.append(tfMap.get(item)).append(TextFormatting.ITALIC);
+                continue;
+            }
+
             builder.append(stackName(stack));
+
+            if(builder.length() >= MAX_LENGTH) {
+                break;
+            }
         }
 
         String s = builder.toString();
         ItemStack thrown = stacks.get(stacks.size() - 1).copy();
+
         if(!s.equals("")) {
-            thrown.setDisplayName(new StringTextComponent(s));
+            ITextComponent component = new StringTextComponent(s);
+            thrown.setDisplayName(component);
         }
 
         return thrown;
