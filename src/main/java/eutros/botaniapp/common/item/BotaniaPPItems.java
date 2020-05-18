@@ -7,6 +7,7 @@ package eutros.botaniapp.common.item;
 
 import eutros.botaniapp.common.core.BotaniappCreativeTab;
 import eutros.botaniapp.common.item.dispenser.BehaviourCorporeaSpark;
+import eutros.botaniapp.common.item.dispenser.BehaviourHangingItem;
 import eutros.botaniapp.common.item.dispenser.BehaviourSpark;
 import eutros.botaniapp.common.item.lens.AdvancedRedirectLens;
 import eutros.botaniapp.common.item.lens.BindingLens;
@@ -14,7 +15,9 @@ import eutros.botaniapp.common.item.lens.RedstoneLens;
 import eutros.botaniapp.common.item.lens.UnresponsiveLens;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -94,6 +97,10 @@ public class BotaniaPPItems {
         DispenserBlock.registerDispenseBehavior(BOTANIA_SPARK, new BehaviourSpark());
         DispenserBlock.registerDispenseBehavior(BOTANIA_CORPOREA_SPARK, new BehaviourCorporeaSpark());
         DispenserBlock.registerDispenseBehavior(BOTANIA_CORPOREA_SPARK_MASTER, new BehaviourCorporeaSpark());
+
+        IDispenseItemBehavior behaviour = new BehaviourHangingItem();
+        DispenserBlock.registerDispenseBehavior(Items.ITEM_FRAME, behaviour);
+        DispenserBlock.registerDispenseBehavior(Items.PAINTING, behaviour);
     }
 
 }

@@ -17,7 +17,7 @@ public class BehaviourSpark extends DefaultDispenseItemBehavior {
 
     @NotNull
     @Override
-    protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
+    protected ItemStack dispenseStack(IBlockSource source, @NotNull ItemStack stack) {
         World world = source.getWorld();
         Direction facing = world.getBlockState(source.getBlockPos()).get(DispenserBlock.FACING);
         BlockPos pos = source.getBlockPos().offset(facing);
