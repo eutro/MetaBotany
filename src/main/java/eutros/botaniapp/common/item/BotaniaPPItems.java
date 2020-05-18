@@ -49,6 +49,8 @@ public class BotaniaPPItems {
     public static Item BOTANIA_SPARK;
     public static Item BOTANIA_CORPOREA_SPARK;
     public static Item BOTANIA_CORPOREA_SPARK_MASTER;
+    public static Item BOTANIA_PIXIE_DUST;
+    public static Item BOTANIA_TWIG_WAND;
 
     public static Item.Properties defaultBuilder() {
         return new Item.Properties().group(BotaniappCreativeTab.INSTANCE);
@@ -83,6 +85,8 @@ public class BotaniaPPItems {
         BOTANIA_CORPOREA_SPARK = r.getValue(new ResourceLocation(b, "corporea_spark"));
         BOTANIA_CORPOREA_SPARK_MASTER = r.getValue(new ResourceLocation(b, "corporea_spark_master"));
         BOTANIA_BLACK_HOLE_TALISMAN = r.getValue(new ResourceLocation(b, "black_hole_talisman"));
+        BOTANIA_PIXIE_DUST = r.getValue(new ResourceLocation(b, "pixie_dust"));
+        BOTANIA_TWIG_WAND = r.getValue(new ResourceLocation(b, "twig_wand"));
     }
 
     public static <V extends IForgeRegistryEntry<V>> void register(IForgeRegistry<V> reg, IForgeRegistryEntry<V> thing, ResourceLocation name) {

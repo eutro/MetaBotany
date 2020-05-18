@@ -2,6 +2,7 @@ package eutros.botaniapp.common.crafting.recipe;
 
 import com.google.gson.JsonObject;
 import eutros.botaniapp.common.core.helper.PetalHelper;
+import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.item.lens.BindingLens;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
@@ -17,7 +18,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.jetbrains.annotations.NotNull;
-import vazkii.botania.common.item.ModItems;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,7 +45,7 @@ public class RecipeLensBinding implements ICraftingRecipe, IShapedRecipe<Craftin
             ItemStack stack = inv.getStackInSlot(i);
             Item item = stack.getItem();
 
-            colorId = item == ModItems.pixieDust ? 16 : PetalHelper.idOf(item);
+            colorId = item == BotaniaPPItems.BOTANIA_PIXIE_DUST ? 16 : PetalHelper.idOf(item);
 
             if(colorId == -1) {
                 continue;

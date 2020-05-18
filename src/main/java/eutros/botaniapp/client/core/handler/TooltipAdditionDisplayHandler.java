@@ -59,7 +59,7 @@ public final class TooltipAdditionDisplayHandler {
         }
         if(item instanceof ICompositableLens) {
             ItemStack composite = ((ICompositableLens) item).getCompositeLens(stack);
-            drawCompositeLens(composite, tooltipX, tooltipY, evt.getLines(), font);
+            drawCompositeLens(composite, tooltipX, tooltipY, evt.getLines());
         }
         RenderSystem.popMatrix();
     }
@@ -107,7 +107,8 @@ public final class TooltipAdditionDisplayHandler {
         }
     }
 
-    private static void drawCompositeLens(ItemStack composite, int tooltipX, int tooltipY, List<String> lines, FontRenderer font) {
+    // TODO fix this or something
+    private static void drawCompositeLens(ItemStack composite, int tooltipX, int tooltipY, List<String> lines) {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         final Pattern pattern = Pattern.compile(".+\\u00a7o" + I18n.format("botaniapp.tooltip.composite") + ".+");
 

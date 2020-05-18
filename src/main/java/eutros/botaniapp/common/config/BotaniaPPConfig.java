@@ -21,6 +21,8 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO make this a separate mod
+
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class BotaniaPPConfig {
 
@@ -59,7 +61,8 @@ public class BotaniaPPConfig {
         }
     }
 
-    static {
+    static { // TODO move these
+
         serializers.put(Set.class, new ITomlSerializer<Set<?>, List<?>>() {
             @Override
             public List<?> serialize(Set<?> toSerialize) {

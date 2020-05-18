@@ -4,15 +4,21 @@ import eutros.botaniapp.common.item.BotaniaPPItems;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import vazkii.botania.api.corporea.CorporeaHelper;
-import vazkii.botania.common.entity.EntityCorporeaSpark;
 
 public class BehaviourCorporeaSpark extends DefaultDispenseItemBehavior {
 
@@ -29,9 +35,18 @@ public class BehaviourCorporeaSpark extends DefaultDispenseItemBehavior {
                 && !CorporeaHelper.instance().doesBlockHaveSpark(world, pos)) {
             stack.shrink(1);
             if(!world.isRemote) {
-                EntityCorporeaSpark spark = new EntityCorporeaSpark(world);
-                if(stack.getItem() == BotaniaPPItems.BOTANIA_CORPOREA_SPARK_MASTER)
-                    spark.setMaster(true);
+                EntityType<?> sparkType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation("botania", "corporea_spark"));
+
+                if(sparkType == null) return super.dispenseStack(source, stack);
+
+                Entity spark = sparkType.create(world);
+
+                if(spark == null) return super.dispenseStack(source, stack);
+
+                if(stack.getItem() == BotaniaPPItems.BOTANIA_CORPOREA_SPARK_MASTER) {
+                    DataParameter<Boolean> key = EntityDataManager.createKey(spark.getClass(), DataSerializers.BOOLEAN);
+                    spark.getDataManager().set(key, true);
+                }
                 spark.setPosition(pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5);
                 world.addEntity(spark);
             }

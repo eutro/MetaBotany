@@ -14,10 +14,11 @@ import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
-import vazkii.botania.common.item.ItemBlackHoleTalisman;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
 
@@ -44,7 +45,7 @@ public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
             }
         }
 
-        Block talismanBlock = ItemBlackHoleTalisman.getBlock(talisman);
+        Block talismanBlock = getBlock(talisman);
         boolean otherItem = false;
 
         for(int i = 0; i < inv.getSizeInventory(); i++) {
@@ -58,7 +59,7 @@ public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
                 } else {
                     Block block = ((BlockItem) item).getBlock();
                     if(talismanBlock != Blocks.AIR &&
-                            ItemBlackHoleTalisman.getBlockCount(talisman) != 0 &&
+                            getBlockCount(talisman) != 0 &&
                             (block != talismanBlock)) {
                         return false;
                     }
@@ -90,7 +91,7 @@ public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
         }
 
         ItemStack newTalisman = talisman.copy();
-        int count = ItemBlackHoleTalisman.getBlockCount(newTalisman);
+        int count = getBlockCount(newTalisman);
 
         for(int i = 0; i < inv.getSizeInventory(); i++) {
             if(i == pop)
@@ -126,6 +127,20 @@ public class RecipeBlackHoleTalismanInsert extends SpecialRecipe {
     @Override
     public IRecipeSerializer<?> getSerializer() {
         return SERIALIZER;
+    }
+
+    public static int getBlockCount(ItemStack stack) {
+        return ItemNBTHelper.getInt(stack, "blockCount", 0);
+    }
+
+    @Nullable
+    public static Block getBlock(ItemStack stack) {
+        ResourceLocation id = ResourceLocation.tryCreate(getBlockName(stack));
+        return id != null ? ForgeRegistries.BLOCKS.getValue(id) : null;
+    }
+
+    private static String getBlockName(ItemStack stack) {
+        return ItemNBTHelper.getString(stack, "blockName", "");
     }
 
 }

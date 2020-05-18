@@ -3,15 +3,19 @@ package eutros.botaniapp.common.item.dispenser;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.mana.spark.ISparkAttachable;
-import vazkii.botania.common.entity.EntitySpark;
+import vazkii.botania.api.mana.spark.ISparkEntity;
 
 public class BehaviourSpark extends DefaultDispenseItemBehavior {
 
@@ -27,10 +31,16 @@ public class BehaviourSpark extends DefaultDispenseItemBehavior {
             if(attach.canAttachSpark(stack) && attach.getAttachedSpark() == null) {
                 if(!world.isRemote) {
                     stack.shrink(1);
-                    EntitySpark spark = new EntitySpark(world);
+                    EntityType<?> sparkType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation("botania", "spark"));
+                    if(sparkType == null) return super.dispenseStack(source, stack);
+
+                    Entity spark = sparkType.create(world);
+
+                    if(spark == null) return super.dispenseStack(source, stack);
+
                     spark.setPosition(pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5);
                     world.addEntity(spark);
-                    attach.attachSpark(spark);
+                    attach.attachSpark((ISparkEntity) spark);
                     VanillaPacketDispatcher.dispatchTEToNearbyPlayers(world, pos);
                 }
                 return stack;

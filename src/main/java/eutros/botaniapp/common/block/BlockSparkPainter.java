@@ -35,6 +35,8 @@ import java.util.*;
 
 import static eutros.botaniapp.common.item.BotaniaPPItems.register;
 
+// TODO resolve internal references
+
 public class BlockSparkPainter extends BlockWaterloggable {
 
     public static Map<DyeColor, BlockSparkPainter> dyeMap = new EnumMap<>(DyeColor.class);

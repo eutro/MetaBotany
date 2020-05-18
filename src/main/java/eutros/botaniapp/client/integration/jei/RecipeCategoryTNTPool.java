@@ -2,6 +2,7 @@ package eutros.botaniapp.client.integration.jei;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
+import eutros.botaniapp.common.core.helper.ItemNBTHelper;
 import eutros.botaniapp.common.crafting.recipe.RecipeLeakyPool;
 import eutros.botaniapp.common.utils.Reference;
 import mezz.jei.api.constants.VanillaTypes;
@@ -15,7 +16,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import vazkii.botania.common.core.helper.ItemNBTHelper;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -79,7 +80,7 @@ public class RecipeCategoryTNTPool implements IRecipeCategory<RecipeLeakyPool> {
     }
 
     @Override
-    public void draw(RecipeLeakyPool recipe, double mouseX, double mouseY) {
+    public void draw(@NotNull RecipeLeakyPool recipe, double mouseX, double mouseY) {
         RenderSystem.enableAlphaTest();
         RenderSystem.enableBlend();
         overlay.draw(background.getWidth() / 2 - overlay.getWidth() / 2,
@@ -90,7 +91,7 @@ public class RecipeCategoryTNTPool implements IRecipeCategory<RecipeLeakyPool> {
 
     @Nonnull
     @Override
-    public List<String> getTooltipStrings(RecipeLeakyPool recipe, double mouseX, double mouseY) {
+    public List<String> getTooltipStrings(@NotNull RecipeLeakyPool recipe, double mouseX, double mouseY) {
 
         if(Math.abs(mouseX - background.getWidth() / 2F) <= overlay.getWidth() / 2F &&
                 Math.abs(mouseY - background.getHeight() / 2F) <= overlay.getHeight() / 2F)

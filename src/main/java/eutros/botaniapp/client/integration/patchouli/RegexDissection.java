@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+// TODO prepare crabs
+
 public class RegexDissection implements ICustomComponent {
 
     private transient final float sf = 1.2f;

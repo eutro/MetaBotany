@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+// TODO beg for API integration I guess?
+
 @SuppressWarnings("deprecation")
 public class BlockSpecialFlower extends FlowerBlock implements IWandable, IWandHUD {
 

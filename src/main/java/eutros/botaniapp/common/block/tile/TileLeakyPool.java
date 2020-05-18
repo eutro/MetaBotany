@@ -43,6 +43,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 
+// TODO resolve internal references
+
 public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKeyLocked, ISparkAttachable, IThrottledPacket, ITickableTileEntity, IManaSpreader {
 
     public static final int MAX_MANA = 1000000;
@@ -262,7 +264,7 @@ public class TileLeakyPool extends TileSimpleInventory implements IManaPool, IKe
         if(!lens.isEmpty() && lens.getItem() instanceof ILensEffect)
             ((ILensEffect) lens.getItem()).apply(lens, props);
 
-        EntityManaBurst burst = new EntityManaBurst(this, fake);
+        EntityManaBurst burst = new EntityManaBurst(this, fake); // TODO get some API in here
 
         // Move burst half a block down so it starts at the bottom of the pool.
         Vec3d vec = burst.getPositionVector();

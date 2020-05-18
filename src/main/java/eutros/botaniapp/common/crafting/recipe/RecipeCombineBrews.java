@@ -23,6 +23,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO resolve internal references perhaps
+
 public class RecipeCombineBrews extends SpecialRecipe {
 
     public static final IRecipeSerializer<RecipeCombineBrews> SERIALIZER = new SpecialRecipeSerializer<>(RecipeCombineBrews::new);

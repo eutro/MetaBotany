@@ -39,6 +39,7 @@ public class BotaniaPPBlocks {
     public static Block BOTANIA_MANA_VOID;
     public static Block BOTANIA_RED_STRING_RELAY;
     public static Block BOTANIA_MANA_POOL;
+    public static Block BOTANIA_LIVINGROCK_BRICKS;
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> evt) {
@@ -66,6 +67,7 @@ public class BotaniaPPBlocks {
         BOTANIA_PISTON_RELAY = r.getValue(new ResourceLocation(b, "piston_relay"));
         BOTANIA_RED_STRING_RELAY = r.getValue(new ResourceLocation(b, "red_string_relay"));
         BOTANIA_MANA_POOL = r.getValue(new ResourceLocation(b, "mana_pool"));
+        BOTANIA_LIVINGROCK_BRICKS = r.getValue(new ResourceLocation(b, "livingrock_bricks"));
     }
 
     @SubscribeEvent

@@ -4,6 +4,8 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 
+// TODO resolve internal references maybe
+
 public class PetalHelper {
 
     public static int idOf(Item item) {

@@ -2,6 +2,7 @@ package eutros.botaniapp.client.integration.jei;
 
 import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.block.flower.BotaniaPPFlowers;
+import eutros.botaniapp.common.core.helper.ItemNBTHelper;
 import eutros.botaniapp.common.crafting.BotaniaPPRecipeTypes;
 import eutros.botaniapp.common.crafting.recipe.RecipeLeakyPool;
 import eutros.botaniapp.common.item.BotaniaPPItems;
@@ -20,7 +21,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import vazkii.botania.common.core.helper.ItemNBTHelper;
 
 import java.util.Collections;
 

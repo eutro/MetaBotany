@@ -1,6 +1,7 @@
 package eutros.botaniapp.common.item.lens;
 
 import eutros.botaniapp.common.BotaniaPP;
+import eutros.botaniapp.common.block.BotaniaPPBlocks;
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
 import eutros.botaniapp.common.item.BotaniaPPItems;
 import eutros.botaniapp.common.sound.BotaniaPPSounds;
@@ -24,6 +25,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
+import org.jetbrains.annotations.NotNull;
 import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.wand.ICoordBoundItem;
@@ -145,7 +147,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
                 ItemNBTHelper.setInt(composite, "color", getLensColorId(stack));
             }
 
-            if(pos.equals(sourcePos) || (warp && block instanceof BlockPistonRelay)) {
+            if(pos.equals(sourcePos) || (warp && block == BotaniaPPBlocks.BOTANIA_PISTON_RELAY)) {
                 return super.collideBurst(burst, traceResult, isManaBlock, dead, stack);
             }
 
@@ -181,7 +183,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
             TileEntity tile = world.getTileEntity(pos);
 
             if((tile instanceof IWandBindable && ((IWandBindable) tile).canSelect(player, stack, pos, side))
-                    || block instanceof BlockPistonRelay) {
+                    || block == BotaniaPPBlocks.BOTANIA_PISTON_RELAY) {
                 if(!boundPos.isPresent() || !boundPos.get().equals(pos)) {
                     setBindingAttempt(stack, pos);
                     return true;
@@ -217,10 +219,10 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
     private boolean tryCompletePistonRelayBinding(World world, BlockPos src, BlockPos pos) {
         if(src.equals(pos))
             return false;
-        if(world.getBlockState(src).getBlock() instanceof BlockPistonRelay) { // Could this minimal checking cause issues with block protections?
+        if(world.getBlockState(src).getBlock() == BotaniaPPBlocks.BOTANIA_PISTON_RELAY) {
             GlobalPos bindPos = GlobalPos.of(world.getDimension().getType(), src.toImmutable());
 
-            BlockPistonRelay.WorldData data = BlockPistonRelay.WorldData.get(world);
+            BlockPistonRelay.WorldData data = BlockPistonRelay.WorldData.get(world); // TODO complain about lack of API support
             data.mapping.put(bindPos.getPos(), pos.toImmutable());
             data.markDirty();
             BlockPistonRelay.WorldData.get(world).markDirty();
@@ -232,7 +234,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, @Nonnull Hand hand) {
+    public ActionResult<ItemStack> onItemRightClick(@NotNull World world, PlayerEntity player, @Nonnull Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if(player.isShiftKeyDown()) {
             if(!world.isRemote)
@@ -258,7 +260,7 @@ public class BindingLens extends ItemLens implements ICoordBoundItem {
         if((player == null || player.isShiftKeyDown()) &&
                 ((tile instanceof IWandBindable &&
                         ((IWandBindable) tile).canSelect(player, stack, pos, side)) ||
-                        block instanceof BlockPistonRelay)) {
+                        block == BotaniaPPBlocks.BOTANIA_PISTON_RELAY)) {
             setBindingAttempt(stack, pos);
             // TODO use own sound
             if(player != null)

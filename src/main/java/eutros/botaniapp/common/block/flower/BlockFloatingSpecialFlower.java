@@ -37,6 +37,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.function.Supplier;
 
+// TODO beg for API integration I guess?
+
 @SuppressWarnings("deprecation")
 public class BlockFloatingSpecialFlower extends BlockFloatingFlower implements IWandable, IWandHUD {
 

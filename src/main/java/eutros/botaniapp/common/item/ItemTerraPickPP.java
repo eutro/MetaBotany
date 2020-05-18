@@ -12,6 +12,9 @@ package eutros.botaniapp.common.item;
 
 import com.google.common.math.BigIntegerMath;
 import eutros.botaniapp.common.core.helper.ItemNBTHelper;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementManager;
+import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -32,12 +35,11 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.ForgeRegistries;
 import vazkii.botania.api.BotaniaAPI;
 import vazkii.botania.api.item.ISequentialBreaker;
 import vazkii.botania.api.mana.IManaGivingItem;
 import vazkii.botania.api.mana.IManaItem;
-import vazkii.botania.common.core.handler.ModSounds;
-import vazkii.botania.common.core.helper.PlayerHelper;
 import vazkii.botania.common.item.ItemTemperanceStone;
 import vazkii.botania.common.item.equipment.tool.ToolCommons;
 import vazkii.botania.common.item.equipment.tool.manasteel.ItemManasteelPick;
@@ -110,7 +112,7 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
         if(world.isAirBlock(pos))
             return;
 
-        boolean thor = !ItemThorRing.getThorRing(player).isEmpty();
+        boolean thor = !ItemThorRing.getThorRing(player).isEmpty(); // TODO complain about lack of API support
         boolean doX = thor || side.getXOffset() == 0;
         boolean doY = thor || side.getYOffset() == 0;
         boolean doZ = thor || side.getZOffset() == 0;
@@ -132,7 +134,13 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
         ToolCommons.removeBlocksInIteration(player, stack, world, pos, beginDiff, endDiff, state -> MATERIALS.contains(state.getMaterial()), isTipped(stack));
 
         if(origLevel >= 5) {
-            PlayerHelper.grantCriterion((ServerPlayerEntity) player, new ResourceLocation("botania:challenge/rank_ss_pick"), "code_triggered");
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+            PlayerAdvancements advancements = serverPlayer.getAdvancements();
+            AdvancementManager manager = serverPlayer.getServerWorld().getServer().getAdvancementManager();
+            Advancement advancement = manager.getAdvancement(new ResourceLocation("botania:challenge/rank_ss_pick"));
+            if(advancement != null) {
+                advancements.grantCriterion(advancement, "code_triggered");
+            }
         }
     }
 
@@ -169,8 +177,11 @@ public class ItemTerraPickPP extends ItemManasteelPick implements IManaItem, ISe
 
         if(level != 0) {
             setEnabled(stack, !isEnabled(stack));
-            if(!world.isRemote)
-                world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.terraPickMode, SoundCategory.PLAYERS, 0.5F, 0.4F);
+            if(!world.isRemote) {
+                SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("botania", "terrapickmode"));
+                if(sound != null)
+                    world.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(), sound, SoundCategory.PLAYERS, 0.5F, 0.4F);
+            }
         }
 
         return ActionResult.resultSuccess(stack);
