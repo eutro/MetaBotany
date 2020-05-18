@@ -3,6 +3,7 @@
   "textures": {
     "top": "botaniapp:blocks/spark_painter/top",
     "bottom": "botaniapp:blocks/spark_painter/bottom",
-    "side": "botaniapp:blocks/spark_painter/side"
+    "side": "botaniapp:blocks/spark_painter/side",
+    "color": "botaniapp:blocks/blank"
   }
 }

@@ -1,3 +1,6 @@
 {
-  "parent": "botaniapp:block/spark_painter/orange"
+  "parent": "botaniapp:block/spark_painter/base",
+  "textures": {
+    "color": "botaniapp:blocks/spark_painter/orange"
+  }
 }

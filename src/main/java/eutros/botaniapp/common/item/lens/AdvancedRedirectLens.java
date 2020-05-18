@@ -45,20 +45,6 @@ public class AdvancedRedirectLens extends ItemLens {
         return state;
     }
 
-    private static BlockState mirror(BlockState state) {
-        Optional<IProperty<Direction>> dir = getDirection(state);
-
-        if(!dir.isPresent())
-            return state;
-
-        IProperty<Direction> prop = dir.get();
-        Direction opposite = state.get(prop).getOpposite();
-        if(prop.getAllowedValues().contains(opposite))
-            return state.with(prop, opposite);
-
-        return state;
-    }
-
     @Override
     public boolean collideBurst(IManaBurst burst, RayTraceResult rtr, boolean isManaBlock, boolean dead, ItemStack stack) {
         BlockPos coords = burst.getBurstSourceBlockPos();
@@ -72,8 +58,6 @@ public class AdvancedRedirectLens extends ItemLens {
 
                 BlockState oldState = world.getBlockState(pos);
                 BlockState newState = rotate(oldState, face);
-                if(newState == oldState)
-                    newState = mirror(oldState);
 
                 world.setBlockState(pos, newState);
             }

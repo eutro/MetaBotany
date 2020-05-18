@@ -4,6 +4,7 @@ import eutros.botaniapp.common.block.corporea.BlockAdvancedFunnel;
 import eutros.botaniapp.common.block.tile.TileChargingPlate;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
 import eutros.botaniapp.common.block.tile.TilePoweredAir;
+import eutros.botaniapp.common.block.tile.TileSparkPainter;
 import eutros.botaniapp.common.block.tile.corporea.TileAdvancedFunnel;
 import eutros.botaniapp.common.block.tinkerer.BlockFrameTinkerer;
 import eutros.botaniapp.common.block.tinkerer.tile.TileFrameTinkerer;
@@ -91,6 +92,7 @@ public class BotaniaPPBlocks {
         register(r, TileEntityType.Builder.create(TileLeakyPool::new, leakyPool).build(null), Reference.BlockNames.LEAKY_POOL);
         register(r, TileEntityType.Builder.create(TileFrameTinkerer::new, frameTinkerer).build(null), Reference.BlockNames.FRAME_TINKERER);
         register(r, TileEntityType.Builder.create(TilePoweredAir::new, poweredAir).build(null), Reference.BlockNames.POWERED_AIR);
+        register(r, TileEntityType.Builder.create(TileSparkPainter::new, BlockSparkPainter.dyeMap.values().toArray(new Block[0])).build(null), "spark_painter");
     }
 
 }

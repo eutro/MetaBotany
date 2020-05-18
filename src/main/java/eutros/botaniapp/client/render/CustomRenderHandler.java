@@ -4,6 +4,7 @@ import eutros.botaniapp.client.render.model.FloatingFlowerModel;
 import eutros.botaniapp.common.block.flower.functional.SubtileBouganvillea;
 import eutros.botaniapp.common.block.tile.TileChargingPlate;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
+import eutros.botaniapp.common.block.tile.TileSparkPainter;
 import eutros.botaniapp.common.block.tinkerer.tile.TileFrameTinkerer;
 import eutros.botaniapp.common.utils.Reference;
 import net.minecraftforge.api.distmarker.Dist;
@@ -25,12 +26,17 @@ public final class CustomRenderHandler {
     public static void registerModels(ModelRegistryEvent evt) {
         ModelLoaderRegistry.registerLoader(FloatingFlowerModel.Loader.ID, FloatingFlowerModel.Loader.INSTANCE);
 
-        ClientRegistry.bindTileEntityRenderer(SubtileBouganvillea.TYPE, RenderTileComposite.of(RenderTileFloatingFlower::new,
-                RenderTileBouganvillea::new));
+        ClientRegistry.bindTileEntityRenderer(SubtileBouganvillea.TYPE,
+                RenderTileComposite.of(
+                        RenderTileFloatingFlower::new,
+                        RenderTileBouganvillea::new
+                )
+        );
 
         ClientRegistry.bindTileEntityRenderer(TileChargingPlate.TYPE, RenderTileChargingPlate::new);
         ClientRegistry.bindTileEntityRenderer(TileFrameTinkerer.TYPE, RenderTileFrameTinkerer::new);
         ClientRegistry.bindTileEntityRenderer(TileLeakyPool.TYPE, RenderTileLeakyPool::new);
+        ClientRegistry.bindTileEntityRenderer(TileSparkPainter.TYPE, RenderTileSparkPainter::new);
     }
 
 }

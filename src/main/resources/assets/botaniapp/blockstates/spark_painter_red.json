@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "botaniapp:block/spark_painter/red"
+      "model": "botaniapp:block/spark_painter/base"
     }
   }
 }

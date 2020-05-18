@@ -1,6 +1,7 @@
 package eutros.botaniapp.common.block;
 
 import eutros.botaniapp.api.internal.block.BlockWaterloggable;
+import eutros.botaniapp.common.block.tile.TileSparkPainter;
 import eutros.botaniapp.common.core.network.BotaniaPPEffectPacket;
 import eutros.botaniapp.common.core.network.PacketHandler;
 import eutros.botaniapp.common.utils.MathUtils;
@@ -13,7 +14,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.*;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -26,13 +27,11 @@ import vazkii.botania.api.mana.spark.ISparkEntity;
 import vazkii.botania.common.entity.EntityCorporeaSpark;
 import vazkii.botania.common.entity.EntitySparkBase;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
-import java.util.EnumMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static eutros.botaniapp.common.item.BotaniaPPItems.register;
 
@@ -62,6 +61,17 @@ public class BlockSparkPainter extends BlockWaterloggable {
         }
     }
 
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return new TileSparkPainter(color);
+    }
+
     @NotNull
     @ParametersAreNonnullByDefault
     @SuppressWarnings("deprecation")
@@ -85,9 +95,7 @@ public class BlockSparkPainter extends BlockWaterloggable {
     @ParametersAreNonnullByDefault
     @SuppressWarnings("deprecation")
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState otherState, boolean moving) {
-        super.onBlockAdded(state, world, pos, otherState, moving);
-
+    public void tick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
         List<EntitySparkBase> sparks = new LinkedList<>();
 
         for(Direction dir : MathUtils.HORIZONTALS) {
@@ -106,16 +114,14 @@ public class BlockSparkPainter extends BlockWaterloggable {
 
         ByteBuffer buffer;
         for(EntitySparkBase spark : sparks) {
-            if(!world.isRemote()) {
-                buffer = ByteBuffer.allocate(8);
-                buffer.putInt(spark.getEntityId());
-                buffer.putInt(1);
-                PacketHandler.sendToNearby(world,
-                        pos,
-                        new BotaniaPPEffectPacket(BotaniaPPEffectPacket.EffectType.SMOKE,
-                                buffer.array()));
-                spark.setNetwork(color);
-            }
+            buffer = ByteBuffer.allocate(8);
+            buffer.putInt(spark.getEntityId());
+            buffer.putInt(1);
+            PacketHandler.sendToNearby(world,
+                    pos,
+                    new BotaniaPPEffectPacket(BotaniaPPEffectPacket.EffectType.SMOKE,
+                            buffer.array()));
+            spark.setNetwork(color);
 
             if(spark instanceof EntityCorporeaSpark) {
                 try {
@@ -126,6 +132,11 @@ public class BlockSparkPainter extends BlockWaterloggable {
                 }
             }
         }
+    }
+
+    @Override
+    public int getLightValue(BlockState state) {
+        return 15;
     }
 
 }

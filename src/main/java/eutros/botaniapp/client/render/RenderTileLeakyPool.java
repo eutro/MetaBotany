@@ -7,7 +7,6 @@ import eutros.botaniapp.client.core.handler.ClientTickHandler;
 import eutros.botaniapp.common.block.tile.TileLeakyPool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -29,37 +28,6 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
 
     public RenderTileLeakyPool(TileEntityRendererDispatcher p_i226006_1_) {
         super(p_i226006_1_);
-    }
-
-    public static void renderIcon(MatrixStack ms, IVertexBuilder buffer, float x, float y, TextureAtlasSprite icon, float width, float height, float alpha) {
-        renderIcon(ms, buffer, 0, 0, 1, 1, x, y, icon, width, height, alpha);
-    }
-
-    public static void renderIcon(MatrixStack ms, IVertexBuilder buffer, float minU, float minV, float maxU, float maxV, float x, float y, TextureAtlasSprite icon, float width, float height, float alpha) {
-        if(maxU > 1) {
-            float singleIconWidth = width / maxU;
-            renderIcon(ms, buffer, 0, minV, maxU - 1, maxV, x + singleIconWidth, y, icon, width - singleIconWidth, height, alpha);
-            width = singleIconWidth;
-            maxU = 1;
-        }
-        if(maxV > 1) {
-            float singleIconHeight = height / maxV;
-            renderIcon(ms, buffer, minU, 0, maxU, maxV - 1, x, y + singleIconHeight, icon, width, height - singleIconHeight, alpha);
-            height = singleIconHeight;
-            maxV = 1;
-        }
-        Matrix4f mat = ms.getLast().getMatrix();
-        int fullBrightness = 0xF000F0;
-        float uDiff = icon.getMaxU() - icon.getMinU();
-        float vDiff = icon.getMaxV() - icon.getMinV();
-        buffer.pos(mat, x, y + height, 0)
-                .color(1, 1, 1, alpha).tex(icon.getMinU() + uDiff * minU, icon.getMaxV() - vDiff * (1 - maxV)).lightmap(fullBrightness).endVertex();
-        buffer.pos(mat, x + width, y + height, 0)
-                .color(1, 1, 1, alpha).tex(icon.getMaxU() - uDiff * (1 - maxU), icon.getMaxV() - vDiff * (1 - maxV)).lightmap(fullBrightness).endVertex();
-        buffer.pos(mat, x + width, y, 0)
-                .color(1, 1, 1, alpha).tex(icon.getMaxU() - uDiff * (1 - maxU), icon.getMinV() + vDiff * minV).lightmap(fullBrightness).endVertex();
-        buffer.pos(mat, x, y, 0)
-                .color(1, 1, 1, alpha).tex(icon.getMinU() + uDiff * minU, icon.getMinV() + vDiff * minV).lightmap(fullBrightness).endVertex();
     }
 
     @Override
@@ -88,7 +56,7 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
             ms.rotate(Vector3f.XP.rotationDegrees(90F));
 
             ms.scale(s, s, s);
-            renderIcon(ms, buffer, 0, 0, icon, 16, 16, 1);
+            RenderHelper.renderIcon(ms, buffer, 0, 0, icon, 16, 16, 1);
 
             ms.pop();
 
@@ -130,18 +98,18 @@ public class RenderTileLeakyPool extends TileEntityRenderer<TileLeakyPool> {
                 ms.translate(0, 0, -4);
                 ms.rotate(Vector3f.XN.rotationDegrees(90F));
                 ms.translate(0F, -4F, 0F);
-                renderIcon(ms, buffer, 6 / 16F, 0, 10 / 16F, dripLevel / 4, 0, 0, icon, 4, dripLevel, 1);
+                RenderHelper.renderIcon(ms, buffer, 6 / 16F, 0, 10 / 16F, dripLevel / 4, 0, 0, icon, 4, dripLevel, 1);
 
                 for(int i = 0; i < 3; i++) {
                     ms.rotate(Vector3f.YP.rotationDegrees(90F));
                     ms.translate(-4F, 0F, 0);
-                    renderIcon(ms, buffer, 6 / 16F, 0, 10 / 16F, dripLevel / 4, 0, 0, icon, 4, dripLevel, 1);
+                    RenderHelper.renderIcon(ms, buffer, 6 / 16F, 0, 10 / 16F, dripLevel / 4, 0, 0, icon, 4, dripLevel, 1);
                 }
                 ms.pop();
             }
 
             ms.translate(0, 0, -dripLevel);
-            renderIcon(ms, buffer, 6 / 16F, 6 / 16F, 10 / 16F, 10 / 16F, 0, 0, icon, 4, 4, 1);
+            RenderHelper.renderIcon(ms, buffer, 6 / 16F, 6 / 16F, 10 / 16F, 10 / 16F, 0, 0, icon, 4, 4, 1);
 
             ms.pop();
         }

@@ -3,6 +3,7 @@ package eutros.botaniapp.client.core.proxy;
 import eutros.botaniapp.client.core.handler.ClientTickHandler;
 import eutros.botaniapp.client.core.handler.ColorHandler;
 import eutros.botaniapp.client.integration.patchouli.RegexDissection;
+import eutros.botaniapp.client.render.RenderHelper;
 import eutros.botaniapp.common.block.BlockSparkPainter;
 import eutros.botaniapp.common.block.flower.BlockFloatingSpecialFlower;
 import eutros.botaniapp.common.core.proxy.IProxy;
@@ -10,6 +11,7 @@ import eutros.botaniapp.common.utils.Reference;
 import net.minecraft.block.FlowerBlock;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -21,8 +23,10 @@ public class ClientProxy implements IProxy {
 
     @Override
     public void registerHandlers() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        bus.addListener(this::clientSetup);
+        bus.addListener(this::loadComplete);
+        bus.register(RenderHelper.getInstance());
     }
 
     @Override
