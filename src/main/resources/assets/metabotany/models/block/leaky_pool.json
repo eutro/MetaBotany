@@ -1,0 +1,6 @@
+{
+  "parent": "metabotany:block/shapes/leaky_pool",
+  "textures": {
+    "all": "metabotany:blocks/leaky_pool"
+  }
+}

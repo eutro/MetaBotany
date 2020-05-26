@@ -1,4 +1,4 @@
 {
-  "type": "botaniapp:lens_unbinding",
-  "group": "botaniapp:lens_binding"
+  "type": "metabotany:lens_unbinding",
+  "group": "metabotany:lens_binding"
 }

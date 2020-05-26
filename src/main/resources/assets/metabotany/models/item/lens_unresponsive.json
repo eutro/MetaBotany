@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "metabotany:items/lens",
+    "layer1": "metabotany:items/lens_unresponsive"
+  }
+}

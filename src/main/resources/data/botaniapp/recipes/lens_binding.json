@@ -1,7 +1,7 @@
 {
-  "type": "botaniapp:lens_binding",
+  "type": "metabotany:lens_binding",
   "result": {
-    "item": "botaniapp:lens_binding"
+    "item": "metabotany:lens_binding"
   },
   "pattern": [
     "PP",
@@ -15,5 +15,5 @@
       "tag": "botania:petals"
     }
   },
-  "group": "botaniapp:lens_binding"
+  "group": "metabotany:lens_binding"
 }

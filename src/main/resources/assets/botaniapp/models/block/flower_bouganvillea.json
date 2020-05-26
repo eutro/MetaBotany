@@ -1,6 +1,0 @@
-{
-  "parent": "botaniapp:block/shapes/cross_tinted",
-  "textures": {
-    "cross": "botaniapp:blocks/flower_func_bouganvillea"
-  }
-}

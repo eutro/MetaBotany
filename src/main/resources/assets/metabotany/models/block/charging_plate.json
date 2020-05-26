@@ -1,0 +1,8 @@
+{
+  "parent": "metabotany:block/shapes/charging_plate",
+  "textures": {
+    "top": "metabotany:blocks/charging_plate_top",
+    "bottom": "metabotany:blocks/charging_plate_bottom",
+    "side": "metabotany:blocks/charging_plate_side"
+  }
+}

@@ -1,6 +1,0 @@
-{
-  "parent": "botaniapp:block/shapes/leaky_pool",
-  "textures": {
-    "all": "botaniapp:blocks/leaky_pool"
-  }
-}

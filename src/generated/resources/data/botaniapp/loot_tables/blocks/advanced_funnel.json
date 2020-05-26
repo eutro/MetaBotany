@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "botaniapp:advanced_funnel"
+          "name": "metabotany:advanced_funnel"
         }
       ],
       "conditions": [

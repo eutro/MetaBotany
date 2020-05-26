@@ -1,34 +1,33 @@
 modLoader="javafml" #mandatory
 loaderVersion="[30,)" #mandatory
-issueTrackerURL="https://github.com/eutropius225/BotaniaPP/issues" #optional
-displayURL="https://github.com/eutropius225/BotaniaPP" #optional
+issueTrackerURL="https://github.com/eutropius225/MetaBotany/issues" #optional
+displayURL="https://github.com/eutropius225/MetaBotany" #optional
 logoFile="logo.png" #optional
 credits="Botania Developers and Maintainers: Vazkii, wiiv, williewillus, dylan4ever" #optional
 authors="Eutros"
 
 [[mods]]
-modId="botaniapp"
+modId="metabotany"
 version="${file.jarVersion}"
-displayName="Botania Plus Plus"
+displayName="MetaBotany"
 description='''
 Addon mod for Botania, adding new possibilites.'''
 
-[[dependencies.botaniapp]]
+[[dependencies.metabotany]]
     modId="forge"
     mandatory=true
     versionRange="[30,)"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.botaniapp]]
+[[dependencies.metabotany]]
     modId="patchouli"
     mandatory=true
     versionRange="[1.2-28,)"
     side="BOTH"
 
-[[dependencies.botaniapp]]
+[[dependencies.metabotany]]
     modId="botania"
     mandatory=true
     versionRange="[r1.11-378,)"
-    ordering="AFTER"
     side="BOTH"

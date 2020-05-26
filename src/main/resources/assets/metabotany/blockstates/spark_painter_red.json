@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "metabotany:block/spark_painter/base"
+    }
+  }
+}

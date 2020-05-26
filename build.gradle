@@ -16,18 +16,14 @@ apply plugin: 'maven-publish'
 def configFile = file('build.properties')
 def config = parseConfig(configFile)
 
-version = "${config.phase}-${config.major}.${config.minor}.${config.patch}"
-group = 'eutros.botaniapp'
+version = "${mc_version}-${config.phase}-${config.major}.${config.minor}.${config.patch}"
+group = 'eutros.metabotany'
 archivesBaseName = mod_name
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 repositories {
     mavenCentral()
-    maven {
-        name "yarn2mcp"
-        url "https://maven.tterrag.com/"
-    }
     maven {
         url "https://maven.blamejared.com"
     }
@@ -52,7 +48,7 @@ minecraft {
             properties 'fml.earlyprogresswindow': 'false'
             workingDirectory project.file('run')
             mods {
-                botaniapp {
+                metabotany {
                     source sourceSets.main
                 }
             }
@@ -68,7 +64,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                botaniapp {
+                metabotany {
                     source sourceSets.main
                 }
             }
@@ -83,10 +79,10 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'botaniapp', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'metabotany', '--all', '--output', file('src/generated/resources/')
 
             mods {
-                botaniapp {
+                metabotany {
                     source sourceSets.main
                 }
             }
@@ -102,7 +98,7 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.15.2-31.1.25'
+    minecraft "net.minecraftforge:forge:${mc_version}-31.1.25"
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
@@ -110,25 +106,25 @@ dependencies {
     compileOnly fg.deobf('vazkii.botania:Botania:r1.15-383.358:api')
     compile fg.deobf('vazkii.botania:Botania:r1.15-383.358')
 
-    compile fg.deobf("vazkii.patchouli:Patchouli:1.15.2-1.2-30.156") { transitive = false }
+    compile fg.deobf("vazkii.patchouli:Patchouli:${mc_version}-1.2-30.156") { transitive = false }
 
-    compileOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.2:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.2")
+    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:6.0.0.2:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:6.0.0.2")
 
-    compileOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-1.15.2-2.0:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-1.15.2-2.0")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${mc_version}-2.0:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${mc_version}-2.0")
     implementation 'org.jetbrains:annotations:15.0'
 }
 
 jar {
     manifest {
         attributes([
-                "Specification-Title": "botaniapp",
-                "Specification-Vendor": "botaniappsareus",
+                "Specification-Title": "metabotany",
+                "Specification-Vendor": "Eutros",
                 "Specification-Version": "1",
                 "Implementation-Title": project.name,
                 "Implementation-Version": "${version}",
-                "Implementation-Vendor" :"botaniappsareus",
+                "Implementation-Vendor" :"Eutros",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

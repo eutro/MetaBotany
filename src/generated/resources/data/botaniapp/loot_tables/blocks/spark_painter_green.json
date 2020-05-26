@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "botaniapp:spark_painter_green"
+          "name": "metabotany:spark_painter_green"
         }
       ],
       "conditions": [

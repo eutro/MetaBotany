@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "botaniapp:frame_tinkerer"
+    "item": "metabotany:frame_tinkerer"
   },
   "pattern": [
     "SLS",

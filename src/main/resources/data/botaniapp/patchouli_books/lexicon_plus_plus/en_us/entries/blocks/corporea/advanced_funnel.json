@@ -1,29 +1,29 @@
 {
-  "name": "botaniapp.entry.advanced_funnel",
-  "icon": "botaniapp:advanced_funnel",
-  "category": "botaniapp:blocks/corporea/corporea",
+  "name": "metabotany.entry.advanced_funnel",
+  "icon": "metabotany:advanced_funnel",
+  "category": "metabotany:blocks/corporea/corporea",
   "entry_color": "aa00",
   "advancement": "botania:main/elf_lexicon_pickup",
   "pages": [
     {
       "type": "spotlight",
-      "item": "botaniapp:advanced_funnel",
-      "text": "botaniapp.page.advanced_funnel0"
+      "item": "metabotany:advanced_funnel",
+      "text": "metabotany.page.advanced_funnel0"
     },
     {
       "type": "text",
-      "text": "botaniapp.page.advanced_funnel1"
+      "text": "metabotany.page.advanced_funnel1"
     },
     {
       "type": "crafting",
-      "recipe": "botaniapp:advanced_funnel",
-      "text": "botaniapp.page.advanced_funnel2"
+      "recipe": "metabotany:advanced_funnel",
+      "text": "metabotany.page.advanced_funnel2"
     },
     {
       "type": "regex_dissection",
-      "text": "botaniapp.page.advanced_funnel.regex0",
-      "regex0": "botaniapp.regex.exp0",
-      "regex1": "botaniapp.regex.exp1"
+      "text": "metabotany.page.advanced_funnel.regex0",
+      "regex0": "metabotany.regex.exp0",
+      "regex1": "metabotany.regex.exp1"
     }
   ]
 }

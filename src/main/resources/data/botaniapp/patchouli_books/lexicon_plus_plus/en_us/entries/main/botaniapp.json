@@ -1,11 +1,11 @@
 {
-  "name": "Botania Plus Plus",
+  "name": "MetaBotany",
   "icon": "botania:lexicon",
-  "category": "botaniapp:main/botaniapp",
+  "category": "metabotany:main/metabotany",
   "pages": [
     {
       "type": "text",
-      "text": "botaniapp.text.botaniapp"
+      "text": "metabotany.text.metabotany"
     }
   ]
 }

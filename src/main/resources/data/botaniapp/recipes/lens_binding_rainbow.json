@@ -1,7 +1,7 @@
 {
-  "type": "botaniapp:lens_binding",
+  "type": "metabotany:lens_binding",
   "result": {
-    "item": "botaniapp:lens_binding",
+    "item": "metabotany:lens_binding",
     "nbt": "{color1:16,color2:16}"
   },
   "pattern": [
@@ -13,8 +13,8 @@
       "item": "botania:lens_normal"
     },
     "P": {
-      "tag": "botaniapp:rainbow_petals"
+      "tag": "metabotany:rainbow_petals"
     }
   },
-  "group": "botaniapp:lens_binding"
+  "group": "metabotany:lens_binding"
 }

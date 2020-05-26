@@ -1,6 +1,6 @@
 {
-  "name": "botaniapp.category.lenses",
-  "description": "botaniapp.category.text.lenses",
-  "icon": "botaniapp:lens_binding",
-  "parent": "botaniapp:main/botaniapp"
+  "name": "metabotany.category.lenses",
+  "description": "metabotany.category.text.lenses",
+  "icon": "metabotany:lens_binding",
+  "parent": "metabotany:main/metabotany"
 }

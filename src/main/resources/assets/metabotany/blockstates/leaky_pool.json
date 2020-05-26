@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=true": {
+      "model": "metabotany:block/leaky_pool"
+    },
+    "powered=false": {
+      "model": "metabotany:block/leaky_pool"
+    }
+  }
+}

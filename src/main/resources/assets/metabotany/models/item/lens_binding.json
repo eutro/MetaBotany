@@ -1,0 +1,17 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "metabotany:items/lens",
+    "layer1": "metabotany:items/lens_binding",
+    "layer2": "metabotany:items/lens_petal_bottom",
+    "layer3": "metabotany:items/lens_petal_top"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "metabotany:bound": 1
+      },
+      "model": "metabotany:item/lens_binding_bound"
+    }
+  ]
+}

@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "botaniapp:flower_bouganvillea"
+          "name": "metabotany:flower_bouganvillea"
         }
       ],
       "conditions": [

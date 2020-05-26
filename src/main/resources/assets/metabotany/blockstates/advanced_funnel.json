@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "metabotany:block/advanced_funnel"
+    },
+    "powered=true": {
+      "model": "metabotany:block/advanced_funnel"
+    }
+  }
+}

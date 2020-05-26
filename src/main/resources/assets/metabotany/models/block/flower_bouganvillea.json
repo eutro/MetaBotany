@@ -1,0 +1,6 @@
+{
+  "parent": "metabotany:block/shapes/cross_tinted",
+  "textures": {
+    "cross": "metabotany:blocks/flower_func_bouganvillea"
+  }
+}

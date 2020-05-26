@@ -7,7 +7,7 @@ function initializeCoreMod() {
     var Opcodes = Java.type("org.objectweb.asm.Opcodes");
     var MethodNode = Java.type("org.objectweb.asm.tree.MethodNode");
     var newInstructions = new InsnList();
-    var HOOKS = "eutros/botaniapp/asm/ASMHooks";
+    var HOOKS = "eutros/metabotany/asm/ASMHooks";
     var COLLIDE_DESC = "(Lvazkii/botania/api/internal/IManaBurst;Lnet/minecraft/entity/projectile/ThrowableEntity;Lnet/minecraft/util/math/RayTraceResult;ZZLnet/minecraft/item/ItemStack;)Z"
 
     function harvestLevelTransformer(varIndex) { // index of the harvestLevel local variable

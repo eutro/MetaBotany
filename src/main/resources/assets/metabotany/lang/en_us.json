@@ -1,0 +1,93 @@
+{
+  "item.metabotany.lens_binding": "Mana Lens: Binding",
+  "item.metabotany.lens_binding.short": "Binding",
+
+  "item.metabotany.lens_redstone": "Mana Lens: Pulse",
+  "item.metabotany.lens_redstone.short": "Pulse",
+
+  "item.metabotany.lens_unresponsive": "Mana Lens: Unresponsive",
+  "item.metabotany.lens_unresponsive.short": "Unresponsive",
+
+  "item.metabotany.terra_pick": "Terra Shatterer",
+
+  "item.metabotany.compacted_stacks": "Mana Compacted Item Stacks",
+  "metabotany.tooltip.stack_count": "Stacks: ",
+
+  "block.metabotany.flower_bouganvillea": "Bouganvillea",
+  "block.metabotany.floating_flower_bouganvillea": "Floating Bouganvillea",
+  "metabotany.name_tag.animal": "Animal",
+
+  "block.metabotany.advanced_funnel": "Advanced Corporea Funnel",
+  "hud.metabotany.advanced_funnel.pre": "Reaches up to ",
+  "hud.metabotany.advanced_funnel.post": " block(s) below.",
+  "hud.metabotany.advanced_funnel.no_match": "No requests yet.",
+  "hud.metabotany.advanced_funnel.prev_match": "Previous request:",
+
+  "item.metabotany.lens_redirect_plus": "Mana Lens: Pivot",
+  "item.metabotany.lens_redirect_plus.short": "Pivot",
+
+  "item.metabotany.lens_redirect_plus_april": "Mana Lens: You Spin Me Right Round Baby Right Round Like A Record Baby Right Round Round Round",
+  "item.metabotany.lens_redirect_plus_april.short": "You Spin Me Right Round Baby Right Round Like A Record Baby Right Round Round Round",
+
+  "block.metabotany.leaky_pool": "Leaky Mana Pool",
+  "recipe.block.metabotany.leaky_pool": "Leaky Mana Pool Crafting",
+  "metabotany.explosion.explosion": "Any Explosion",
+
+  "block.metabotany.charging_plate": "Charging Plate",
+
+  "block.metabotany.frame_tinkerer": "Item Frame Tinkerer",
+
+  "enchantment.metabotany.sharper": "Sharpened",
+
+  "block.metabotany.spark_painter_black": "Black Spark Painter",
+  "block.metabotany.spark_painter_blue": "Blue Spark Painter",
+  "block.metabotany.spark_painter_brown": "Brown Spark Painter",
+  "block.metabotany.spark_painter_cyan": "Cyan Spark Painter",
+  "block.metabotany.spark_painter_gray": "Gray Spark Painter",
+  "block.metabotany.spark_painter_green": "Green Spark Painter",
+  "block.metabotany.spark_painter_light_blue": "Light Blue Spark Painter",
+  "block.metabotany.spark_painter_light_gray": "Light Gray Spark Painter",
+  "block.metabotany.spark_painter_lime": "Lime Spark Painter",
+  "block.metabotany.spark_painter_magenta": "Magenta Spark Painter",
+  "block.metabotany.spark_painter_orange": "Orange Spark Painter",
+  "block.metabotany.spark_painter_pink": "Pink Spark Painter",
+  "block.metabotany.spark_painter_purple": "Purple Spark Painter",
+  "block.metabotany.spark_painter_red": "Red Spark Painter",
+  "block.metabotany.spark_painter_white": "White Spark Painter",
+  "block.metabotany.spark_painter_yellow": "Yellow Spark Painter",
+
+  "metabotany.customize.preset.botanist_ready": "Botanist Ready",
+
+  "metabotany.tooltip.composite": "Composite:",
+
+  "itemGroup.metabotany": "MetaBotany",
+
+  "metabotany.category.metabotany": "$(4)MetaBotany$(0) is an add-on mod for $(1)Botania$(0). It aims to create new possibilities for automation of things that were not possible before.",
+  "metabotany.text.metabotany": "$(4)MetaBotany$(0) is a mod by Eutros.",
+
+  "metabotany.category.lenses": "Additional Mana Lenses",
+  "metabotany.category.text.lenses": "More lenses for your mana bursts!",
+  "metabotany.entry.lens_binding": "Mana Lens: Binding",
+  "metabotany.page.lens_binding0": "The $(item)Binding Lens$(0) allows $(thing)Mana Bursts$(0) to bind blocks automatically, like a $(l:basics/wand)$(item)Wand of the Forest$(0)$(/l) would.$(p)Striking any applicable block with the mana burst from this lens will $(thing)bind$(0) that location to the lens, dropping the first petal.$(p)Striking a second block will, if possible, $(thing)bind$(0) the $(thing)first block$(0) to the $(thing)second$(0).",
+  "metabotany.page.lens_binding1": "If the $(thing)first block$(0) $(l)cannot$() be bound to the $(thing)second$(0), $(o)the lens will not unbind from the first block$().$(p)The $(item)Binding Lens$(0) can even be moved around without losing its binding. Furthermore, it can be bound by hand, by sneak-right clicking on an applicable block. It can also be $(thing)unbound$(0) by sneak-right clicking into space, or putting it in a $(thing)crafting grid$(0).",
+  "metabotany.page.lens_binding6": "Though the lens and its color will visibly change depending on whether it is currently bound or not, any $(thing)mana bursts$(0) in flight will not change color when the lens does.$(p)Furthermore, $(item)Flowers$(0) cannot be bound (not even $(l:misc/shiny_flowers)$(thing)Floating Flowers$(0)$(/l)) to $(l:mana/pool)$(item)Mana Pools$(0)$(/l) or $(l:mana/spreader)$(item)Mana Spreaders$(0)$(/l) in this way.",
+  "metabotany.page.lens_binding2": "Wow, pretty colors.$(p)Maybe looking back at this entry after the $(thing)Elves$(0) have seen it would be a good idea...",
+
+  "metabotany.page.title.lens_binding3": "Elven Factors",
+  "metabotany.page.lens_binding3": "It looks like you have met the $(thing)Elves$(0). There are some new features to pay attention to.$(p)Firstly, due to the faint presence of the $(l:mana/prism)$(item)Mana Prism$(0)$(/l) in this world, a $(item)Binding Lens$(0) placed on one will $(o)not$() change its $(thing)binding$(0) when a burst fired through it lands.",
+  "metabotany.page.lens_binding4": "Interactions with certain $(l:mana/elven_lenses)$(item)Elven Lenses$(0)$(/l) when combined are also of note.$(p)The first is the $(item)Paintslinger Lens$(0). Should the primary lens be the $(item)Binding Lens$(0), it will be the $(item)Binding Lens$(0) whose color is used for painting.$(p)The second to note is the $(item)Warp Lens$(0). When it is combined with the $(item)Binding Lens$(0), the order matters:",
+  "metabotany.page.lens_binding5": "Should the primary lens be the $(item)Binding Lens$(0), the burst will not $(thing)bind$(0) any $(l:ender/piston_relay)$(item)Force Relays$(0)$(/l) it hits. Should the primary lens be the $(item)Warp Lens$(0), the burst will bind any $(l:ender/piston_relay)$(item)Force Relays$(0)$(/l) it goes through.$(p)The third special interaction is with $(item)Phantom Lenses$(0). By lining up several targets, a single burst can be used to select both the $(thing)source$(0) and $(thing)target$(0) of the binding, or of consecutive bindings. This works even if the lens is on a $(l:mana/prism)$(item)Mana Prism$(0)$(/l).",
+  "metabotany.page.lens_binding7": "Finally, $(l:alfhomancy/elf_resources)$(item)Pixie Dust$(0)$(/l) can be used in the $(item)Binding Lens$(0)' recipe in lieu of petals, resulting in that petal being replaced with a rainbow petal, which changes color.",
+
+
+  "metabotany.category.corporea": "Corporea Additions",
+  "metabotany.category.text.corporea": "Do more with Corporea!",
+
+  "metabotany.entry.advanced_funnel": "Advanced Corporea Funnel",
+  "metabotany.page.advanced_funnel0": "The $(item)Advanced Corporea Funnel$(0) is, as the name suggests, a more $(thing)Advanced$(0) version of the $(l:ender/corporea_funnel)Corporea Funnel$(/l). It has a couple of key differences.$(p)Firstly, the $(item)Advanced Corporea Funnel$(0) can reach anywhere between $(thing)0$(0) (always dropping the items) and $(thing)8$(0) blocks below it. This can be changed with a $(l:basics/wand)$(item)Wand of the Forest$(0)$(/l).",
+  "metabotany.page.advanced_funnel1": "Secondly, the $(item)Advanced Corporea Funnel$(0) provides $(thing)better ways to filter items$(0). Though putting specific items in item frames works fine if you need those exact items, sometimes that just won't cut it.$(p)By naming your items carefully, you can have your $(item)Advanced Corporea Funnel$(0) speak to your $(thing)Corporea Network$(0), and request items like you could from a $(l:ender/corporea_index)Corporea Index$(/l). To do so, simply name any item, putting quotation marks around its",
+  "metabotany.page.advanced_funnel2": "name, $(l)\"like so\"$(), before placing it in an $(item)Item Frame$(0) on the block.",
+  "metabotany.page.advanced_funnel.regex0": "Here is an example of a $(thing)Regular Expression$(0), with each component annotated:",
+  "metabotany.regex.exp0": "$(t:§lW§6§l|§f§lw§r: Matches either a §cW§r or a §cw§r.)W$(6)|$(0)w$(t:§lhat colo§r: Matches §chat colo§r.)hat colo$(t:§lu§b§l?§r: Matches §cu§r or nothing at all.)u$(b)?/$$(t:§lr§r: Matches §cr§r.)r$(t:§6§l\\W§r: Matches any §cnon-letter characters§r.)$(6)\\W$(t:§6§l.§b§l+§r: Matches §cany number§r of §cany character§r.)$(6).$(b)+$(0)$(/t)",
+  "metabotany.regex.exp1": "$(t:§a§lParentheses§r: Match §canything contained in them§r as one thing.)$(a)($(0)are$(a))$(t:§6§l|§r: Matches either the thing §cbefore§r it, or the thing §cafter§r.)$(6)|$(t:§6§lBrackets§r: Match §cone§r of §cany character§r inside them.)$(a)($(6)[$(0)rR$(6)]$(a))$(0)$(t:§l you§r: Matches §c you§r) you$(6)$(t:§6§lBrackets§r: Match §cone§r of §cany character§r inside them.)[$(0).?!$(6)]$(b)$(t:§b§l{0,3}§r: Matches §c0§r to §c3§r of the thing before it.){0,3}$(7)$(/t)"
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "metabotany:block/spark_painter/base",
+  "textures": {
+    "color": "metabotany:blocks/spark_painter/yellow"
+  }
+}

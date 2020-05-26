@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "botaniapp:frame_tinkerer"
+          "name": "metabotany:frame_tinkerer"
         }
       ],
       "conditions": [

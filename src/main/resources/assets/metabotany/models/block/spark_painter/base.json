@@ -1,0 +1,9 @@
+{
+  "parent": "metabotany:block/shapes/spark_painter",
+  "textures": {
+    "top": "metabotany:blocks/spark_painter/top",
+    "bottom": "metabotany:blocks/spark_painter/bottom",
+    "side": "metabotany:blocks/spark_painter/side",
+    "color": "metabotany:blocks/blank"
+  }
+}

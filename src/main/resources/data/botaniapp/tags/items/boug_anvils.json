@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#botaniapp:anvils/vanilla_anvils",
-    "#botaniapp:anvils/botani_anvils"
+    "#metabotany:anvils/vanilla_anvils",
+    "#metabotany:anvils/botani_anvils"
   ]
 }

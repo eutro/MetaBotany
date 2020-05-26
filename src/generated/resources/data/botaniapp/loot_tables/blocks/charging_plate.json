@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "botaniapp:charging_plate"
+          "name": "metabotany:charging_plate"
         }
       ],
       "conditions": [

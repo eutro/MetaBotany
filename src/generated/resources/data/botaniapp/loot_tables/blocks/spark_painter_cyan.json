@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "botaniapp:spark_painter_cyan"
+          "name": "metabotany:spark_painter_cyan"
         }
       ],
       "conditions": [

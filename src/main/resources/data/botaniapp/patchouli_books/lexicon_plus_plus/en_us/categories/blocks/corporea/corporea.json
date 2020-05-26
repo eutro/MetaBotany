@@ -1,6 +1,6 @@
 {
-  "name": "botaniapp.category.corporea",
-  "description": "botaniapp.category.text.corporea",
-  "icon": "botaniapp:advanced_funnel",
-  "parent": "botaniapp:main/botaniapp"
+  "name": "metabotany.category.corporea",
+  "description": "metabotany.category.text.corporea",
+  "icon": "metabotany:advanced_funnel",
+  "parent": "metabotany:main/metabotany"
 }

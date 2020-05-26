@@ -1,8 +1,0 @@
-{
-  "parent": "botania:block/shapes/three_high_bottom_top",
-  "textures": {
-    "bottom": "botaniapp:blocks/frame_tinkerer_bottom",
-    "up": "botaniapp:blocks/frame_tinkerer_top",
-    "side": "botaniapp:blocks/frame_tinkerer_side"
-  }
-}

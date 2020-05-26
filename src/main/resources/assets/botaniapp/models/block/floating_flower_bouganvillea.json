@@ -1,7 +1,0 @@
-{
-  "parent": "block/block",
-  "loader": "botania:floating_flower",
-  "flower": {
-    "parent": "botaniapp:block/flower_bouganvillea"
-  }
-}

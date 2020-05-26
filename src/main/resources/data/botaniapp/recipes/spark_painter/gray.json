@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "botaniapp:spark_painter_gray"
+    "item": "metabotany:spark_painter_gray"
   },
   "pattern": [
     " S ",

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=true": {
+      "model": "metabotany:block/frame_tinkerer"
+    },
+    "powered=false": {
+      "model": "metabotany:block/frame_tinkerer"
+    }
+  }
+}

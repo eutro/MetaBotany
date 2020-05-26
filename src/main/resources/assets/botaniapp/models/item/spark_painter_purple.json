@@ -1,6 +1,0 @@
-{
-  "parent": "botaniapp:block/spark_painter/base",
-  "textures": {
-    "color": "botaniapp:blocks/spark_painter/purple"
-  }
-}

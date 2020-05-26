@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "botaniapp:lens_redstone"
+    "item": "metabotany:lens_redstone"
   },
   "pattern": [
     "RRR",
