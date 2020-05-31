@@ -14,6 +14,7 @@ import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 
 public final class MetaBotanyCreativeTab extends ItemGroup {
 
@@ -46,10 +47,14 @@ public final class MetaBotanyCreativeTab extends ItemGroup {
         addItem(MetaBotanyItems.redstoneLens);
         addItem(MetaBotanyItems.redirectPlusLens);
         addItem(MetaBotanyBlocks.frameTinkerer);
-        addItem(MetaBotanyBlocks.advancedFunnel);
         addItem(MetaBotanyBlocks.chargingPlate);
-        addItem(MetaBotanyBlocks.leakyPool);
-        addItem(BlockSparkPainter.dyeMap.get(DyeColor.WHITE));
+
+        Map<DyeColor, BlockSparkPainter> dyeColorBlockSparkPainterMap = BlockSparkPainter.dyeMap;
+        for(DyeColor dyeColor : DyeColor.values()) {
+            BlockSparkPainter blockSparkPainter = dyeColorBlockSparkPainterMap.get(dyeColor);
+            addItem(blockSparkPainter);
+        }
+
         addItem(MetaBotanyFlowers.bouganvillea);
         addItem(MetaBotanyFlowers.bouganvilleaFloating);
     }

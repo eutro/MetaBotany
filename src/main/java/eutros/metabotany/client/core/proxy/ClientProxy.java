@@ -2,7 +2,6 @@ package eutros.metabotany.client.core.proxy;
 
 import eutros.metabotany.client.core.handler.ClientTickHandler;
 import eutros.metabotany.client.core.handler.ColorHandler;
-import eutros.metabotany.client.integration.patchouli.RegexDissection;
 import eutros.metabotany.client.render.RenderHelper;
 import eutros.metabotany.common.block.BlockSparkPainter;
 import eutros.metabotany.common.block.flower.BlockFloatingSpecialFlower;
@@ -53,7 +52,6 @@ public class ClientProxy implements IProxy {
 
     private void loadComplete(FMLLoadCompleteEvent event) {
         ColorHandler.init();
-        RegexDissection.init();
     }
 
 }

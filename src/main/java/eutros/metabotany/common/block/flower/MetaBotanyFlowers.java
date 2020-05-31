@@ -40,10 +40,6 @@ public class MetaBotanyFlowers {
         return new ResourceLocation(orig.getNamespace(), "floating_" + orig.getPath());
     }
 
-    private static ResourceLocation chibi(ResourceLocation orig) {
-        return new ResourceLocation(orig.getNamespace(), orig.getPath() + "_chibi");
-    }
-
     public static List<Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation>> getTypes() {
         return ImmutableList.copyOf(TYPES);
     }
@@ -83,6 +79,7 @@ public class MetaBotanyFlowers {
         for(Pair<Supplier<? extends TileEntitySpecialFlower>, ResourceLocation> type : TYPES) {
             Block block = b.getValue(type.getRight());
             Block floating = b.getValue(floating(type.getRight()));
+            //noinspection ConstantConditions
             register(r, TileEntityType.Builder.create(type.getLeft(), block, floating).build(null), type.getRight());
         }
     }

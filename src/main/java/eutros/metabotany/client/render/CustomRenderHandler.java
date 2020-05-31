@@ -3,7 +3,6 @@ package eutros.metabotany.client.render;
 import eutros.metabotany.client.render.model.FloatingFlowerModel;
 import eutros.metabotany.common.block.flower.functional.SubtileBouganvillea;
 import eutros.metabotany.common.block.tile.TileChargingPlate;
-import eutros.metabotany.common.block.tile.TileLeakyPool;
 import eutros.metabotany.common.block.tile.TileSparkPainter;
 import eutros.metabotany.common.block.tinkerer.tile.TileFrameTinkerer;
 import eutros.metabotany.common.utils.Reference;
@@ -35,7 +34,6 @@ public final class CustomRenderHandler {
 
         ClientRegistry.bindTileEntityRenderer(TileChargingPlate.TYPE, RenderTileChargingPlate::new);
         ClientRegistry.bindTileEntityRenderer(TileFrameTinkerer.TYPE, RenderTileFrameTinkerer::new);
-        ClientRegistry.bindTileEntityRenderer(TileLeakyPool.TYPE, RenderTileLeakyPool::new);
         ClientRegistry.bindTileEntityRenderer(TileSparkPainter.TYPE, RenderTileSparkPainter::new);
     }
 

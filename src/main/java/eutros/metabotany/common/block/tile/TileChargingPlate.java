@@ -64,7 +64,6 @@ public class TileChargingPlate extends TileSimpleInventory implements ISparkAtta
         };
     }
 
-
     @Override
     public boolean isFull() {
         return getManaItem().map(item -> {

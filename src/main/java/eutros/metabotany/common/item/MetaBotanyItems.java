@@ -35,7 +35,6 @@ public class MetaBotanyItems {
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "redstone") public static RedstoneLens redstoneLens;
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "redirect_plus") public static AdvancedRedirectLens redirectPlusLens;
     @ObjectHolder(Reference.ItemNames.LENS_PREFIX + "unresponsive") public static UnresponsiveLens unresponsiveLens;
-    @ObjectHolder("terra_pick") public static ItemTerraPickPP terraPick;
 
     public static Item BOTANIA_ENTROPIC_LENS;
     public static Item BOTANIA_FLARE_LENS;
@@ -69,7 +68,6 @@ public class MetaBotanyItems {
         register(r, new RedstoneLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "redstone");
         register(r, new AdvancedRedirectLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "redirect_plus");
         register(r, new UnresponsiveLens(unstackable()), Reference.ItemNames.LENS_PREFIX + "unresponsive");
-        register(r, new ItemTerraPickPP(unstackable()), "terra_pick");
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)

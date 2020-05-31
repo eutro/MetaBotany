@@ -15,6 +15,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -26,8 +27,8 @@ public class TileMod extends TileEntity {
 
     @Nonnull
     @Override
-    public CompoundNBT write(CompoundNBT par1nbtTagCompound) {
-        CompoundNBT ret = super.write(par1nbtTagCompound);
+    public CompoundNBT write(@NotNull CompoundNBT cmp) {
+        CompoundNBT ret = super.write(cmp);
         writePacketNBT(ret);
         return ret;
     }
@@ -39,9 +40,9 @@ public class TileMod extends TileEntity {
     }
 
     @Override
-    public void read(CompoundNBT par1nbtTagCompound) {
-        super.read(par1nbtTagCompound);
-        readPacketNBT(par1nbtTagCompound);
+    public void read(@NotNull CompoundNBT cmp) {
+        super.read(cmp);
+        readPacketNBT(cmp);
     }
 
     public void writePacketNBT(CompoundNBT cmp) {
